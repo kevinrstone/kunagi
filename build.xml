@@ -48,7 +48,7 @@
 
 	<target name="compile-gwt" depends="compile-java">
 
-		<java classname="com.google.gwt.dev.Compiler" failonerror="true" fork="true">
+		<java classname="com.google.gwt.dev.Compiler" failonerror="true" fork="true" maxmemory="512M">
 			<arg value="-war" />
 			<arg value="${build.dir}/webapp" />
 			<arg value="scrum.ScrumGwtApplication" />
