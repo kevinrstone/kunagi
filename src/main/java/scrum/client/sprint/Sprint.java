@@ -80,6 +80,14 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 		return ret;
 	}
 
+	public List<Requirement> getIncompletedRequirements() {
+		List<Requirement> ret = new ArrayList<Requirement>();
+		for (Requirement req : getRequirements()) {
+			if (!req.isTasksClosed()) ret.add(req);
+		}
+		return ret;
+	}
+
 	public Integer getLengthInDays() {
 		TimePeriod lenght = getLength();
 		return lenght == null ? null : lenght.toDays();

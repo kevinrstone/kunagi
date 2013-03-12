@@ -14,9 +14,9 @@
  */
 package scrum.mda;
 
-import ilarkesto.base.time.Date;
-import ilarkesto.base.time.DateAndTime;
-import ilarkesto.base.time.Time;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 import ilarkesto.mda.legacy.AGeneratorApplication;
 import ilarkesto.mda.legacy.generator.GwtActionGenerator;
 import ilarkesto.mda.legacy.generator.GwtActionTemplateGenerator;
@@ -512,6 +512,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 					.setTooltip(
 						"The date by which the Team will finish working on this Sprint. "
 								+ "A Sprint Review meeting should be scheduled to present results.");
+			sprintModel.addProperty("originallyEnd", Date.class);
 			sprintModel.addProperty("velocity", Float.class);
 			sprintModel.addStringProperty("completedRequirementsData");
 			sprintModel.addStringProperty("incompletedRequirementsData");

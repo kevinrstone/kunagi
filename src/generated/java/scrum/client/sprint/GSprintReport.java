@@ -14,11 +14,7 @@
 package scrum.client.sprint;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GSprintReport
     }
 
     public final boolean isSprint(scrum.client.sprint.Sprint sprint) {
-        return equals(this.sprintId, sprint);
+        String id = sprint==null ? null : sprint.getId();
+        return equals(this.sprintId, id);
     }
 
     // --- completedRequirements ---

@@ -14,11 +14,7 @@
 package scrum.client.sprint;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -139,7 +135,8 @@ public abstract class GSprint
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- label ---
@@ -219,11 +216,11 @@ public abstract class GSprint
         return (Sprint)this;
     }
 
-    public abstract String getGoalTemplate();
-
     public final boolean isGoal(java.lang.String goal) {
         return equals(this.goal, goal);
     }
+
+    public abstract String getGoalTemplate();
 
     private transient GoalModel goalModel;
 
@@ -377,6 +374,59 @@ public abstract class GSprint
         public boolean isEditable() { return GSprint.this.isDatesEditable(); }
         @Override
         public String getTooltip() { return "The date by which the Team will finish working on this Sprint. A Sprint Review meeting should be scheduled to present results."; }
+
+        @Override
+        protected void onChangeValue(ilarkesto.core.time.Date oldValue, ilarkesto.core.time.Date newValue) {
+            super.onChangeValue(oldValue, newValue);
+            addUndo(this, oldValue);
+        }
+
+    }
+
+    // --- originallyEnd ---
+
+    private ilarkesto.core.time.Date originallyEnd ;
+
+    public final ilarkesto.core.time.Date getOriginallyEnd() {
+        return this.originallyEnd ;
+    }
+
+    public final Sprint setOriginallyEnd(ilarkesto.core.time.Date originallyEnd) {
+        if (isOriginallyEnd(originallyEnd)) return (Sprint)this;
+        this.originallyEnd = originallyEnd ;
+        propertyChanged("originallyEnd", this.originallyEnd);
+        return (Sprint)this;
+    }
+
+    public final boolean isOriginallyEnd(ilarkesto.core.time.Date originallyEnd) {
+        return equals(this.originallyEnd, originallyEnd);
+    }
+
+    private transient OriginallyEndModel originallyEndModel;
+
+    public OriginallyEndModel getOriginallyEndModel() {
+        if (originallyEndModel == null) originallyEndModel = createOriginallyEndModel();
+        return originallyEndModel;
+    }
+
+    protected OriginallyEndModel createOriginallyEndModel() { return new OriginallyEndModel(); }
+
+    protected class OriginallyEndModel extends ilarkesto.gwt.client.editor.ADateEditorModel {
+
+        @Override
+        public String getId() {
+            return "Sprint_originallyEnd";
+        }
+
+        @Override
+        public ilarkesto.core.time.Date getValue() {
+            return getOriginallyEnd();
+        }
+
+        @Override
+        public void setValue(ilarkesto.core.time.Date value) {
+            setOriginallyEnd(value);
+        }
 
         @Override
         protected void onChangeValue(ilarkesto.core.time.Date oldValue, ilarkesto.core.time.Date newValue) {
@@ -560,11 +610,11 @@ public abstract class GSprint
         return (Sprint)this;
     }
 
-    public abstract String getPlanningNoteTemplate();
-
     public final boolean isPlanningNote(java.lang.String planningNote) {
         return equals(this.planningNote, planningNote);
     }
+
+    public abstract String getPlanningNoteTemplate();
 
     private transient PlanningNoteModel planningNoteModel;
 
@@ -626,11 +676,11 @@ public abstract class GSprint
         return (Sprint)this;
     }
 
-    public abstract String getReviewNoteTemplate();
-
     public final boolean isReviewNote(java.lang.String reviewNote) {
         return equals(this.reviewNote, reviewNote);
     }
+
+    public abstract String getReviewNoteTemplate();
 
     private transient ReviewNoteModel reviewNoteModel;
 
@@ -692,11 +742,11 @@ public abstract class GSprint
         return (Sprint)this;
     }
 
-    public abstract String getRetrospectiveNoteTemplate();
-
     public final boolean isRetrospectiveNote(java.lang.String retrospectiveNote) {
         return equals(this.retrospectiveNote, retrospectiveNote);
     }
+
+    public abstract String getRetrospectiveNoteTemplate();
 
     private transient RetrospectiveNoteModel retrospectiveNoteModel;
 
@@ -873,6 +923,8 @@ public abstract class GSprint
         begin  =  beginAsString == null ? null : new ilarkesto.core.time.Date(beginAsString);
         String endAsString = (String) props.get("end");
         end  =  endAsString == null ? null : new ilarkesto.core.time.Date(endAsString);
+        String originallyEndAsString = (String) props.get("originallyEnd");
+        originallyEnd  =  originallyEndAsString == null ? null : new ilarkesto.core.time.Date(originallyEndAsString);
         velocity  = (java.lang.Float) props.get("velocity");
         completedRequirementsData  = (java.lang.String) props.get("completedRequirementsData");
         incompletedRequirementsData  = (java.lang.String) props.get("incompletedRequirementsData");
@@ -895,6 +947,7 @@ public abstract class GSprint
         properties.put("goal", this.goal);
         properties.put("begin", this.begin == null ? null : this.begin.toString());
         properties.put("end", this.end == null ? null : this.end.toString());
+        properties.put("originallyEnd", this.originallyEnd == null ? null : this.originallyEnd.toString());
         properties.put("velocity", this.velocity);
         properties.put("completedRequirementsData", this.completedRequirementsData);
         properties.put("incompletedRequirementsData", this.incompletedRequirementsData);

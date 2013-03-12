@@ -16,8 +16,8 @@ package scrum.server.sprint;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.Date;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -286,6 +286,18 @@ public class Sprint extends GSprint implements Numbered {
 		}
 
 		if (isBeginSet() && isEndSet() && getBegin().isAfter(getEnd())) setEnd(getBegin());
+
+		if (!isOriginallyEndSet()) {
+			setOriginallyEnd(getEnd());
+		}
+		if (isOriginallyEndSet() && isEndSet()) {
+			if (!isOriginallyEnd(getEnd())) {
+				if (getEnd().isBefore(getOriginallyEnd()) || getBurnedWork() == 0 || getBegin().isToday()) {
+					setOriginallyEnd(getEnd());
+					if (getBurnedWork() == 0) setOriginallyEnd(getEnd());
+				}
+			}
+		}
 
 		// delete when not current and end date older than 4 weeks
 		// if (isEndSet() && !getProject().isCurrentSprint(this) && getEnd().isPast()

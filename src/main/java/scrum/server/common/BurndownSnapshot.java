@@ -14,7 +14,7 @@
  */
 package scrum.server.common;
 
-import ilarkesto.base.time.Date;
+import ilarkesto.core.time.Date;
 
 public interface BurndownSnapshot {
 

@@ -18,7 +18,6 @@ import ilarkesto.core.scope.Scope;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.TooltipBuilder;
 import scrum.client.files.Uploader.UploadedFileHandler;
-import scrum.client.workspace.ProjectWorkspaceWidgets;
 
 public class UploadFileAction extends AScrumAction {
 
@@ -41,7 +40,7 @@ public class UploadFileAction extends AScrumAction {
 
 		@Override
 		public void onFileUploaded(File file) {
-			Scope.get().getComponent(ProjectWorkspaceWidgets.class).showEntity(file);
+			// Scope.get().getComponent(ProjectWorkspaceWidgets.class).showEntity(file);
 		}
 
 	}

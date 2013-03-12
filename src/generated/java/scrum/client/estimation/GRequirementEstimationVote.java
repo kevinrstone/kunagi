@@ -14,11 +14,7 @@
 package scrum.client.estimation;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GRequirementEstimationVote
     }
 
     public final boolean isRequirement(scrum.client.project.Requirement requirement) {
-        return equals(this.requirementId, requirement);
+        String id = requirement==null ? null : requirement.getId();
+        return equals(this.requirementId, id);
     }
 
     // --- user ---
@@ -91,7 +88,8 @@ public abstract class GRequirementEstimationVote
     }
 
     public final boolean isUser(scrum.client.admin.User user) {
-        return equals(this.userId, user);
+        String id = user==null ? null : user.getId();
+        return equals(this.userId, id);
     }
 
     // --- estimatedWork ---

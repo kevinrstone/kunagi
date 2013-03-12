@@ -14,11 +14,7 @@
 package scrum.client.sprint;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -68,7 +64,8 @@ public abstract class GTask
     }
 
     public final boolean isRequirement(scrum.client.project.Requirement requirement) {
-        return equals(this.requirementId, requirement);
+        String id = requirement==null ? null : requirement.getId();
+        return equals(this.requirementId, id);
     }
 
     // --- number ---
@@ -415,7 +412,8 @@ public abstract class GTask
     }
 
     public final boolean isOwner(scrum.client.admin.User owner) {
-        return equals(this.ownerId, owner);
+        String id = owner==null ? null : owner.getId();
+        return equals(this.ownerId, id);
     }
 
     // --- impediment ---
@@ -440,7 +438,8 @@ public abstract class GTask
     }
 
     public final boolean isImpediment(scrum.client.impediments.Impediment impediment) {
-        return equals(this.impedimentId, impediment);
+        String id = impediment==null ? null : impediment.getId();
+        return equals(this.impedimentId, id);
     }
 
     // --- closedInPastSprint ---
@@ -465,7 +464,8 @@ public abstract class GTask
     }
 
     public final boolean isClosedInPastSprint(scrum.client.sprint.Sprint closedInPastSprint) {
-        return equals(this.closedInPastSprintId, closedInPastSprint);
+        String id = closedInPastSprint==null ? null : closedInPastSprint.getId();
+        return equals(this.closedInPastSprintId, id);
     }
 
     // --- update properties by map ---

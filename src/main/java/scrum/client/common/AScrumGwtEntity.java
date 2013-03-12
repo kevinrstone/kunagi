@@ -15,7 +15,7 @@
 package scrum.client.common;
 
 import ilarkesto.core.base.Str;
-import ilarkesto.core.base.ToHtmlSupport;
+import ilarkesto.core.html.ToHtmlSupport;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.AGwtEntity;

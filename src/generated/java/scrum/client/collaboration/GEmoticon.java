@@ -14,11 +14,7 @@
 package scrum.client.collaboration;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GEmoticon
     }
 
     public final boolean isParent(ilarkesto.gwt.client.AGwtEntity parent) {
-        return equals(this.parentId, parent);
+        String id = parent==null ? null : parent.getId();
+        return equals(this.parentId, id);
     }
 
     // --- owner ---
@@ -91,7 +88,8 @@ public abstract class GEmoticon
     }
 
     public final boolean isOwner(scrum.client.admin.User owner) {
-        return equals(this.ownerId, owner);
+        String id = owner==null ? null : owner.getId();
+        return equals(this.ownerId, id);
     }
 
     // --- emotion ---

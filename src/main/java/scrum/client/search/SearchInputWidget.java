@@ -31,13 +31,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SearchInputWidget extends AScrumWidget {
 
-	private Search search;
 	private TextBox input;
 	private boolean dirty;
 
 	@Override
 	protected Widget onInitialization() {
-		search = Scope.get().getComponent(Search.class);
 
 		Scope.get().getComponent(Navigator.class).setSearch(this);
 
@@ -58,7 +56,7 @@ public class SearchInputWidget extends AScrumWidget {
 
 	private void submitSearch() {
 		dirty = false;
-		search.search(input.getText());
+		Scope.get().getComponent(Search.class).search(input.getText());
 	}
 
 	public void clear() {

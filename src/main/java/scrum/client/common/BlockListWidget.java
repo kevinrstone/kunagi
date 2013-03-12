@@ -55,11 +55,16 @@ public final class BlockListWidget<O> extends AScrumWidget {
 	private FlowPanel panel;
 	private ElementPredicate<O> highlightPredicate;
 
+	public BlockListWidget(BlockWidgetFactory<O> blockWidgetFactory) {
+		this(blockWidgetFactory, null);
+	}
+
 	public BlockListWidget(BlockWidgetFactory<O> blockWidgetFactory, BlockListDropAction<O> dropAction) {
 		this.dropAction = dropAction;
 		this.blockWidgetFactory = blockWidgetFactory;
 
 		dndMarkerBottom = new BlockDndMarkerWidget();
+		dnd = dropAction != null;
 	}
 
 	public ABlockWidget<O> getExtendedBlock() {
@@ -77,10 +82,6 @@ public final class BlockListWidget<O> extends AScrumWidget {
 	public void setMinHeight(int height) {
 		initialize();
 		panel.getElement().getStyle().setProperty("minHeight", height + "px");
-	}
-
-	public BlockListWidget(BlockWidgetFactory<O> blockWidgetFactory) {
-		this(blockWidgetFactory, null);
 	}
 
 	public void setSelectionManager(BlockListSelectionManager selectionManager) {
@@ -167,8 +168,13 @@ public final class BlockListWidget<O> extends AScrumWidget {
 		return dndSorting;
 	}
 
+	public boolean isDnd() {
+		return dnd;
+	}
+
 	public final void setDndSorting(boolean dndSorting) {
 		this.dndSorting = dndSorting;
+		if (dndSorting) this.dnd = true;
 	}
 
 	public final void clear() {

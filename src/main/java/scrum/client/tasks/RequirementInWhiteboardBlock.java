@@ -78,6 +78,11 @@ public class RequirementInWhiteboardBlock extends ABlockWidget<Requirement> {
 	}
 
 	@Override
+	protected boolean isUpdateRequired() {
+		return true;
+	}
+
+	@Override
 	protected Widget onExtendedInitialization() {
 		return new RequirementWidget(getObject(), true, false, true, true, false, true, true);
 	}

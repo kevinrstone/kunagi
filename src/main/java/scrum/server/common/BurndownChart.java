@@ -17,8 +17,8 @@ package scrum.server.common;
 import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.Date;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -92,11 +92,12 @@ public class BurndownChart {
 
 		WeekdaySelector freeDays = sprint.getProject().getFreeDaysAsWeekdaySelector();
 
-		writeSprintBurndownChart(out, snapshots, sprint.getBegin(), sprint.getEnd(), freeDays, width, height);
+		writeSprintBurndownChart(out, snapshots, sprint.getBegin(), sprint.getEnd(), sprint.getOriginallyEnd(),
+			freeDays, width, height);
 	}
 
 	static void writeSprintBurndownChart(OutputStream out, List<? extends BurndownSnapshot> snapshots, Date firstDay,
-			Date lastDay, WeekdaySelector freeDays, int width, int height) {
+			Date lastDay, Date originallyLastDay, WeekdaySelector freeDays, int width, int height) {
 		LOG.debug("Creating burndown chart:", snapshots.size(), "snapshots from", firstDay, "to", lastDay, "(" + width
 				+ "x" + height + " px)");
 
@@ -109,8 +110,8 @@ public class BurndownChart {
 		}
 
 		List<BurndownSnapshot> burndownSnapshots = new ArrayList<BurndownSnapshot>(snapshots);
-		JFreeChart chart = createSprintBurndownChart(burndownSnapshots, firstDay, lastDay, freeDays, dateMarkTickUnit,
-			widthPerDay);
+		JFreeChart chart = createSprintBurndownChart(burndownSnapshots, firstDay, lastDay, originallyLastDay, freeDays,
+			dateMarkTickUnit, widthPerDay);
 		try {
 			ChartUtilities.writeScaledChartAsPNG(out, chart, width, height, 1, 1);
 			out.flush();
@@ -120,8 +121,9 @@ public class BurndownChart {
 	}
 
 	private static JFreeChart createSprintBurndownChart(List<BurndownSnapshot> snapshots, Date firstDay, Date lastDay,
-			WeekdaySelector freeDays, int dateMarkTickUnit, float widthPerDay) {
-		DefaultXYDataset data = createSprintBurndownChartDataset(snapshots, firstDay, lastDay, freeDays);
+			Date originallyLastDay, WeekdaySelector freeDays, int dateMarkTickUnit, float widthPerDay) {
+		DefaultXYDataset data = createSprintBurndownChartDataset(snapshots, firstDay, lastDay, originallyLastDay,
+			freeDays);
 
 		double tick = 1.0;
 		double max = BurndownChart.getMaximum(data);
@@ -206,10 +208,10 @@ public class BurndownChart {
 	}
 
 	static DefaultXYDataset createSprintBurndownChartDataset(final List<BurndownSnapshot> snapshots,
-			final Date firstDay, final Date lastDay, final WeekdaySelector freeDays) {
+			final Date firstDay, final Date lastDay, Date originallyLastDay, final WeekdaySelector freeDays) {
 
 		ChartDataFactory factory = new ChartDataFactory();
-		factory.createDataset(snapshots, firstDay, lastDay, freeDays);
+		factory.createDataset(snapshots, firstDay, lastDay, originallyLastDay, freeDays);
 		return factory.getDataset();
 	}
 
@@ -256,18 +258,22 @@ public class BurndownChart {
 		double idealRemaining;
 		double idealBurnPerDay;
 		int totalWorkDays = 0;
+		int totalOriginallyWorkDays = 0;
 		boolean extrapolationFinished;
 
 		DefaultXYDataset dataset;
 
 		public void createDataset(final List<BurndownSnapshot> snapshots, final Date firstDay, final Date lastDay,
-				final WeekdaySelector freeDays) {
+				final Date originallyLastDay, final WeekdaySelector freeDays) {
 			this.snapshots = snapshots;
 			this.freeDays = freeDays;
 
 			date = firstDay;
 			while (date.isBeforeOrSame(lastDay)) {
-				if (!freeDays.isFree(date.getWeekday().getDayOfWeek())) totalWorkDays++;
+				if (!freeDays.isFree(date.getWeekday().getDayOfWeek())) {
+					totalWorkDays++;
+					if (date.isBeforeOrSame(originallyLastDay)) totalOriginallyWorkDays++;
+				}
 				date = date.nextDay();
 			}
 
@@ -313,14 +319,15 @@ public class BurndownChart {
 				idealDates.add((double) millisBegin);
 				idealValues.add(idealRemaining);
 
-				if (totalWorkDays > 0) {
-					idealBurnPerDay = (double) jump / (double) totalWorkDays;
+				if (totalOriginallyWorkDays > 0) {
+					idealBurnPerDay = (double) jump / (double) totalOriginallyWorkDays;
 				}
 
 				processCenter();
 				return;
 			}
 			totalWorkDays--;
+			totalOriginallyWorkDays--;
 		}
 
 		private void processCenter() {
@@ -338,8 +345,10 @@ public class BurndownChart {
 				idealRemaining -= idealBurnPerDay;
 			}
 
-			idealDates.add((double) millisEnd);
-			idealValues.add(idealRemaining);
+			if (idealRemaining > 0) {
+				idealDates.add((double) millisEnd);
+				idealValues.add(idealRemaining);
+			}
 		}
 
 		private void processSuffix() {

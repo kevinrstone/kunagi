@@ -14,11 +14,7 @@
 package scrum.client.collaboration;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -68,7 +64,8 @@ public abstract class GComment
     }
 
     public final boolean isParent(ilarkesto.gwt.client.AGwtEntity parent) {
-        return equals(this.parentId, parent);
+        String id = parent==null ? null : parent.getId();
+        return equals(this.parentId, id);
     }
 
     // --- author ---
@@ -93,7 +90,8 @@ public abstract class GComment
     }
 
     public final boolean isAuthor(scrum.client.admin.User author) {
-        return equals(this.authorId, author);
+        String id = author==null ? null : author.getId();
+        return equals(this.authorId, id);
     }
 
     // --- published ---

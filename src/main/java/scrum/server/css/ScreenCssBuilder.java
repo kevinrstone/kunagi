@@ -215,6 +215,8 @@ public class ScreenCssBuilder implements CssBuilder {
 		css.style(".ReleaseWidget-script-ok").fontFamilyMonospace().overflowHidden();
 		css.style(".ReleaseWidget-script-empty").fontFamilyMonospace().overflowHidden();
 		css.style(".ReleaseWidget-script-failed").fontFamilyMonospace().overflowHidden().color("red");
+
+		css.style(".draggable").cursorMove();
 	}
 
 	private void loginPage(CssRenderer css) {
@@ -498,7 +500,7 @@ public class ScreenCssBuilder implements CssBuilder {
 		css.style(".BlockHeaderWidget").background(cBlockHeaderBackground, "../blockheader-bg.png", "repeat-x");
 		css.style(".BlockHeaderWidget:hover").background(cBlockHeaderHoverBackground);
 		css.style(".BlockHeaderWidget-dragHandle, .CreateStoryButtonWidget-dragHandle").margin(2).padding(2)
-				.fontSize(fontSize - 1).lineHeight(lineHeight - 2).textAlignCenter().cursorMove()
+				.fontSize(fontSize - 1).lineHeight(lineHeight - 2).textAlignCenter()
 				.background(cBlockHeaderDragHandleBackground, "../blockdraghandle-bg.png")
 				.border(1, cNavigatorSeparator).borderRadius(5);
 		css.style(".BlockHeaderWidget-anchor").displayBlock().floatLeft().width100().textDecorationNone();

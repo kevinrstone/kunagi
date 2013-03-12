@@ -52,6 +52,8 @@ public class Search extends GSearch implements SearchResultsChangedHandler {
 	private void searchClient(String text) {
 		String[] keys = parseKeys(text);
 
+		log.info(project.getRequirements().size(), " stories to search for", keys);
+
 		results.addEntities(getMatching(project.getRequirements(), keys));
 		results.addEntities(getMatching(project.getQualitys(), keys));
 		results.addEntities(getMatching(project.getTasks(), keys));
@@ -61,6 +63,7 @@ public class Search extends GSearch implements SearchResultsChangedHandler {
 		results.addEntities(getMatching(project.getImpediments(), keys));
 		results.addEntities(getMatching(project.getRisks(), keys));
 
+		log.info("Client search results:", results.getCount());
 	}
 
 	private <T extends AScrumGwtEntity> List<T> getMatching(Collection<T> entities, String[] keys) {

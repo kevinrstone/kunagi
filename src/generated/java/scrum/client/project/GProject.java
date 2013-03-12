@@ -14,11 +14,7 @@
 package scrum.client.project;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -683,7 +679,8 @@ public abstract class GProject
     }
 
     public final boolean isCurrentSprint(scrum.client.sprint.Sprint currentSprint) {
-        return equals(this.currentSprintId, currentSprint);
+        String id = currentSprint==null ? null : currentSprint.getId();
+        return equals(this.currentSprintId, id);
     }
 
     // --- nextSprint ---
@@ -708,7 +705,8 @@ public abstract class GProject
     }
 
     public final boolean isNextSprint(scrum.client.sprint.Sprint nextSprint) {
-        return equals(this.nextSprintId, nextSprint);
+        String id = nextSprint==null ? null : nextSprint.getId();
+        return equals(this.nextSprintId, id);
     }
 
     // --- velocity ---

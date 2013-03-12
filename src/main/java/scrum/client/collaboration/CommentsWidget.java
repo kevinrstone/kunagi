@@ -193,7 +193,7 @@ public class CommentsWidget extends AScrumWidget {
 			@Override
 			public void onViewerActivated(AViewEditWidget widget) {
 				editor = null;
-				update();
+				if (widget.isAttached()) update();
 			}
 
 			@Override

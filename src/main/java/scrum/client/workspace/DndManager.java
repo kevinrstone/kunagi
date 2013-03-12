@@ -67,6 +67,7 @@ public class DndManager extends GDndManager {
 
 	public void makeDraggable(Widget widget, Widget dragHandle) {
 		dragController.makeDraggable(widget, dragHandle);
+		dragHandle.addStyleName("draggable");
 	}
 
 	public ScrumDragController getDragController() {

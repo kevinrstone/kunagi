@@ -14,11 +14,7 @@
 package scrum.client.pr;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GBlogEntry
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- number ---

@@ -14,11 +14,7 @@
 package scrum.client.release;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GRelease
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- parentRelease ---
@@ -91,7 +88,8 @@ public abstract class GRelease
     }
 
     public final boolean isParentRelease(scrum.client.release.Release parentRelease) {
-        return equals(this.parentReleaseId, parentRelease);
+        String id = parentRelease==null ? null : parentRelease.getId();
+        return equals(this.parentReleaseId, id);
     }
 
     // --- sprints ---

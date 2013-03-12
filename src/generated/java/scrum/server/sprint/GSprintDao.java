@@ -14,12 +14,11 @@
 package scrum.server.sprint;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
-import ilarkesto.fp.*;
+import ilarkesto.auth.Auth;
+import ilarkesto.base.Cache;
+import ilarkesto.persistence.EntityEvent;
+import ilarkesto.fp.Predicate;
 
 public abstract class GSprintDao
             extends ilarkesto.persistence.ADao<Sprint> {
@@ -54,6 +53,8 @@ public abstract class GSprintDao
         beginsCache = null;
         sprintsByEndCache.clear();
         endsCache = null;
+        sprintsByOriginallyEndCache.clear();
+        originallyEndsCache = null;
         sprintsByVelocityCache.clear();
         velocitysCache = null;
         sprintsByCompletedRequirementsDataCache.clear();
@@ -256,21 +257,21 @@ public abstract class GSprintDao
     // - begin
     // -----------------------------------------------------------
 
-    private final Cache<ilarkesto.base.time.Date,Set<Sprint>> sprintsByBeginCache = new Cache<ilarkesto.base.time.Date,Set<Sprint>>(
-            new Cache.Factory<ilarkesto.base.time.Date,Set<Sprint>>() {
-                public Set<Sprint> create(ilarkesto.base.time.Date begin) {
+    private final Cache<ilarkesto.core.time.Date,Set<Sprint>> sprintsByBeginCache = new Cache<ilarkesto.core.time.Date,Set<Sprint>>(
+            new Cache.Factory<ilarkesto.core.time.Date,Set<Sprint>>() {
+                public Set<Sprint> create(ilarkesto.core.time.Date begin) {
                     return getEntities(new IsBegin(begin));
                 }
             });
 
-    public final Set<Sprint> getSprintsByBegin(ilarkesto.base.time.Date begin) {
+    public final Set<Sprint> getSprintsByBegin(ilarkesto.core.time.Date begin) {
         return new HashSet<Sprint>(sprintsByBeginCache.get(begin));
     }
-    private Set<ilarkesto.base.time.Date> beginsCache;
+    private Set<ilarkesto.core.time.Date> beginsCache;
 
-    public final Set<ilarkesto.base.time.Date> getBegins() {
+    public final Set<ilarkesto.core.time.Date> getBegins() {
         if (beginsCache == null) {
-            beginsCache = new HashSet<ilarkesto.base.time.Date>();
+            beginsCache = new HashSet<ilarkesto.core.time.Date>();
             for (Sprint e : getEntities()) {
                 if (e.isBeginSet()) beginsCache.add(e.getBegin());
             }
@@ -280,9 +281,9 @@ public abstract class GSprintDao
 
     private static class IsBegin implements Predicate<Sprint> {
 
-        private ilarkesto.base.time.Date value;
+        private ilarkesto.core.time.Date value;
 
-        public IsBegin(ilarkesto.base.time.Date value) {
+        public IsBegin(ilarkesto.core.time.Date value) {
             this.value = value;
         }
 
@@ -296,21 +297,21 @@ public abstract class GSprintDao
     // - end
     // -----------------------------------------------------------
 
-    private final Cache<ilarkesto.base.time.Date,Set<Sprint>> sprintsByEndCache = new Cache<ilarkesto.base.time.Date,Set<Sprint>>(
-            new Cache.Factory<ilarkesto.base.time.Date,Set<Sprint>>() {
-                public Set<Sprint> create(ilarkesto.base.time.Date end) {
+    private final Cache<ilarkesto.core.time.Date,Set<Sprint>> sprintsByEndCache = new Cache<ilarkesto.core.time.Date,Set<Sprint>>(
+            new Cache.Factory<ilarkesto.core.time.Date,Set<Sprint>>() {
+                public Set<Sprint> create(ilarkesto.core.time.Date end) {
                     return getEntities(new IsEnd(end));
                 }
             });
 
-    public final Set<Sprint> getSprintsByEnd(ilarkesto.base.time.Date end) {
+    public final Set<Sprint> getSprintsByEnd(ilarkesto.core.time.Date end) {
         return new HashSet<Sprint>(sprintsByEndCache.get(end));
     }
-    private Set<ilarkesto.base.time.Date> endsCache;
+    private Set<ilarkesto.core.time.Date> endsCache;
 
-    public final Set<ilarkesto.base.time.Date> getEnds() {
+    public final Set<ilarkesto.core.time.Date> getEnds() {
         if (endsCache == null) {
-            endsCache = new HashSet<ilarkesto.base.time.Date>();
+            endsCache = new HashSet<ilarkesto.core.time.Date>();
             for (Sprint e : getEntities()) {
                 if (e.isEndSet()) endsCache.add(e.getEnd());
             }
@@ -320,14 +321,54 @@ public abstract class GSprintDao
 
     private static class IsEnd implements Predicate<Sprint> {
 
-        private ilarkesto.base.time.Date value;
+        private ilarkesto.core.time.Date value;
 
-        public IsEnd(ilarkesto.base.time.Date value) {
+        public IsEnd(ilarkesto.core.time.Date value) {
             this.value = value;
         }
 
         public boolean test(Sprint e) {
             return e.isEnd(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - originallyEnd
+    // -----------------------------------------------------------
+
+    private final Cache<ilarkesto.core.time.Date,Set<Sprint>> sprintsByOriginallyEndCache = new Cache<ilarkesto.core.time.Date,Set<Sprint>>(
+            new Cache.Factory<ilarkesto.core.time.Date,Set<Sprint>>() {
+                public Set<Sprint> create(ilarkesto.core.time.Date originallyEnd) {
+                    return getEntities(new IsOriginallyEnd(originallyEnd));
+                }
+            });
+
+    public final Set<Sprint> getSprintsByOriginallyEnd(ilarkesto.core.time.Date originallyEnd) {
+        return new HashSet<Sprint>(sprintsByOriginallyEndCache.get(originallyEnd));
+    }
+    private Set<ilarkesto.core.time.Date> originallyEndsCache;
+
+    public final Set<ilarkesto.core.time.Date> getOriginallyEnds() {
+        if (originallyEndsCache == null) {
+            originallyEndsCache = new HashSet<ilarkesto.core.time.Date>();
+            for (Sprint e : getEntities()) {
+                if (e.isOriginallyEndSet()) originallyEndsCache.add(e.getOriginallyEnd());
+            }
+        }
+        return originallyEndsCache;
+    }
+
+    private static class IsOriginallyEnd implements Predicate<Sprint> {
+
+        private ilarkesto.core.time.Date value;
+
+        public IsOriginallyEnd(ilarkesto.core.time.Date value) {
+            this.value = value;
+        }
+
+        public boolean test(Sprint e) {
+            return e.isOriginallyEnd(value);
         }
 
     }

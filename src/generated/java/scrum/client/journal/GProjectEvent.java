@@ -14,11 +14,7 @@
 package scrum.client.journal;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -68,7 +64,8 @@ public abstract class GProjectEvent
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- label ---
@@ -153,7 +150,8 @@ public abstract class GProjectEvent
     }
 
     public final boolean isSubject(ilarkesto.gwt.client.AGwtEntity subject) {
-        return equals(this.subjectId, subject);
+        String id = subject==null ? null : subject.getId();
+        return equals(this.subjectId, id);
     }
 
     // --- dateAndTime ---

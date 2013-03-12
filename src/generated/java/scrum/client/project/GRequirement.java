@@ -14,11 +14,7 @@
 package scrum.client.project;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -68,7 +64,8 @@ public abstract class GRequirement
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- sprint ---
@@ -93,7 +90,8 @@ public abstract class GRequirement
     }
 
     public final boolean isSprint(scrum.client.sprint.Sprint sprint) {
-        return equals(this.sprintId, sprint);
+        String id = sprint==null ? null : sprint.getId();
+        return equals(this.sprintId, id);
     }
 
     // --- issue ---
@@ -118,7 +116,8 @@ public abstract class GRequirement
     }
 
     public final boolean isIssue(scrum.client.issues.Issue issue) {
-        return equals(this.issueId, issue);
+        String id = issue==null ? null : issue.getId();
+        return equals(this.issueId, id);
     }
 
     // --- number ---
@@ -783,7 +782,8 @@ public abstract class GRequirement
     }
 
     public final boolean isEpic(scrum.client.project.Requirement epic) {
-        return equals(this.epicId, epic);
+        String id = epic==null ? null : epic.getId();
+        return equals(this.epicId, id);
     }
 
     // --- update properties by map ---

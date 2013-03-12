@@ -14,9 +14,9 @@
  */
 package scrum.server.project;
 
-import ilarkesto.base.time.Date;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
 import scrum.server.admin.User;
 import scrum.server.admin.UserDao;
 

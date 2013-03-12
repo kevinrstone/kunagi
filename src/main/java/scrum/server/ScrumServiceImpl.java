@@ -20,11 +20,11 @@ import ilarkesto.auth.WrongPasswordException;
 import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
-import ilarkesto.base.time.Date;
-import ilarkesto.base.time.DateAndTime;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.In;
+import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.ldap.Ldap;
 import ilarkesto.persistence.ADao;
 import ilarkesto.persistence.AEntity;
@@ -69,6 +69,7 @@ import scrum.server.release.Release;
 import scrum.server.release.ReleaseDao;
 import scrum.server.risks.Risk;
 import scrum.server.sprint.Sprint;
+import scrum.server.sprint.SprintDao;
 import scrum.server.sprint.SprintReport;
 import scrum.server.sprint.SprintReportDao;
 import scrum.server.sprint.Task;
@@ -88,6 +89,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 	private transient CommentDao commentDao;
 	private transient ScrumWebApplication webApplication;
 	private transient ChangeDao changeDao;
+	private transient SprintDao sprintDao;
 
 	@In
 	private transient SubscriptionService subscriptionService;
@@ -153,6 +155,15 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			entities.addAll(getAssociatedEntities(report));
 		}
 		conversation.sendToClient(entities);
+	}
+
+	@Override
+	public void onRequestHistorySprint(GwtConversation conversation, String sprintId) {
+		assertProjectSelected(conversation);
+		Sprint sprint = sprintDao.getById(sprintId);
+		SprintReport report = sprint.getSprintReport();
+		conversation.sendToClient(report);
+		conversation.sendToClient(getAssociatedEntities(report));
 	}
 
 	@Override
@@ -642,7 +653,8 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 
 	private void onTaskChanged(GwtConversation conversation, Task task, Map properties) {
 		// update sprint day snapshot after change
-		conversation.getProject().getCurrentSprint().getDaySnapshot(Date.today()).updateWithCurrentSprint();
+		Sprint sprint = conversation.getProject().getCurrentSprint();
+		sprint.getDaySnapshot(Date.today()).updateWithCurrentSprint();
 		Requirement requirement = task.getRequirement();
 		if (requirement.isInCurrentSprint()) {
 			User currentUser = conversation.getSession().getUser();
@@ -662,6 +674,9 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			if (!task.isClosed() && requirement.isRejectDateSet()) {
 				requirement.setRejectDate(null);
 				sendToClients(conversation, requirement);
+			}
+			if (properties.containsKey("remainingWork") && sprint.getEnd().isPast()) {
+				sprint.setEnd(Date.today());
 			}
 		}
 	}
@@ -704,6 +719,12 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		conversation.sendToClient(project.getBlogEntrys());
 
 		sendToClients(conversation, config);
+	}
+
+	@Override
+	public void onRequestProjectEvents(GwtConversation conversation) {
+		assertProjectSelected(conversation);
+		conversation.sendToClient(conversation.getProject().getLatestProjectEvents(50));
 	}
 
 	@Override
@@ -767,7 +788,13 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 	public void onRequestReleaseIssues(GwtConversation conversation, String releaseId) {
 		assertProjectSelected(conversation);
 		Project project = conversation.getProject();
-		Release release = releaseDao.getById(releaseId);
+		Release release;
+		try {
+			release = releaseDao.getById(releaseId);
+		} catch (EntityDoesNotExistException ex) {
+			// release does not exist yet (timing problem directly after creating a new release)
+			return;
+		}
 		if (!release.isProject(project)) throw new PermissionDeniedException();
 		conversation.sendToClient(release.getIssues());
 	}

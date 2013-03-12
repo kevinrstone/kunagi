@@ -15,6 +15,9 @@
 package scrum.server.admin;
 
 import ilarkesto.base.Str;
+
+import java.util.List;
+
 import scrum.server.KunagiRootConfig;
 import scrum.server.ScrumWebApplication;
 
@@ -69,7 +72,7 @@ public class SystemConfig extends GSystemConfig {
 
 	public boolean isOpenIdDomainAllowed(String openId) {
 		if (!isOpenIdDomainsSet()) return true;
-		String[] domains = Str.tokenize(getOpenIdDomains(), ",; ");
+		List<String> domains = Str.tokenize(getOpenIdDomains(), ",; ");
 		for (String domain : domains) {
 			if (openId.contains(domain)) return true;
 		}

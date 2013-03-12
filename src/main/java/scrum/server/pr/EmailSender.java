@@ -14,6 +14,7 @@
  */
 package scrum.server.pr;
 
+import ilarkesto.concurrent.ATask;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.In;
@@ -60,7 +61,7 @@ public class EmailSender {
 		if (Str.isBlank(subject)) subject = "Kunagi";
 
 		MimeMessage message = Eml.createTextMessage(session, subject, text, from, to);
-		Eml.sendSmtpMessage(session, message);
+		webApplication.getTaskManager().start(new SendEmailTask(session, message));
 	}
 
 	public Session createSmtpSession() {
@@ -79,4 +80,30 @@ public class EmailSender {
 	private SystemConfig getSystemConfig() {
 		return webApplication.getSystemConfig();
 	}
+
+	public class SendEmailTask extends ATask {
+
+		private Session session;
+		private MimeMessage message;
+
+		public SendEmailTask(Session session, MimeMessage message) {
+			super();
+			this.session = session;
+			this.message = message;
+		}
+
+		@Override
+		protected void perform() throws InterruptedException {
+			try {
+				Eml.sendSmtpMessage(session, message);
+			} catch (Throwable ex) {
+				SystemConfig conf = getSystemConfig();
+				String smtp = conf.getSmtpServer();
+				if (conf.isSmtpPortSet()) smtp += ":" + conf.getSmtpPort();
+				if (conf.isSmtpUserSet()) smtp = conf.getSmtpUser() + "@" + smtp;
+				log.error("Sending email", "<" + Eml.toString(message) + ">", "via", "<" + smtp + ">", "failed.", ex);
+			}
+		}
+	}
+
 }

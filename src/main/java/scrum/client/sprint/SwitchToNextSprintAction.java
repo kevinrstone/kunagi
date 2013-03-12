@@ -50,30 +50,37 @@ public class SwitchToNextSprintAction extends GSwitchToNextSprintAction {
 
 	@Override
 	protected void onExecute() {
-		List<Requirement> undecidedRequirements = getCurrentProject().getCurrentSprint()
-				.getCompletedUnclosedRequirements();
-		if (!undecidedRequirements.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			if (undecidedRequirements.size() == 1) {
-				sb.append("Story ").append(undecidedRequirements.get(0).getReference()).append(" is");
+		Sprint sprint = getCurrentProject().getCurrentSprint();
+		StringBuilder sb = new StringBuilder();
+
+		List<Requirement> incompletedRequirements = sprint.getIncompletedRequirements();
+		if (!incompletedRequirements.isEmpty()) {
+			if (incompletedRequirements.size() == 1) {
+				sb.append("Story ").append(incompletedRequirements.get(0).getReference())
+						.append(" is not completed. It will be rejected and goes back to the product backlog.\n\n");
 			} else {
 				sb.append("Stories ");
-				boolean first = true;
-				for (Requirement req : undecidedRequirements) {
-					if (first) {
-						first = false;
-					} else {
-						sb.append(", ");
-					}
-					sb.append(req.getReference());
-				}
-				sb.append(" are");
+				appendStories(sb, incompletedRequirements);
+				sb.append(" are not completed. They will be rejected and go back to the product backlog.\n\n");
 			}
-			sb.append(" completed and should be either accepted or rejected. Switch to next Sprint and reject all undecided Stories?");
-			if (!Gwt.confirm(sb.toString())) return;
-		} else {
-			if (!Gwt.confirm("Switch to next Sprint?")) return;
 		}
+
+		List<Requirement> undecidedRequirements = sprint.getCompletedUnclosedRequirements();
+		if (!undecidedRequirements.isEmpty()) {
+			if (undecidedRequirements.size() == 1) {
+				sb.append("Story ")
+						.append(undecidedRequirements.get(0).getReference())
+						.append(
+							" is completed but not accepted and not rejected. It will be rejected and goes back to the product backlog.\n\n");
+			} else {
+				sb.append("Stories ");
+				appendStories(sb, undecidedRequirements);
+				sb.append(" are completed but not accepted and not rejected. They will be rejected and go back to the product backlog.\n\n");
+			}
+		}
+		sb.append("Switch to next Sprint?");
+		if (!Gwt.confirm(sb.toString())) return;
+
 		Scope.get().getComponent(Ui.class).lock("Switching to next Sprint");
 		new SwitchToNextSprintServiceCall().execute(new Runnable() {
 
@@ -83,5 +90,17 @@ public class SwitchToNextSprintAction extends GSwitchToNextSprintAction {
 				Scope.get().getComponent(Ui.class).unlock();
 			}
 		});
+	}
+
+	public void appendStories(StringBuilder sb, List<Requirement> stories) {
+		boolean first = true;
+		for (Requirement req : stories) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(req.getReference());
+		}
 	}
 }

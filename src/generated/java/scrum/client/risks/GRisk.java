@@ -14,11 +14,7 @@
 package scrum.client.risks;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -68,7 +64,8 @@ public abstract class GRisk
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- number ---
@@ -382,11 +379,11 @@ public abstract class GRisk
         return (Risk)this;
     }
 
-    public abstract List<java.lang.Integer> getProbabilityOptions();
-
     public final boolean isProbability(int probability) {
         return equals(this.probability, probability);
     }
+
+    public abstract List<java.lang.Integer> getProbabilityOptions();
 
     private transient ProbabilityModel probabilityModel;
 
@@ -447,11 +444,11 @@ public abstract class GRisk
         return (Risk)this;
     }
 
-    public abstract List<java.lang.Integer> getImpactOptions();
-
     public final boolean isImpact(int impact) {
         return equals(this.impact, impact);
     }
+
+    public abstract List<java.lang.Integer> getImpactOptions();
 
     private transient ImpactModel impactModel;
 

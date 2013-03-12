@@ -28,7 +28,7 @@
 			<fileset dir="src/generated/java" />
 			<fileset dir="${ilarkesto.dir}/src/main/java" />
 		</copy>
-		<javac target="1.6" srcdir="${classes.output.dir}" destdir="${classes.output.dir}" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+		<javac source="1.6" target="1.6" srcdir="${classes.output.dir}" destdir="${classes.output.dir}" encoding="UTF-8" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
 			<classpath>
 				<fileset dir="${ilarkesto.dir}/lib" />
 			</classpath>
@@ -99,6 +99,7 @@
 				<exclude name="**/jaudiotagger-*.jar" />
 				<exclude name="**/jcip-annotations.jar" />
 				<exclude name="**/mysql-*.jar" />
+				<exclude name="**/android*.jar" />
 			</fileset>
 		</copy>
 		<war destfile="${build.dir}/kunagi.war" basedir="${build.dir}/webapp" />

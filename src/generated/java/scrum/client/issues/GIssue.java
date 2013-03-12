@@ -14,11 +14,7 @@
 package scrum.client.issues;
 
 import java.util.*;
-import ilarkesto.persistence.*;
 import ilarkesto.core.logging.Log;
-import ilarkesto.base.*;
-import ilarkesto.base.time.*;
-import ilarkesto.auth.*;
 import scrum.client.common.*;
 import ilarkesto.gwt.client.*;
 
@@ -66,7 +62,8 @@ public abstract class GIssue
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        return equals(this.projectId, project);
+        String id = project==null ? null : project.getId();
+        return equals(this.projectId, id);
     }
 
     // --- story ---
@@ -91,7 +88,8 @@ public abstract class GIssue
     }
 
     public final boolean isStory(scrum.client.project.Requirement story) {
-        return equals(this.storyId, story);
+        String id = story==null ? null : story.getId();
+        return equals(this.storyId, id);
     }
 
     // --- number ---
@@ -172,11 +170,11 @@ public abstract class GIssue
         return (Issue)this;
     }
 
-    public abstract List<java.lang.String> getTypeOptions();
-
     public final boolean isType(java.lang.String type) {
         return equals(this.type, type);
     }
+
+    public abstract List<java.lang.String> getTypeOptions();
 
     private transient TypeModel typeModel;
 
@@ -296,7 +294,8 @@ public abstract class GIssue
     }
 
     public final boolean isCreator(scrum.client.admin.User creator) {
-        return equals(this.creatorId, creator);
+        String id = creator==null ? null : creator.getId();
+        return equals(this.creatorId, id);
     }
 
     // --- label ---
@@ -705,11 +704,11 @@ public abstract class GIssue
         return (Issue)this;
     }
 
-    public abstract List<java.lang.Integer> getSeverityOptions();
-
     public final boolean isSeverity(int severity) {
         return equals(this.severity, severity);
     }
+
+    public abstract List<java.lang.Integer> getSeverityOptions();
 
     private transient SeverityModel severityModel;
 
@@ -774,7 +773,8 @@ public abstract class GIssue
     }
 
     public final boolean isOwner(scrum.client.admin.User owner) {
-        return equals(this.ownerId, owner);
+        String id = owner==null ? null : owner.getId();
+        return equals(this.ownerId, id);
     }
 
     // --- fixDate ---

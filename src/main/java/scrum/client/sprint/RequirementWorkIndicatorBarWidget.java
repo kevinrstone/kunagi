@@ -24,33 +24,35 @@ import com.google.gwt.user.client.ui.Widget;
 public class RequirementWorkIndicatorBarWidget extends AScrumWidget {
 
 	private FloatingFlowPanel flowPanel;
-	private int factor = 1;
 
 	private Requirement requirement;
 
 	public RequirementWorkIndicatorBarWidget(Requirement requirement) {
 		this.requirement = requirement;
-
-		Sprint sprint = requirement.getSprint();
-		int totalWork = sprint.getRemainingWork() + sprint.getBurnedWork();
-
-		factor = 500 / totalWork;
 	}
 
 	@Override
 	protected void onUpdate() {
-		flowPanel.clear();
+		Sprint sprint = requirement.getSprint();
+		int maxBarWidth = 125; // Gwt.getRootWidget().getOffsetWidth() / 10;
+		int maxWorkInRequirement = 0;
+		for (Requirement r : sprint.getRequirements()) {
+			int work = r.getBurnedWork() + r.getRemainingWork();
+			if (work > maxWorkInRequirement) maxWorkInRequirement = work;
+		}
+		int pixelsPerHour = maxBarWidth / maxWorkInRequirement;
 
+		flowPanel.clear();
 		int burnedHours = requirement.getBurnedWork();
 		Widget burnedWidget = Gwt.createEmptyDiv("EstimationBarWidget-bar1");
 		burnedWidget.setHeight("6px");
-		burnedWidget.setWidth((factor * burnedHours) + "px");
+		burnedWidget.setWidth((pixelsPerHour * burnedHours) + "px");
 		flowPanel.add(burnedWidget);
 
 		int remainingHours = requirement.getRemainingWork();
 		Widget remainingWidget = Gwt.createEmptyDiv("EstimationBarWidget-bar0");
 		remainingWidget.setHeight("6px");
-		remainingWidget.setWidth((factor * remainingHours) + "px");
+		remainingWidget.setWidth((pixelsPerHour * remainingHours) + "px");
 		flowPanel.add(remainingWidget);
 
 		flowPanel.getElement().setTitle(burnedHours + " of " + (burnedHours + remainingHours) + " hours burned.");
