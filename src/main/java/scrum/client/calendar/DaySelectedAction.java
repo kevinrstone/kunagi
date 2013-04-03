@@ -17,6 +17,7 @@ package scrum.client.calendar;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.Date;
 import scrum.client.common.AScrumAction;
+import scrum.client.common.TooltipBuilder;
 
 public class DaySelectedAction extends AScrumAction {
 
@@ -24,6 +25,11 @@ public class DaySelectedAction extends AScrumAction {
 
 	public DaySelectedAction(Date date) {
 		this.date = date;
+	}
+
+	@Override
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Show events on the date.");
 	}
 
 	@Override

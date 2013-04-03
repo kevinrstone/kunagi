@@ -30,10 +30,10 @@ public class UserConfigWidget extends AScrumWidget {
 		final User user = getCurrentUser();
 
 		TableBuilder tb = ScrumGwt.createFieldTable();
-		tb.addFieldRow("Name", user.getNameModel());
-		tb.addFieldRow("Public Name", user.getPublicNameModel());
-		tb.addFieldRow("Email", user.getEmailModel());
+		tb.addFieldRow("User name", user.getNameModel());
 		tb.addFieldRow("Full name", user.getFullNameModel());
+		tb.addFieldRow("Public name", user.getPublicNameModel());
+		tb.addFieldRow("Email", user.getEmailModel());
 		tb.addFieldRow("OpenID", user.getOpenIdModel());
 		tb.addFieldRow("Password", new PasswordChangeWidget());
 		tb.addFieldRow("Default Color", new TextEditorWidget(user.getColorModel()) {
@@ -46,7 +46,7 @@ public class UserConfigWidget extends AScrumWidget {
 		});
 
 		PagePanel page = new PagePanel();
-		page.addHeader("Personal preferences for all projects");
+		page.addHeader("Personal settings for all projects");
 		page.addSection(tb.createTable());
 		return page;
 	}

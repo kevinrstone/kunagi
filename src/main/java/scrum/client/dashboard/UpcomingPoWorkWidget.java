@@ -85,7 +85,7 @@ public class UpcomingPoWorkWidget extends AScrumWidget {
 
 	private void appendFixedBugs(StringBuilder sb) {
 		Project project = getCurrentProject();
-		List<Issue> fixedBugs = project.getFixedBugs();
+		List<Issue> fixedBugs = project.getUnclosedFixedBugs();
 		Collections.sort(fixedBugs, project.getIssuesOrderComparator());
 		if (!fixedBugs.isEmpty()) {
 			sb.append("Fixed bugs to review:");

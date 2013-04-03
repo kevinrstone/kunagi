@@ -104,7 +104,7 @@ public class IssueManagementWidget extends AScrumWidget {
 
 		Project project = getCurrentProject();
 		openList.setObjects(project.getOpenIssues(issueManager.isSuspendedIssuesVisible()));
-		bugList.setObjects(project.getBugs());
+		bugList.setObjects(project.getOpenBugs());
 		ideaList.setObjects(project.getIdeas());
 		closedList.setObjects(project.getClosedIssues());
 		super.onUpdate();

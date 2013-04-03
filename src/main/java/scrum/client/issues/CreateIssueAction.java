@@ -15,6 +15,7 @@
 package scrum.client.issues;
 
 import ilarkesto.core.scope.Scope;
+import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
 
 public class CreateIssueAction extends GCreateIssueAction {
@@ -25,8 +26,8 @@ public class CreateIssueAction extends GCreateIssueAction {
 	}
 
 	@Override
-	public boolean isExecutable() {
-		return true;
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Create a new issue.");
 	}
 
 	@Override
@@ -34,6 +35,11 @@ public class CreateIssueAction extends GCreateIssueAction {
 		Issue issue = getCurrentProject().createNewIssue();
 		Scope.get().getComponent(ProjectWorkspaceWidgets.class).showEntity(issue);
 		addUndo(new Undo(issue));
+	}
+
+	@Override
+	public boolean isExecutable() {
+		return true;
 	}
 
 	class Undo extends ALocalUndo {

@@ -33,7 +33,7 @@ public abstract class AScrumAction extends AAction {
 
 	// --- helper ---
 
-	protected void updateTooltip(TooltipBuilder tb) {}
+	protected abstract void updateTooltip(TooltipBuilder tb);
 
 	@Override
 	public final String getTooltip() {

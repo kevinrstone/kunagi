@@ -37,9 +37,9 @@ public class IssueBlock extends ABlockWidget<Issue> implements TrashSupport {
 	protected void onInitializationHeader(BlockHeaderWidget header) {
 		Issue issue = getObject();
 
-		if (issue.isBug()) statusIcon = header.addIconWrapper();
+		if (issue.isUnclosedBug()) statusIcon = header.addIconWrapper();
 
-		if (issue.isBug()) header.addText(issue.getSeverityLabelModel(), "40px", true, false);
+		if (issue.isUnclosedBug()) header.addText(issue.getSeverityLabelModel(), "40px", true, false);
 
 		header.addText(issue.getLabelModel());
 		header.addText(issue.getThemesAsStringModel(), true, false);
@@ -70,7 +70,7 @@ public class IssueBlock extends ABlockWidget<Issue> implements TrashSupport {
 	protected void onUpdateHeader(BlockHeaderWidget header) {
 		Issue issue = getObject();
 
-		if (issue.isBug()) {
+		if (issue.isUnclosedBug()) {
 			Image statusImage = null;
 			if (issue.isFixed()) {
 				statusImage = Img.bundle.issFixed().createImage();
@@ -82,6 +82,13 @@ public class IssueBlock extends ABlockWidget<Issue> implements TrashSupport {
 			if (statusIcon != null) statusIcon.setWidget(statusImage);
 		}
 		header.setDragHandle(issue.getReference());
+	}
+
+	@Override
+	protected String getUpdateSignature() {
+		if (isExtended()) return null;
+		Issue issue = getObject();
+		return issue.getLabel() + issue.isBug() + issue.isFixed() + issue.getOwner();
 	}
 
 	@Override

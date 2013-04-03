@@ -21,9 +21,9 @@ import ilarkesto.core.menu.StaticSubmenu;
 import ilarkesto.core.menu.Submenu;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.NavigatorWidget;
+import scrum.client.admin.ProjectUserConfigWidget;
 import scrum.client.collaboration.WikiWidget;
 import scrum.client.impediments.ImpedimentListWidget;
-import scrum.client.pr.BlogWidget;
 import scrum.client.project.ProductBacklogWidget;
 import scrum.client.tasks.WhiteboardWidget;
 
@@ -40,7 +40,7 @@ public class ScrumNavigatorWidget extends NavigatorWidget<Object> {
 			if ("product".equals(payload)) return Navigator.getPageHref(ProductBacklogWidget.class);
 			if ("project".equals(payload)) return Navigator.getPageHref(ImpedimentListWidget.class);
 			if ("collaboration".equals(payload)) return Navigator.getPageHref(WikiWidget.class);
-			if ("administration".equals(payload)) return Navigator.getPageHref(BlogWidget.class);
+			if ("administration".equals(payload)) return Navigator.getPageHref(ProjectUserConfigWidget.class);
 			if (payload instanceof Widget) return Navigator.getPageHref(((Widget) payload).getClass());
 		}
 		return super.getHref(item);

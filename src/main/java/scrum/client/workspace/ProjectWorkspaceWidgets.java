@@ -127,6 +127,8 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 		pages.addPage(new Page(issueList, "Issues", productGroupKey));
 		releaseList = new ReleaseManagementWidget();
 		pages.addPage(new Page(releaseList, "Releases", productGroupKey));
+		blog = new BlogWidget();
+		pages.addPage(new Page(blog, "Blog", productGroupKey));
 
 		String projectGroupKey = "project";
 		impedimentList = new ImpedimentListWidget();
@@ -153,19 +155,17 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 		pages.addPage(new Page(punishments, "Courtroom", collaborationGroupKey));
 
 		String administrationKey = "administration";
-		blog = new BlogWidget();
-		pages.addPage(new Page(blog, "Blog", administrationKey));
 		projectUserConfig = new ProjectUserConfigWidget();
-		pages.addPage(new Page(projectUserConfig, "Personal Preferences", administrationKey));
+		pages.addPage(new Page(projectUserConfig, "Personal Settings", administrationKey));
 		if (project.isScrumTeamMember(user)) {
 			projectAdmin = new ProjectAdminWidget();
-			pages.addPage(new Page(projectAdmin, "Project administration", administrationKey));
+			pages.addPage(new Page(projectAdmin, "Project Settings", administrationKey));
 		}
 		if (user.isAdmin()) {
+			systemConfig = new SystemConfigWidget();
+			pages.addPage(new Page(systemConfig, "System Settings", administrationKey));
 			systemMessageManager = new SystemMessageManagerWidget();
 			pages.addPage(new Page(systemMessageManager, "System Message", administrationKey));
-			systemConfig = new SystemConfigWidget();
-			pages.addPage(new Page(systemConfig, "System Configuration", administrationKey));
 			userList = new UserListWidget();
 			pages.addPage(new Page(userList, "User Management", administrationKey));
 		}
@@ -176,7 +176,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 		addNavigatorGroup(navigator, productGroupKey, "Product");
 		addNavigatorGroup(navigator, projectGroupKey, "Project");
 		addNavigatorGroup(navigator, collaborationGroupKey, "Collaboration");
-		addNavigatorGroup(navigator, administrationKey, "Administration");
+		addNavigatorGroup(navigator, administrationKey, "Settings");
 	}
 
 	private void addNavigatorGroup(ScrumNavigatorWidget navigator, String groupKey, String label) {

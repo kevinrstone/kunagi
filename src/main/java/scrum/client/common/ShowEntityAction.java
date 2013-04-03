@@ -43,6 +43,11 @@ public class ShowEntityAction extends AScrumAction {
 	}
 
 	@Override
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Show this object.");
+	}
+
+	@Override
 	protected void onExecute() {
 		// TODO change to url navigation
 		Scope.get().getComponent(ProjectWorkspaceWidgets.class).showEntity(entity);

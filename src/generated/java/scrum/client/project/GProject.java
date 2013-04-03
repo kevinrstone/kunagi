@@ -91,6 +91,9 @@ public abstract class GProject
 
         @Override
         public boolean isMandatory() { return true; }
+
+        @Override
+        public boolean isEditable() { return GProject.this.isEditable(); }
         @Override
         public String getTooltip() { return "This is the project name that should be chosen for humans to clearly identify the project."; }
 
@@ -1950,6 +1953,9 @@ public abstract class GProject
         public void setValue(java.lang.String value) {
             setSupportEmail(value);
         }
+
+        @Override
+        public boolean isEditable() { return GProject.this.isEditable(); }
         @Override
         public String getTooltip() { return "Email address of the support for this project."; }
 

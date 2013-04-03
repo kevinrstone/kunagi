@@ -43,13 +43,15 @@ public class Pinger extends GPinger implements ServerDataReceivedHandler, BlockE
 	private long lastDataReceiveTime = Tm.getCurrentTimeMillis();
 	private LinkedList<Long> pingTimes = new LinkedList<Long>();
 
+	private boolean disabled;
+
 	@Override
 	public void onApplicationStarted(ApplicationStartedEvent event) {
 		timer = new Timer() {
 
 			@Override
 			public void run() {
-				if (!serviceCaller.containsServiceCall(PingServiceCall.class)) {
+				if (!disabled && !serviceCaller.containsServiceCall(PingServiceCall.class)) {
 					final long start = Tm.getCurrentTimeMillis();
 					new PingServiceCall().execute(new Runnable() {
 
@@ -65,6 +67,14 @@ public class Pinger extends GPinger implements ServerDataReceivedHandler, BlockE
 			}
 		};
 		reschedule();
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
 	}
 
 	public void shutdown() {

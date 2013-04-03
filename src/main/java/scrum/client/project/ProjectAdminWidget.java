@@ -34,10 +34,10 @@ public class ProjectAdminWidget extends AScrumWidget {
 
 		PagePanel page = new PagePanel();
 
-		page.addHeader("Project properties");
+		page.addHeader("Project Settings");
 		TableBuilder tbPro = ScrumGwt.createFieldTable();
-		tbPro.addFieldRow("Name", project.getLabelModel());
-		tbPro.addFieldRow("Vision", new RichtextEditorWidget(project.getVisionModel()));
+		tbPro.addFieldRow("Project name", project.getLabelModel());
+		tbPro.addFieldRow("Project vision", new RichtextEditorWidget(project.getVisionModel()));
 
 		ProjectBlock.addParticipantsAndAdminsFieldRows(project, tbPro);
 		ProjectBlock.addRolesFieldRows(project, tbPro);
@@ -47,7 +47,7 @@ public class ProjectAdminWidget extends AScrumWidget {
 
 		page.addHeader("Product descriptions");
 		TableBuilder tbDescr = ScrumGwt.createFieldTable();
-		tbDescr.addFieldRow("Name", project.getProductLabelModel());
+		tbDescr.addFieldRow("Product name", project.getProductLabelModel());
 		tbDescr.addFieldRow("Tagline", project.getShortDescriptionModel());
 		tbDescr.addFieldRow("Short description", project.getDescriptionModel());
 		tbDescr.addFieldRow("Long description", project.getLongDescriptionModel());

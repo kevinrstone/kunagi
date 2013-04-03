@@ -92,6 +92,13 @@ public class TaskBlock extends ABlockWidget<Task> implements TrashSupport {
 		return this.container;
 	}
 
+	@Override
+	protected String getUpdateSignature() {
+		if (isExtended()) return null;
+		Task task = getObject();
+		return task.getLabel() + task.getRemainingWork() + task.getBurnedWork() + task.isBlocked();
+	}
+
 	public static class TaskBlockFactory implements BlockWidgetFactory<Task> {
 
 		private TaskBlockContainer container;

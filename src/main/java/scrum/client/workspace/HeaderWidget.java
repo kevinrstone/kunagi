@@ -29,6 +29,7 @@ import scrum.client.ScrumScopeManager;
 import scrum.client.admin.LogoutAction;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
+import scrum.client.common.TooltipBuilder;
 import scrum.client.img.Img;
 import scrum.client.project.ChangeProjectAction;
 import scrum.client.project.Project;
@@ -98,6 +99,11 @@ public class HeaderWidget extends AScrumWidget {
 				@Override
 				public String getLabel() {
 					return "Project Selector";
+				}
+
+				@Override
+				protected void updateTooltip(TooltipBuilder tb) {
+					tb.setText("Show all visible projects.");
 				}
 
 				@Override

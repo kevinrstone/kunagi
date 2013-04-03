@@ -14,185 +14,46 @@
  */
 package scrum.client.collaboration;
 
-import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.ButtonWidget;
-import ilarkesto.gwt.client.DropdownMenuButtonWidget;
-import ilarkesto.gwt.client.Gwt;
-import ilarkesto.gwt.client.TableBuilder;
-import ilarkesto.gwt.client.editor.RichtextEditorWidget;
-import scrum.client.ScrumGwt;
-import scrum.client.common.AScrumAction;
-import scrum.client.common.AScrumGwtEntity;
 import scrum.client.common.AScrumWidget;
-import scrum.client.common.TooltipBuilder;
-import scrum.client.communication.TouchLastActivityServiceCall;
-import scrum.client.journal.ActivateChangeHistoryAction;
-import scrum.client.journal.ChangeHistoryWidget;
-import scrum.client.workspace.Navigator;
+import scrum.client.common.BlockListWidget;
+import scrum.client.impediments.RequestImpedimentsServiceCall;
 import scrum.client.workspace.PagePanel;
 
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WikiWidget extends AScrumWidget {
 
-	private static final String START_PAGE_NAME = "Start";
-	private String pageName;
-	private Wikipage wikipage;
-	private Wiki wiki;
-
-	private FlowPanel panel;
-	private RichtextEditorWidget editor;
-	private Widget emoticonsAndComments;
-	private CommentsWidget commentsWidget;
+	public BlockListWidget<Wikipage> list;
 
 	@Override
 	protected Widget onInitialization() {
-		wiki = Scope.get().getComponent(Wiki.class);
+		new RequestImpedimentsServiceCall().execute();
 
-		panel = new FlowPanel();
-		panel.setStyleName("WikiWidget");
-		return panel;
+		list = new BlockListWidget<Wikipage>(WikipageBlock.FACTORY);
+		list.setAutoSorter(Wikipage.NAME_COMPARATOR);
+
+		PagePanel page = new PagePanel();
+		page.addHeader("Wiki", new ButtonWidget(new CreateWikipageAction()));
+		page.addSection(list);
+		return page;
 	}
 
 	@Override
 	protected void onUpdate() {
-		if (editor != null && editor.isEditMode()) return;
-		if (commentsWidget != null && commentsWidget.isEditorActive()) return;
-
-		if (pageName == null || pageName.trim().length() == 0) pageName = START_PAGE_NAME;
-
-		Wikipage newWikipage = getCurrentProject().getWikipage(pageName);
-		if (newWikipage != null && wikipage != newWikipage) {
-			emoticonsAndComments = createEmoticonsAndComments(newWikipage);
-		}
-		wikipage = newWikipage;
-
-		PagePanel page = new PagePanel();
-
-		if (wikipage == null) {
-			page.addHeader(pageName, createPageSelector());
-			page.addSection("Page does not exist.");
-			page.addSection(new ButtonWidget(new CreateWikipageAction(pageName)));
-		} else {
-			page.addHeader(wikipage.getName(), createPageSelector(), new EmoticonsWidget(wikipage));
-			editor = new RichtextEditorWidget(wikipage.getTextModel());
-			editor.setEditorHeight(600);
-
-			FlowPanel right = new FlowPanel();
-			right.add(new CommentsWidget(wikipage));
-
-			page.addSection(TableBuilder.row(20, editor, emoticonsAndComments));
-
-			page.addHeader("Page properties", createActionsDropdown());
-
-			FlowPanel left = new FlowPanel();
-			left.add(ScrumGwt.createPdfLink("Downlad as PDF", "wikipage", wikipage));
-			left.add(Gwt.createSpacer(1, 10));
-			left.add(new ChangeHistoryWidget(wikipage));
-			page.addSection(left);
-		}
-
-		panel.clear();
-		panel.add(page);
-		Gwt.update(panel);
+		list.setObjects(getCurrentProject().getWikipages());
+		super.onUpdate();
 	}
 
-	private Widget createEmoticonsAndComments(AScrumGwtEntity entity) {
-		TableBuilder tb = ScrumGwt.createFieldTable();
-		tb.addFieldRow("My emoticon", new EmoticonSelectorWidget(entity));
-		tb.addRow(Gwt.createSpacer(1, 5));
-		commentsWidget = new CommentsWidget(entity);
-		tb.addRow(commentsWidget, 2);
-		return tb.createTable();
+	public boolean showPage(Wikipage page) {
+		if (!list.contains(page)) update();
+		return list.showObject(page);
 	}
 
-	private Widget createActionsDropdown() {
-		DropdownMenuButtonWidget dropdown = new DropdownMenuButtonWidget();
-		dropdown.addAction(new ActivateChangeHistoryAction(wikipage));
-		dropdown.addAction(new DeleteWikipageAction(wikipage));
-		return dropdown;
+	public boolean showPage(String pageName) {
+		Wikipage page = getCurrentProject().getWikipage(pageName);
+		if (page == null) page = getCurrentProject().createNewWikipage(pageName);
+		return showPage(page);
 	}
 
-	private Widget createPageSelector() {
-		SuggestBox pageNameBox = new SuggestBox(wiki.createPagesSuggestOracle());
-		pageNameBox.getElement().setId("wikiPageNameInput");
-		pageNameBox.setAutoSelectEnabled(false);
-		pageNameBox.setTitle("Enter name of wiki page");
-		pageNameBox.addSelectionHandler(new PageNameHandler());
-		pageNameBox.addKeyPressHandler(new PageNameHandler());
-		pageNameBox.setText(pageName);
-
-		DropdownMenuButtonWidget dropdown = new DropdownMenuButtonWidget();
-		for (Wikipage page : getCurrentProject().getWikipages()) {
-			dropdown.addAction(new ShowPageAction("", page.getName()));
-		}
-
-		return TableBuilder.row(5, new ButtonWidget(new ShowPageAction("Go to ", START_PAGE_NAME)), pageNameBox,
-			dropdown);
-	}
-
-	public void showPage(String name) {
-		this.pageName = name;
-		update();
-		new TouchLastActivityServiceCall().execute();
-	}
-
-	public void showPage(Wikipage page) {
-		showPage(page == null ? null : page.getName());
-	}
-
-	class ShowPageAction extends AScrumAction {
-
-		private String prefix;
-		private String pageName;
-
-		public ShowPageAction(String prefix, String pageName) {
-			super();
-			this.prefix = prefix;
-			this.pageName = pageName;
-		}
-
-		@Override
-		public String getLabel() {
-			return prefix + pageName;
-		}
-
-		@Override
-		protected void updateTooltip(TooltipBuilder tb) {
-			tb.setText("Goto wiki page " + pageName);
-		}
-
-		@Override
-		protected void onExecute() {
-			History.newItem(Navigator.getEntityHistoryToken("wiki", "[[" + pageName + "]]"));
-		}
-	}
-
-	class PageNameHandler implements KeyPressHandler, SelectionHandler<Suggestion> {
-
-		@Override
-		public void onKeyPress(KeyPressEvent event) {
-			SuggestBox pageNameBox = (SuggestBox) event.getSource();
-			if (pageNameBox.isSuggestionListShowing()) return;
-			if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-				event.stopPropagation();
-				showPage(pageNameBox.getText());
-			}
-		}
-
-		@Override
-		public void onSelection(SelectionEvent<Suggestion> event) {
-			showPage(event.getSelectedItem().getReplacementString());
-		}
-
-	}
 }

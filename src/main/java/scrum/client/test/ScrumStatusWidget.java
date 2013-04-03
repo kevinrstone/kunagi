@@ -22,6 +22,7 @@ import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.animation.AnimatingFlowPanel;
 
+import java.util.List;
 import java.util.Map;
 
 import scrum.client.Dao;
@@ -30,6 +31,8 @@ import scrum.client.ScrumGwtApplication;
 import scrum.client.collaboration.Comment;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
+import scrum.client.common.TooltipBuilder;
+import scrum.client.communication.Pinger;
 import scrum.client.core.DeleteEntityServiceCall;
 import scrum.client.core.ServiceCaller;
 import scrum.client.issues.Issue;
@@ -78,6 +81,7 @@ public class ScrumStatusWidget extends AScrumWidget {
 		TableBuilder tb = new TableBuilder();
 		tb.setWidth(null);
 		tb.setCellPadding(5);
+		tb.addRow(new ButtonWidget(new TogglePingerAction()));
 		tb.addRow(new ButtonWidget(new ToggleListAnimationsAction()));
 		tb.addRow(new ButtonWidget(new ThrowExceptionAction()));
 		tb.addRow(new ButtonWidget(new ThrowServerExceptionAction()));
@@ -112,11 +116,37 @@ public class ScrumStatusWidget extends AScrumWidget {
 		return tb.createTable();
 	}
 
+	class TogglePingerAction extends AScrumAction {
+
+		@Override
+		public String getLabel() {
+			Pinger pinger = Scope.get().getComponent(Pinger.class);
+			return pinger.isDisabled() ? "Enable Pinger" : "Disable Pinger";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Enable/disable background pings to the server.");
+		}
+
+		@Override
+		protected void onExecute() {
+			Pinger pinger = Scope.get().getComponent(Pinger.class);
+			pinger.setDisabled(!pinger.isDisabled());
+		}
+
+	}
+
 	class ToggleListAnimationsAction extends AScrumAction {
 
 		@Override
 		public String getLabel() {
 			return AnimatingFlowPanel.animationsDisabled ? "Enable list animations" : "Disable list animations";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Enable/disable animations on all lists.");
 		}
 
 		@Override
@@ -133,6 +163,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		}
 
 		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Simulate an exception on the client.");
+		}
+
+		@Override
 		protected void onExecute() {
 			throw new RuntimeException("User initiated exception.<br>:-D");
 		}
@@ -143,6 +178,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		public String getLabel() {
 			return "Throw Server Exception";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Simulate an exception on the server.");
 		}
 
 		@Override
@@ -159,6 +199,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		}
 
 		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Show the widgets tester view.");
+		}
+
+		@Override
 		protected void onExecute() {
 			Scope.get().getComponent(Ui.class).getWorkspace().getWorkarea().show(new WidgetsTesterWidget());
 		}
@@ -170,6 +215,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		public String getLabel() {
 			return "Generate Comments";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Generate " + COUNT + " comments on stories.");
 		}
 
 		@Override
@@ -192,13 +242,33 @@ public class ScrumStatusWidget extends AScrumWidget {
 		}
 
 		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Generate " + COUNT + " tasks on stories in the current sprint.");
+		}
+
+		@Override
 		protected void onExecute() {
 			DateAndTime time = DateAndTime.now();
-			Requirement req = getCurrentProject().getCurrentSprint().getRequirements().get(0);
+			List<Requirement> requirements = getCurrentProject().getCurrentSprint().getRequirements();
+			if (requirements.isEmpty()) return;
+			int reqIdx = 0;
 			for (int i = 0; i < COUNT; i++) {
+				if (reqIdx >= requirements.size()) {
+					reqIdx = 0;
+				}
+				Requirement req = requirements.get(reqIdx);
+				reqIdx++;
 				Task task = new Task(req);
 				task.setLabel("Generated Task " + time + " - #" + i);
 				task.setDescription(longText());
+				task.setBurnedWork(i);
+				if (i % 2 == 0) {
+					task.setOwner(getCurrentUser());
+					task.setRemainingWork(0);
+				} else {
+					if (i % 5 == 0) task.setOwner(getCurrentUser());
+					task.setRemainingWork(i);
+				}
 				dao.createTask(task);
 			}
 		}
@@ -210,6 +280,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		public String getLabel() {
 			return "Generate Issues";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Generate " + COUNT + " issues.");
 		}
 
 		@Override
@@ -230,6 +305,11 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		public String getLabel() {
 			return "Generate Stories";
+		}
+
+		@Override
+		protected void updateTooltip(TooltipBuilder tb) {
+			tb.setText("Generate " + COUNT + " stories.");
 		}
 
 		@Override
@@ -258,6 +338,6 @@ public class ScrumStatusWidget extends AScrumWidget {
 		return sb.toString();
 	}
 
-	private static final int COUNT = 10;
+	private static final int COUNT = 50;
 
 }

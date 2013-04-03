@@ -14,6 +14,8 @@
  */
 package scrum.client.admin;
 
+import scrum.client.common.TooltipBuilder;
+
 public class ResetUserPasswordAction extends GResetUserPasswordAction {
 
 	public ResetUserPasswordAction(scrum.client.admin.User user) {
@@ -23,6 +25,11 @@ public class ResetUserPasswordAction extends GResetUserPasswordAction {
 	@Override
 	public String getLabel() {
 		return "Reset password to default";
+	}
+
+	@Override
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Reset the users password. If a SMTP server is configured an the user has an email address, he will get an email with a new password. Otherwise his password will be set to the configured default password.");
 	}
 
 	@Override

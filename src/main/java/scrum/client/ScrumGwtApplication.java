@@ -117,7 +117,7 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 	public void handleServiceCallError(String serviceCall, List<ErrorWrapper> errors) {
 		for (ErrorWrapper error : errors) {
 			if ("ilarkesto.webapp.GwtConversationDoesNotExist".equals(error.getName())) {
-				Scope.get().getComponent(Ui.class).getWorkspace().abort("Session timed out.");
+				abort("Session timed out.");
 				return;
 			}
 		}
@@ -128,7 +128,13 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 		for (ErrorWrapper error : errors) {
 			sb.append(Str.toHtml(error.toString())).append("<br>");
 		}
-		Scope.get().getComponent(Ui.class).getWorkspace().abort(sb.toString());
+		abort(sb.toString());
+	}
+
+	private void abort(String message) {
+		Scope.get().getComponent(Ui.class).getWorkspace().abort(message);
+		Scope.get().getComponent(Pinger.class).shutdown();
+		Scope.get().getComponent(Dao.class).clearAllEntities();
 	}
 
 	@Override
@@ -137,7 +143,7 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<strong>Unexpected Error</strong><br>");
 		sb.append(Str.toHtml(Str.formatException(ex)));
-		Scope.get().getComponent(Ui.class).getWorkspace().abort(sb.toString());
+		abort(sb.toString());
 	}
 
 	@Override

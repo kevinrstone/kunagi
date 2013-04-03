@@ -27,11 +27,10 @@ public class SprintSwitchIndicatorWidget extends AWidget {
 	@Override
 	protected Widget onInitialization() {
 		label = new Label("Estimated Sprint Switch");
-		label.setStyleName("SprintBorderIndicatorWidget");
 		return label;
 	}
 
-	public void updateLabel(int sprints, Date date) {
+	public void updateLabel(int sprints, Date date, boolean uncertain) {
 		initialize();
 		String s = String.valueOf(sprints);
 		if (sprints == 1) {
@@ -39,6 +38,11 @@ public class SprintSwitchIndicatorWidget extends AWidget {
 		}
 		label.setText("After " + s + " sprint" + (sprints < 2 ? "" : "s")
 				+ (", in " + date.getPeriodTo(Date.today()).abs().toShortestString()));
+		if (uncertain) {
+			label.setStyleName("SprintBorderIndicatorWidget-uncertain");
+		} else {
+			label.setStyleName("SprintBorderIndicatorWidget-certain");
+		}
 	}
 
 }

@@ -14,7 +14,6 @@
  */
 package scrum.client.common;
 
-import ilarkesto.core.logging.Log;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
 import scrum.client.ScrumScopeManager;
@@ -69,7 +68,6 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		}
 
 		if (list.isDnd() && list.dndManager != null) {
-			Log.TEST("Making draggable:", getObject());
 			list.dndManager.makeDraggable(this, header.getDragHandle());
 		}
 
@@ -88,23 +86,12 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		return outerPanel;
 	}
 
-	private long lastModificationTime;
-
-	public final void resetLastModificationTime() {
-		lastModificationTime = 0;
-	}
-
 	@Override
-	protected boolean isUpdateRequired() {
-		if (object instanceof AGwtEntity) {
-			updateHref();
-			AGwtEntity entity = getHrefEntity();
-			long localModificationTime = entity.getLocalModificationTime();
-			if (localModificationTime == lastModificationTime) return false;
-			lastModificationTime = localModificationTime;
-			return true;
-		}
-		return super.isUpdateRequired();
+	protected String getUpdateSignature() {
+		updateHref();
+		if (isExtended()) return null;
+		if (object instanceof AGwtEntity) return String.valueOf(((AGwtEntity) object).getLocalModificationTime());
+		return super.getUpdateSignature();
 	}
 
 	@Override
@@ -212,7 +199,6 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 			panel.removeStyleName("ABlockWidget-extended");
 		}
 
-		resetLastModificationTime();
 		update();
 	}
 

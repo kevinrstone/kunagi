@@ -17,6 +17,7 @@ package scrum.client.journal;
 import ilarkesto.core.scope.Scope;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumGwtEntity;
+import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
 
 public class ActivateChangeHistoryAction extends AScrumAction {
@@ -26,6 +27,11 @@ public class ActivateChangeHistoryAction extends AScrumAction {
 	public ActivateChangeHistoryAction(AScrumGwtEntity entity) {
 		super();
 		this.entity = entity;
+	}
+
+	@Override
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Show the history of changes made on this object.");
 	}
 
 	@Override

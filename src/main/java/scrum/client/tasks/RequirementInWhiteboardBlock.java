@@ -78,8 +78,11 @@ public class RequirementInWhiteboardBlock extends ABlockWidget<Requirement> {
 	}
 
 	@Override
-	protected boolean isUpdateRequired() {
-		return true;
+	protected String getUpdateSignature() {
+		if (isExtended()) return null;
+		Requirement r = getObject();
+		return String.valueOf(r.getLocalModificationTime()) + r.isRejected() + r.isClosed() + r.isTasksClosed()
+				+ r.isBlocked();
 	}
 
 	@Override

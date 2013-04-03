@@ -15,6 +15,7 @@
 package scrum.client.issues;
 
 import ilarkesto.core.scope.Scope;
+import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
 
 public class ReopenIssueAction extends GReopenIssueAction {
@@ -38,6 +39,11 @@ public class ReopenIssueAction extends GReopenIssueAction {
 	@Override
 	public String getLabel() {
 		return issue.isClosed() ? "Re-Open" : "Move to inbox";
+	}
+
+	@Override
+	protected void updateTooltip(TooltipBuilder tb) {
+		tb.setText("Reactivate this issue.");
 	}
 
 	@Override

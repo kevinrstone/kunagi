@@ -45,10 +45,10 @@ public class UsersWorkspaceWidgets extends GUsersWorkspaceWidgets {
 
 		navigator = new ScrumNavigatorWidget();
 		navigator.addItem("Projects", projectSelector);
-		navigator.addItem("Personal Preferences", userConfig);
+		navigator.addItem("Personal Settings", userConfig);
 		if (auth.getUser().isAdmin()) {
 			userList = new UserListWidget();
-			navigator.addItem("System Configuration", systemConfig);
+			navigator.addItem("System Settings", systemConfig);
 			navigator.addItem("User Management", userList);
 			navigator.addItem("System Message", messageManager);
 		}

@@ -41,18 +41,6 @@ public class SystemConfigWidget extends AScrumWidget {
 		// tbMessages.addFieldRow("About Page", config.getAboutPageMessageModel());
 		page.addSection(tbLogin.createTable());
 
-		page.addHeader("Authentication", new ButtonWidget(new TestLdapAction()));
-		TableBuilder tbAuth = ScrumGwt.createFieldTable();
-		tbAuth.addFieldRow("OpenID disabled", config.getOpenIdDisabledModel());
-		tbAuth.addFieldRow("Allowed OpenID Domains", config.getOpenIdDomainsModel());
-		tbAuth.addFieldRow("LDAP authentication enabled", config.getLdapEnabledModel());
-		tbAuth.addFieldRow("LDAP URL", config.getLdapUrlModel());
-		tbAuth.addFieldRow("LDAP user", config.getLdapUserModel());
-		tbAuth.addFieldRow("LDAP password", config.getLdapPasswordModel());
-		tbAuth.addFieldRow("LDAP base DN", config.getLdapBaseDnModel());
-		tbAuth.addFieldRow("LDAP user filter RegEx", config.getLdapUserFilterRegexModel());
-		page.addSection(tbAuth.createTable());
-
 		page.addHeader("Installation");
 		TableBuilder tbKunagi = ScrumGwt.createFieldTable();
 		tbKunagi.addFieldRow("Public URL", config.getUrlModel());
@@ -70,6 +58,18 @@ public class SystemConfigWidget extends AScrumWidget {
 		});
 		tbKunagi.addFieldRow("Maximum file size (MB)", config.getMaxFileSizeModel());
 		page.addSection(tbKunagi.createTable());
+
+		page.addHeader("Authentication", new ButtonWidget(new TestLdapAction()));
+		TableBuilder tbAuth = ScrumGwt.createFieldTable();
+		tbAuth.addFieldRow("OpenID disabled", config.getOpenIdDisabledModel());
+		tbAuth.addFieldRow("Allowed OpenID Domains", config.getOpenIdDomainsModel());
+		tbAuth.addFieldRow("LDAP authentication enabled", config.getLdapEnabledModel());
+		tbAuth.addFieldRow("LDAP URL", config.getLdapUrlModel());
+		tbAuth.addFieldRow("LDAP user", config.getLdapUserModel());
+		tbAuth.addFieldRow("LDAP password", config.getLdapPasswordModel());
+		tbAuth.addFieldRow("LDAP base DN", config.getLdapBaseDnModel());
+		tbAuth.addFieldRow("LDAP user filter RegEx", config.getLdapUserFilterRegexModel());
+		page.addSection(tbAuth.createTable());
 
 		page.addHeader("Email", new ButtonWidget(new SendTestEmailAction()));
 		TableBuilder tbEmail = ScrumGwt.createFieldTable();

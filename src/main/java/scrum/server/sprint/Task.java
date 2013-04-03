@@ -58,6 +58,8 @@ public class Task extends GTask implements Numbered, ReferenceSupport, LabelSupp
 	public void ensureIntegrity() {
 		super.ensureIntegrity();
 		updateNumber();
+		if (getRemainingWork() < 0) setRemainingWork(0);
+		if (getBurnedWork() < 0) setBurnedWork(0);
 	}
 
 	public Project getProject() {

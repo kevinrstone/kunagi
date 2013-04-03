@@ -133,7 +133,6 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	public boolean isAccepted() {
-		if (isClosed()) return false;
 		return getAcceptDate() != null;
 	}
 
@@ -142,7 +141,8 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	public boolean isUnclosedBug() {
-		return isBug() && !isClosed();
+		if (isClosed()) return false;
+		return isBug();
 	}
 
 	public boolean isIdea() {
@@ -163,7 +163,7 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 			String time = period.toDays() < 1 ? "today" : period.toShortestString() + " ago";
 			return "closed " + time;
 		}
-		if (isBug()) {
+		if (isUnclosedBug()) {
 			String s = "";
 			if (isFixed()) {
 				s += "fixed ";
@@ -222,8 +222,8 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	public void reopen() {
-		setAcceptDate(null);
-		setUrgent(false);
+		// setAcceptDate(null);
+		// setUrgent(false);
 		setCloseDate(null);
 	}
 

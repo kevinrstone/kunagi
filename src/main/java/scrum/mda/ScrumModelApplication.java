@@ -52,9 +52,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			applicationModel.addDaosAsComposites(getFinalEntityModels(true));
 
 			applicationModel.addAction("SwitchToNextSprint", getBasePackageName() + ".sprint");
-			applicationModel.addAction("Login", getBasePackageName() + ".admin");
 			applicationModel.addAction("Logout", getBasePackageName() + ".admin");
-			applicationModel.addAction("RequestNewPassword", getBasePackageName() + ".admin");
 			applicationModel.addAction("SendTestEmail", getBasePackageName() + ".admin");
 			applicationModel.addAction("TestLdap", getBasePackageName() + ".admin");
 			applicationModel.addAction("ChangeProject", getBasePackageName() + ".project");
@@ -171,6 +169,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			projectModel.addPredicate("editable");
 			projectModel
 					.addStringProperty("label")
+					.setEditablePredicate("editable")
 					.setMandatory(true)
 					.setSearchable(true)
 					.setUnique(true)
@@ -247,7 +246,8 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			projectModel.addStringProperty("releaseScriptPath").setTooltip(
 				"Full path to the script, which needs to be executed when publishing a release. "
 						+ "The Script recives the release label as the first argument.");
-			projectModel.addStringProperty("supportEmail").setTooltip("Email address of the support for this project.");
+			projectModel.addStringProperty("supportEmail").setEditablePredicate("editable")
+					.setTooltip("Email address of the support for this project.");
 			projectModel
 					.addStringProperty("issueReplyTemplate")
 					.setRichtext(true)

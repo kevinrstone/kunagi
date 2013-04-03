@@ -14,8 +14,10 @@
  */
 package scrum.client.collaboration;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.HyperlinkWidget;
 
+import java.util.Comparator;
 import java.util.Map;
 
 import scrum.client.common.ShowEntityAction;
@@ -28,7 +30,7 @@ public class Wikipage extends GWikipage implements ForumSupport {
 	public Wikipage(Project project, String name) {
 		setProject(project);
 		setName(name);
-		setText("= " + name + " =\n\n...");
+		if (name != null) setText("= " + name + " =\n\n...");
 	}
 
 	public Wikipage(Map data) {
@@ -59,5 +61,18 @@ public class Wikipage extends GWikipage implements ForumSupport {
 	public Widget createForumItemWidget() {
 		return new HyperlinkWidget(new ShowEntityAction(WikiWidget.class, this, getLabel()));
 	}
+
+	public static final Comparator<Wikipage> NAME_COMPARATOR = new Comparator<Wikipage>() {
+
+		@Override
+		public int compare(Wikipage a, Wikipage b) {
+			String an = a.getName();
+			String bn = b.getName();
+			if (Utl.equals(an, bn)) return 0;
+			if ("Start".equals(an)) return -1;
+			if ("Start".equals(bn)) return 1;
+			return Utl.compare(an, bn);
+		}
+	};
 
 }
