@@ -60,11 +60,10 @@ public class SprintBacklogPdfCreator extends APdfCreator {
 
 		pdf.nl();
 		List<Requirement> requirements = new ArrayList<Requirement>(sprint.getRequirements());
-		Collections.sort(requirements, project.getRequirementsOrderComparator());
+		Collections.sort(requirements, sprint.getRequirementsOrderComparator());
 		for (Requirement req : requirements) {
 			requirement(pdf, req, req.getOpenTasksAsList(), req.getClosedTasksAsList());
 		}
-
 	}
 
 	@Override

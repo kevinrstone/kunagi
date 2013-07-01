@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.Map;
 
 import scrum.client.admin.User;
-import scrum.client.common.AScrumGwtEntity;
 import scrum.client.project.Project;
 
 public class Comment extends GComment {
@@ -44,9 +43,10 @@ public class Comment extends GComment {
 		User currentUser = Scope.get().getComponent(User.class);
 		if (isAuthorSet()) {
 			if (!isAuthor(currentUser)) return false;
-			if (getDateAndTime().getPeriodFromNow().abs().toHours() > 6) return false;
-			AScrumGwtEntity parent = (AScrumGwtEntity) getParent();
-			if (parent.getLatestComment() != this) return false;
+			// MGI edit. We don't care about limitting the edit time for comments. Make them editable forever.
+			// if (getDateAndTime().getPeriodFromNow().abs().toHours() > 6) return false;
+			// AScrumGwtEntity parent = (AScrumGwtEntity) getParent();
+			// if (parent.getLatestComment() != this) return false;
 		} else {
 			// public comment
 			Project project = Scope.get().getComponent(Project.class);

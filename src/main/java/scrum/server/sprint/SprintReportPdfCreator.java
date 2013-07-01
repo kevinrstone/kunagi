@@ -24,6 +24,7 @@ import ilarkesto.pdf.FieldList;
 import ilarkesto.pdf.FontStyle;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.List;
 
 import scrum.client.sprint.SprintHistoryHelper;
@@ -78,8 +79,12 @@ public class SprintReportPdfCreator extends APdfCreator {
 			requirements(pdf, "Completed stories", sprint.getCompletedRequirementsData());
 			requirements(pdf, "Rejected stories", sprint.getIncompletedRequirementsData());
 		} else {
-			requirements(pdf, "Completed stories", report.getCompletedRequirementsAsList(), report);
-			requirements(pdf, "Rejected stories", report.getRejectedRequirementsAsList(), report);
+			List<Requirement> completedRequirements = report.getCompletedRequirementsAsList();
+			Collections.sort(completedRequirements, sprint.getRequirementsOrderComparator());
+			requirements(pdf, "Completed stories", completedRequirements, report);
+			List<Requirement> rejectedRequirements = report.getRejectedRequirementsAsList();
+			Collections.sort(rejectedRequirements, sprint.getRequirementsOrderComparator());
+			requirements(pdf, "Rejected stories", rejectedRequirements, report);
 		}
 
 		if (sprint.isReviewNoteSet()) {

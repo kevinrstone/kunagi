@@ -35,6 +35,7 @@ import scrum.server.release.ReleasePlanPdfCreator;
 import scrum.server.risks.RiskListPdfCreator;
 import scrum.server.sprint.Sprint;
 import scrum.server.sprint.SprintBacklogPdfCreator;
+import scrum.server.sprint.SprintBacklogPdfCreatorPlus;
 import scrum.server.sprint.SprintReportPdfCreator;
 
 public class PdfServlet extends AKunagiServlet {
@@ -44,6 +45,7 @@ public class PdfServlet extends AKunagiServlet {
 		if (pdfId.equals("wikipage")) return createWikipage(req);
 		if (pdfId.equals("productBacklog")) return createProductBacklog(req);
 		if (pdfId.equals("sprintBacklog")) return createSprintBacklog(req);
+		if (pdfId.equals("sprintBacklogPlus")) return createSprintBacklogPlus(req);
 		if (pdfId.equals("qualityBacklog")) return createQualityBacklog(req);
 		if (pdfId.equals("impedimentList")) return createImpedimentList(req);
 		if (pdfId.equals("riskList")) return createRiskList(req);
@@ -79,6 +81,10 @@ public class PdfServlet extends AKunagiServlet {
 
 	private APdfCreator createSprintBacklog(RequestWrapper<WebSession> req) {
 		return new SprintBacklogPdfCreator(getProject(req));
+	}
+
+	private APdfCreator createSprintBacklogPlus(RequestWrapper<WebSession> req) {
+		return new SprintBacklogPdfCreatorPlus(getProject(req));
 	}
 
 	private APdfCreator createQualityBacklog(RequestWrapper<WebSession> req) {

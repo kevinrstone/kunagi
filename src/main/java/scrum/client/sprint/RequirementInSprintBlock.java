@@ -65,6 +65,7 @@ public class RequirementInSprintBlock extends ABlockWidget<Requirement> {
 		statusIcon = header.addIconWrapper();
 		header.addText(requirement.getLabelModel());
 		header.addText(requirement.getThemesAsStringModel(), true, false);
+		header.addText(requirement.getEstimatedWorkWithUnitModel(), true);
 		header.addText(requirement.getTaskStatusLabelModel(), true);
 		header.appendOuterCell(new EmoticonsWidget(requirement), null, true);
 		header.addMenuAction(new RejectRequirementAction(requirement));
@@ -92,7 +93,7 @@ public class RequirementInSprintBlock extends ABlockWidget<Requirement> {
 		} else if (requirement.isClosed()) {
 			statusImage = Img.bundle.reqClosed().createImage();
 			statusImage.setTitle("Accepted.");
-		} else if (requirement.isTasksClosed()) {
+		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
 			statusImage = Img.bundle.reqTasksClosed().createImage();
 			statusImage.setTitle("All tasks done.");
 		} else if (requirement.isBlocked()) {

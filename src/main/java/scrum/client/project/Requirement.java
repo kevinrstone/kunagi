@@ -53,10 +53,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class Requirement extends GRequirement implements ReferenceSupport, LabelSupport, ForumSupport, ThemesContainer {
 
 	public static final String REFERENCE_PREFIX = "sto";
-	public static String[] WORK_ESTIMATION_VALUES = new String[] { "", "0", "0.5", "1", "2", "3", "5", "8", "13", "20",
-			"40", "100" };
-	public static Float[] WORK_ESTIMATION_FLOAT_VALUES = new Float[] { 0.5f, 0f, 1f, 2f, 3f, 5f, 8f, 13f, 20f, 40f,
-			100f };
+	public static String[] WORK_ESTIMATION_VALUES = new String[] { "", "0", "0.5", "1", "2", "3", "5", "8", "10", "13",
+			"15", "20", "25", "30", "35", "40", "50", "60", "70", "80", "90", "100", "120", "150", "200" };
+	public static Float[] WORK_ESTIMATION_FLOAT_VALUES = new Float[] { 0.5f, 0f, 1f, 2f, 3f, 5f, 8f, 10f, 13f, 15f,
+			20f, 25f, 30f, 35f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 120f, 150f, 200f };
 
 	private transient EstimationBar estimationBar;
 	private transient AFieldModel<String> taskStatusLabelModel;
@@ -287,11 +287,16 @@ public class Requirement extends GRequirement implements ReferenceSupport, Label
 	 */
 	public boolean isTasksClosed() {
 		Collection<Task> tasks = getTasksInSprint();
-		if (tasks.isEmpty()) return false;
+		// if (tasks.isEmpty()) return false;
 		for (Task task : tasks) {
 			if (!task.isClosed()) return false;
 		}
 		return true;
+	}
+
+	public boolean hasTasks() {
+		Collection<Task> tasks = getTasksInSprint();
+		return tasks != null ? tasks.size() > 0 : false;
 	}
 
 	/**

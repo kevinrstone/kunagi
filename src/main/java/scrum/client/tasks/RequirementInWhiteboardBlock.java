@@ -67,7 +67,7 @@ public class RequirementInWhiteboardBlock extends ABlockWidget<Requirement> {
 		} else if (requirement.isClosed()) {
 			statusImage = Img.bundle.reqClosed().createImage();
 			statusImage.setTitle("Accepted.");
-		} else if (requirement.isTasksClosed()) {
+		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
 			statusImage = Img.bundle.reqTasksClosed().createImage();
 			statusImage.setTitle("All tasks done.");
 		} else if (requirement.isBlocked()) {

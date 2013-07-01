@@ -16,6 +16,10 @@ package scrum.client.sprint;
 
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.Gwt;
+import ilarkesto.gwt.client.animation.AnimatingFlowPanel.InsertCallback;
+
+import java.util.List;
+
 import scrum.client.ScrumGwt;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.BlockListWidget;
@@ -36,6 +40,8 @@ public class SprintBacklogWidget extends AScrumWidget {
 
 		requirementList = new BlockListWidget<Requirement>(RequirementInSprintBlock.FACTORY);
 		requirementList.setAutoSorter(sprint.getRequirementsOrderComparator());
+		requirementList.setMoveObserver(new MoveObserver());
+		requirementList.setDndSorting(true);
 
 		PagePanel page = new PagePanel();
 		page.addHeader("Stories in this Sprint", new ButtonWidget(new PullNextRequirementAction(sprint)));
@@ -43,6 +49,8 @@ public class SprintBacklogWidget extends AScrumWidget {
 		page.addHeader("Sprint Properties");
 		page.addSection(Gwt.createFlowPanel(new SprintWidget(sprint),
 			ScrumGwt.createPdfLink("Download as PDF", "sprintBacklog", sprint)));
+		// add the MGI custom sprint backlog PDF
+		page.addSection(ScrumGwt.createPdfLink("Download Custom PDF Report", "sprintBacklogPlus", sprint));
 		page.addSection(new UserGuideWidget(getLocalizer().views().sprintBacklog(), getCurrentProject()
 				.getCurrentSprint().getRequirements().size() < 3, getCurrentUser().getHideUserGuideSprintBacklogModel()));
 		return page;
@@ -71,4 +79,13 @@ public class SprintBacklogWidget extends AScrumWidget {
 		rBlock.selectTask(task);
 	}
 
+	class MoveObserver implements InsertCallback {
+
+		@Override
+		public void onInserted(int index) {
+			List<Requirement> requirements = requirementList.getObjects();
+			sprint.updateRequirementsOrder(requirements);
+			update();
+		}
+	}
 }

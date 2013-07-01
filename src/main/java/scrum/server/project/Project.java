@@ -723,7 +723,8 @@ public class Project extends GProject {
 
 	@Override
 	public boolean isVisibleFor(User user) {
-		return (user != null && user.isAdmin()) || containsParticipant(user) || containsAdmin(user);
+		return user != null;
+		// return (user != null && user.isAdmin()) || containsParticipant(user) || containsAdmin(user);
 	}
 
 	public boolean isEditableBy(User user) {
