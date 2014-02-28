@@ -97,7 +97,12 @@ public class Dao extends GDao {
 			return null;
 		}
 
-		int number = Integer.parseInt(reference.substring(Requirement.REFERENCE_PREFIX.length()));
+		int number;
+		try {
+			number = Integer.parseInt(reference.substring(Requirement.REFERENCE_PREFIX.length()));
+		} catch (NumberFormatException ex) {
+			return null;
+		}
 		if (reference.startsWith(Requirement.REFERENCE_PREFIX)) {
 			for (Requirement e : getRequirements()) {
 				if (e.isNumber(number)) return e;

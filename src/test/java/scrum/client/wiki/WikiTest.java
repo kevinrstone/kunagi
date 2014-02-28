@@ -38,17 +38,21 @@ public class WikiTest extends Assert {
 
 	@Test
 	public void localImg() {
-		Assert.assertEquals(toHtml("[[Image:fle1]]"), "<a href='fle1.html'><img src=\"fle1\"></a>");
+		Assert.assertEquals(toHtml("[[Image:fle1]]"),
+			"<a href='fle1.html'><img src=\"fle1\" style=\"max-width:500px;\"></a>");
 		Assert.assertEquals(toHtml("[[Image:fle1|thumb]]"),
 			"<a href='fle1.html'><img src=\"fle1\" width=\"100px\" align=\"right\"></a>");
 		Assert.assertEquals(toHtml("[[Image:fle1|thumb|left]]"),
 			"<a href='fle1.html'><img src=\"fle1\" width=\"100px\" align=\"left\"></a>");
+		Assert.assertEquals(toHtml("[[Image:fle6 | text]]"),
+			"<a href='fle6.html'><img src=\"fle6\" style=\"max-width:500px;\"></a>");
 	}
 
 	@Test
 	public void externalImg() {
-		Assert.assertEquals(toHtml("[[Image:http://servisto.de/image.png]]"),
-			"<a href=\"http://servisto.de/image.png\" target=\"_blank\"><img src=\"http://servisto.de/image.png\"></a>");
+		Assert.assertEquals(
+			toHtml("[[Image:http://servisto.de/image.png]]"),
+			"<a href=\"http://servisto.de/image.png\" target=\"_blank\"><img src=\"http://servisto.de/image.png\" style=\"max-width:500px;\"></a>");
 
 	}
 

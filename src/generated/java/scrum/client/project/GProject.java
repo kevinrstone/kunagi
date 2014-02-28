@@ -100,6 +100,7 @@ public abstract class GProject
         @Override
         protected void onChangeValue(java.lang.String oldValue, java.lang.String newValue) {
             super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
@@ -2201,6 +2202,61 @@ public abstract class GProject
 
     }
 
+    // --- autoCreateTasksFromQualities ---
+
+    private boolean autoCreateTasksFromQualities ;
+
+    public final boolean isAutoCreateTasksFromQualities() {
+        return this.autoCreateTasksFromQualities ;
+    }
+
+    public final Project setAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        if (isAutoCreateTasksFromQualities(autoCreateTasksFromQualities)) return (Project)this;
+        this.autoCreateTasksFromQualities = autoCreateTasksFromQualities ;
+        propertyChanged("autoCreateTasksFromQualities", this.autoCreateTasksFromQualities);
+        return (Project)this;
+    }
+
+    public final boolean isAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        return equals(this.autoCreateTasksFromQualities, autoCreateTasksFromQualities);
+    }
+
+    private transient AutoCreateTasksFromQualitiesModel autoCreateTasksFromQualitiesModel;
+
+    public AutoCreateTasksFromQualitiesModel getAutoCreateTasksFromQualitiesModel() {
+        if (autoCreateTasksFromQualitiesModel == null) autoCreateTasksFromQualitiesModel = createAutoCreateTasksFromQualitiesModel();
+        return autoCreateTasksFromQualitiesModel;
+    }
+
+    protected AutoCreateTasksFromQualitiesModel createAutoCreateTasksFromQualitiesModel() { return new AutoCreateTasksFromQualitiesModel(); }
+
+    protected class AutoCreateTasksFromQualitiesModel extends ilarkesto.gwt.client.editor.ABooleanEditorModel {
+
+        @Override
+        public String getId() {
+            return "Project_autoCreateTasksFromQualities";
+        }
+
+        @Override
+        public java.lang.Boolean getValue() {
+            return isAutoCreateTasksFromQualities();
+        }
+
+        @Override
+        public void setValue(java.lang.Boolean value) {
+            setAutoCreateTasksFromQualities(value);
+        }
+        @Override
+        public String getTooltip() { return "When pulling stories into the sprint, automatically create a task for each quality assigned to the story."; }
+
+        @Override
+        protected void onChangeValue(java.lang.Boolean oldValue, java.lang.Boolean newValue) {
+            super.onChangeValue(oldValue, newValue);
+            addUndo(this, oldValue);
+        }
+
+    }
+
     // --- releasingInfo ---
 
     private java.lang.String releasingInfo ;
@@ -2306,6 +2362,7 @@ public abstract class GProject
         String lastOpenedDateAndTimeAsString = (String) props.get("lastOpenedDateAndTime");
         lastOpenedDateAndTime  =  lastOpenedDateAndTimeAsString == null ? null : new ilarkesto.core.time.DateAndTime(lastOpenedDateAndTimeAsString);
         freeDays  = (Integer) props.get("freeDays");
+        autoCreateTasksFromQualities  = (Boolean) props.get("autoCreateTasksFromQualities");
         releasingInfo  = (java.lang.String) props.get("releasingInfo");
         updateLocalModificationTime();
     }
@@ -2354,6 +2411,7 @@ public abstract class GProject
         properties.put("subscriberNotificationTemplate", this.subscriberNotificationTemplate);
         properties.put("lastOpenedDateAndTime", this.lastOpenedDateAndTime == null ? null : this.lastOpenedDateAndTime.toString());
         properties.put("freeDays", this.freeDays);
+        properties.put("autoCreateTasksFromQualities", this.autoCreateTasksFromQualities);
         properties.put("releasingInfo", this.releasingInfo);
     }
 

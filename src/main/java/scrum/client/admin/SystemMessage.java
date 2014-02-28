@@ -68,8 +68,8 @@ public class SystemMessage implements Serializable, IsSerializable {
 
 	public String getExpiresAsString() {
 		if (expires == null) return null;
+		if (expires.isPast()) return null;
 		TimePeriod timePeriod = expires.getPeriodFromNow();
-		if (!timePeriod.isPositive()) return null;
 		return "in " + timePeriod.toShortestString();
 	}
 

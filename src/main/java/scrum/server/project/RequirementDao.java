@@ -40,9 +40,11 @@ public class RequirementDao extends GRequirementDao {
 
 	public Requirement postRequirement(Project project, String label, Float estimation) {
 		Requirement requirement = newEntityInstance();
+
 		requirement.setProject(project);
 		requirement.setLabel(label);
 		requirement.setEstimatedWork(estimation);
+
 		saveEntity(requirement);
 		requirement.updateNumber();
 		return requirement;
@@ -50,14 +52,36 @@ public class RequirementDao extends GRequirementDao {
 
 	public Requirement postRequirement(Issue issue) {
 		Requirement requirement = newEntityInstance();
+
 		requirement.setProject(issue.getProject());
 		requirement.setLabel(issue.getLabel());
 		requirement.setDescription(issue.getDescription());
 		requirement.setIssue(issue);
 		requirement.setThemes(issue.getThemes());
 		issue.setStory(requirement);
+
 		saveEntity(requirement);
 		requirement.updateNumber();
 		return requirement;
 	}
+
+	public Requirement postRequirement(Project destinationProject, Requirement template) {
+		Requirement requirement = newEntityInstance();
+
+		requirement.setProject(destinationProject);
+		requirement.setLabel(template.getLabel());
+		requirement.setDescription(template.getDescription());
+		requirement.setTestDescription(template.getTestDescription());
+		requirement.setThemes(template.getThemes());
+		for (Quality templateQuality : template.getQualitys()) {
+			Quality quality = destinationProject.getQualityByLabel(templateQuality.getLabel());
+			if (quality == null) continue;
+			requirement.addQuality(quality);
+		}
+
+		saveEntity(requirement);
+		requirement.updateNumber();
+		return requirement;
+	}
+
 }

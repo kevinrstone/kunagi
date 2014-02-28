@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -103,12 +104,28 @@ public class Project extends GProject {
 
 	// --- ---
 
+	public boolean isInHistory(Requirement requirement) {
+		for (SprintReport report : getSprintReports()) {
+			if (report.containsCompletedRequirement(requirement)) return true;
+			if (report.containsRejectedRequirement(requirement)) return true;
+		}
+		return false;
+	}
+
+	public Set<Sprint> getRelevantSprints() {
+		Set<Sprint> ret = new HashSet<Sprint>();
+		ret.add(getCurrentSprint());
+		ret.add(getNextSprint());
+		return ret;
+	}
+
 	public Set<Requirement> getProductBacklogRequirements() {
 		Set<Requirement> requirements = getRequirements();
 		Iterator<Requirement> iterator = requirements.iterator();
 		while (iterator.hasNext()) {
 			Requirement requirement = iterator.next();
-			if (requirement.isClosed() || requirement.isInCurrentSprint()) iterator.remove();
+			if (requirement.isDeleted() || requirement.isClosed() || requirement.isInCurrentSprint())
+				iterator.remove();
 		}
 		return requirements;
 	}
@@ -173,9 +190,8 @@ public class Project extends GProject {
 		getHomepageUpdater().processAll();
 	}
 
-	public synchronized void updateHomepage(AEntity entity, boolean forceUpdate) {
+	public synchronized void updateHomepage(AEntity entity) {
 		if (!isHomepageDirSet()) return;
-		if (!forceUpdate && !isAutoUpdateHomepage()) return;
 		getHomepageUpdater().processEntityTemplate(entity);
 	}
 
@@ -607,10 +623,6 @@ public class Project extends GProject {
 		return ret;
 	}
 
-	public Set<Comment> getAllComments() {
-		return getComments(false);
-	}
-
 	public Set<Comment> getLatestComments() {
 		return getComments(true);
 	}
@@ -681,6 +693,7 @@ public class Project extends GProject {
 		if (!isNextSprintSet()) {
 			createNextSprint();
 		}
+		updateRequirementsOrder();
 		if (!isPunishmentUnitSet()) {
 			setPunishmentUnit(Money.EUR);
 		}
@@ -691,6 +704,12 @@ public class Project extends GProject {
 		if (!isIssueReplyTemplateSet()) setIssueReplyTemplate(createDefaultIssueReplyTemplate());
 		if (!isSubscriberNotificationTemplateSet())
 			setSubscriberNotificationTemplate(createDefaultSubscriberNotificationTemplate());
+	}
+
+	private void updateRequirementsOrder() {
+		List<Requirement> requirements = new ArrayList<Requirement>(getProductBacklogRequirements());
+		Collections.sort(requirements, getRequirementsOrderComparator());
+		setRequirementsOrderIds(AEntity.getIdsAsList(requirements));
 	}
 
 	private String createDefaultIssueReplyTemplate() {
@@ -985,6 +1004,13 @@ public class Project extends GProject {
 			}
 		};
 		return requirementsOrderComparator;
+	}
+
+	public Quality getQualityByLabel(String label) {
+		for (Quality quality : getQualitys()) {
+			if (quality.isLabel(label)) return quality;
+		}
+		return null;
 	}
 
 }

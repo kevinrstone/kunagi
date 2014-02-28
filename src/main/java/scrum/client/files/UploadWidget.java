@@ -23,6 +23,7 @@ import gwtupload.client.Uploader;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.Scope;
 
+import java.util.List;
 import java.util.Set;
 
 import scrum.client.common.AScrumWidget;
@@ -53,6 +54,7 @@ public class UploadWidget extends AScrumWidget {
 	public UploadWidget() {
 		statusLabel = new Label();
 		uploader = new SingleUploader(FileInputType.BROWSER_INPUT, new UploadStatus(), button, formPanel);
+		uploader.setMultipleSelection(false);
 		uploader.setAutoSubmit(true);
 		Uploader.setStatusInterval(1000);
 	}
@@ -116,11 +118,6 @@ public class UploadWidget extends AScrumWidget {
 		}
 
 		@Override
-		public Widget getWidget() {
-			return statusLabel;
-		}
-
-		@Override
 		public IUploadStatus newInstance() {
 			return null;
 		}
@@ -136,14 +133,13 @@ public class UploadWidget extends AScrumWidget {
 		}
 
 		@Override
-		public void setFileName(String name) {
-			this.filename = name;
+		public void setFileNames(List<String> names) {
+			if (names != null && !names.isEmpty()) this.filename = names.get(0);
+			log.info("Filename:", this.filename);
 		}
 
 		@Override
-		public void setI18Constants(UploadStatusConstants strs) {
-
-		}
+		public void setI18Constants(UploadStatusConstants strs) {}
 
 		@Override
 		public void setStatus(Status status) {
@@ -164,13 +160,23 @@ public class UploadWidget extends AScrumWidget {
 		public void setVisible(boolean b) {}
 
 		@Override
-		public void setProgress(int done, int total) {
+		public void setProgress(long done, long total) {
 			if (total == 0) {
 				statusLabel.setText("Uploading " + filename);
 			} else {
-				int percent = done * 100 / total;
+				long percent = done * 100 / total;
 				statusLabel.setText("Uploading " + filename + " (" + percent + "%)");
 			}
+		}
+
+		@Override
+		public Widget getWidget() {
+			return statusLabel;
+		}
+
+		@Override
+		public Widget asWidget() {
+			return statusLabel;
 		}
 	}
 
@@ -180,6 +186,8 @@ public class UploadWidget extends AScrumWidget {
 		Widget fileField;
 
 		public FormFlowPanel() {
+			setEncoding(FormPanel.ENCODING_MULTIPART);
+			getElement().setAttribute("accept-charset", "UTF-8");
 			super.add(formElements);
 			Project project = Scope.get().getComponent(Project.class);
 			Hidden projectIdField = new Hidden("projectId", project.getId());

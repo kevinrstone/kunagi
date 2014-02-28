@@ -35,7 +35,7 @@ public class RequirementWorkIndicatorBarWidget extends AScrumWidget {
 	protected void onUpdate() {
 		Sprint sprint = requirement.getSprint();
 		int maxBarWidth = 125; // Gwt.getRootWidget().getOffsetWidth() / 10;
-		int maxWorkInRequirement = 0;
+		int maxWorkInRequirement = 1;
 		for (Requirement r : sprint.getRequirements()) {
 			int work = r.getBurnedWork() + r.getRemainingWork();
 			if (work > maxWorkInRequirement) maxWorkInRequirement = work;

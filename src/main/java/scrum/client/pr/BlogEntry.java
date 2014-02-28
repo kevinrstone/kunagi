@@ -71,7 +71,11 @@ public class BlogEntry extends GBlogEntry implements ReferenceSupport, ForumSupp
 
 		@Override
 		public int compare(BlogEntry a, BlogEntry b) {
-			return Utl.compare(b.getDateAndTime(), a.getDateAndTime());
+			DateAndTime bDate = b.getDateAndTime();
+			DateAndTime aDate = a.getDateAndTime();
+			if (aDate == null && bDate != null) return -1;
+			if (aDate != null && bDate == null) return 1;
+			return Utl.compare(bDate, aDate);
 		}
 	};
 
@@ -87,5 +91,33 @@ public class BlogEntry extends GBlogEntry implements ReferenceSupport, ForumSupp
 			}
 		};
 		return dateModel;
+	}
+
+	private transient DateAndTimeModel dateAndTimeModel;
+
+	@Override
+	public DateAndTimeModel getDateAndTimeModel() {
+		if (dateAndTimeModel == null) {
+			dateAndTimeModel = new DateAndTimeModel() {
+
+				@Override
+				public void changeValue(DateAndTime newValue) {
+					if (newValue == null && isMandatory()) return;
+					super.changeValue(newValue);
+				}
+
+				@Override
+				public boolean isMandatory() {
+					return isPublished();
+				}
+
+				@Override
+				public String getDisplayValueForNull() {
+					return "<publication date>";
+				}
+
+			};
+		}
+		return dateAndTimeModel;
 	}
 }

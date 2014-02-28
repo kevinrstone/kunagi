@@ -54,8 +54,9 @@ public class CreateExampleProjectAction extends GCreateExampleProjectAction {
 				List<Project> newProjects = getDao().getProjects();
 				newProjects.removeAll(previousProjects);
 				if (!newProjects.isEmpty()) {
-					Scope.get().getComponent(UsersWorkspaceWidgets.class).getProjectSelector()
-							.select(newProjects.get(0));
+					Project project = newProjects.get(0);
+					Scope.get().getComponent(UsersWorkspaceWidgets.class).getProjectSelector().select(project);
+					getNavigator().gotoProject(project.getId());
 				}
 			}
 		});

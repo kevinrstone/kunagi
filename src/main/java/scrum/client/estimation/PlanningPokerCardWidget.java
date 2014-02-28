@@ -54,9 +54,7 @@ public class PlanningPokerCardWidget extends AScrumWidget {
 			card.addStyleName("PlanningPokerCardWidget-clickable");
 			card.setTitle(clickTooltip);
 		}
-		if (mouseOverHandler != null) {
-			card.addMouseOverHandler(mouseOverHandler);
-		}
+		if (mouseOverHandler != null) card.addMouseOverHandler(mouseOverHandler);
 
 		return card;
 	}

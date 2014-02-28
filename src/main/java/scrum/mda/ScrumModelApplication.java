@@ -242,7 +242,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			projectModel.addStringProperty("homepageUrl")
 					.setTooltip("URL on which the project homepage is accessible.");
 			projectModel.addProperty("autoUpdateHomepage", boolean.class).setTooltip(
-				"Automatically update the homepage.");
+				"Automatically update the homepage."); // TODO remove
 			projectModel.addStringProperty("releaseScriptPath").setTooltip(
 				"Full path to the script, which needs to be executed when publishing a release. "
 						+ "The Script recives the release label as the first argument.");
@@ -264,6 +264,10 @@ public class ScrumModelApplication extends AGeneratorApplication {
 								+ "${entity.reference} ${entity.label} ${change.message} ${unsubscribe.url} ${unsubscribeall.url} ${homepage.url} ${product.label} ${project.label} ${project.id} ${kunagi.instance} ${kunagi.url}");
 			projectModel.addProperty("lastOpenedDateAndTime", DateAndTime.class);
 			projectModel.addProperty("freeDays", int.class).setTooltip("Weekdays, on which no work is done.");
+			projectModel
+					.addProperty("autoCreateTasksFromQualities", boolean.class)
+					.setTooltip(
+						"When pulling stories into the sprint, automatically create a task for each quality assigned to the story.");
 			getApplicationModel().addCreateAction(projectModel);
 			projectModel.addStringProperty("releasingInfo").setRichtext(true)
 					.setTooltip("Custom info text for the releases page. Could be used for a release checklist.");
@@ -407,6 +411,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 						+ "Big Stories (Epics) close to being worked on should be split to be smaller.");
 			requirementModel.addProperty("rejectDate", Date.class);
 			requirementModel.addProperty("closed", boolean.class);
+			requirementModel.addProperty("deleted", boolean.class);
 			requirementModel.addProperty("dirty", boolean.class);
 			requirementModel.addProperty("workEstimationVotingActive", boolean.class);
 			requirementModel.addProperty("workEstimationVotingShowoff", boolean.class);
@@ -420,6 +425,9 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			requirementModel.addAction("SetRequirementDirty");
 			requirementModel.addAction("SetRequirementClean");
 			requirementModel.addAction("CloseRequirement");
+			requirementModel.addAction("MoveRequirementToTop");
+			requirementModel.addAction("MoveRequirementToBottom");
+			requirementModel.addAction("CloseRequirement");
 			requirementModel.addAction("RejectRequirement");
 			requirementModel.addAction("FixRequirement");
 			requirementModel.addAction("ReopenRequirement");
@@ -429,6 +437,7 @@ public class ScrumModelApplication extends AGeneratorApplication {
 			requirementModel.addAction("ResetRequirementEstimationVoting");
 			requirementModel.addAction("RequirementEstimationVote").addParameter("estimatedWork", Float.class);
 			requirementModel.addAction("SplitRequirement");
+			requirementModel.addAction("MoveRequirementToOtherProject");
 		}
 		return requirementModel;
 	}

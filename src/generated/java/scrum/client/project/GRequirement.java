@@ -273,6 +273,7 @@ public abstract class GRequirement
         @Override
         protected void onChangeValue(java.lang.String oldValue, java.lang.String newValue) {
             super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
@@ -561,6 +562,59 @@ public abstract class GRequirement
 
     }
 
+    // --- deleted ---
+
+    private boolean deleted ;
+
+    public final boolean isDeleted() {
+        return this.deleted ;
+    }
+
+    public final Requirement setDeleted(boolean deleted) {
+        if (isDeleted(deleted)) return (Requirement)this;
+        this.deleted = deleted ;
+        propertyChanged("deleted", this.deleted);
+        return (Requirement)this;
+    }
+
+    public final boolean isDeleted(boolean deleted) {
+        return equals(this.deleted, deleted);
+    }
+
+    private transient DeletedModel deletedModel;
+
+    public DeletedModel getDeletedModel() {
+        if (deletedModel == null) deletedModel = createDeletedModel();
+        return deletedModel;
+    }
+
+    protected DeletedModel createDeletedModel() { return new DeletedModel(); }
+
+    protected class DeletedModel extends ilarkesto.gwt.client.editor.ABooleanEditorModel {
+
+        @Override
+        public String getId() {
+            return "Requirement_deleted";
+        }
+
+        @Override
+        public java.lang.Boolean getValue() {
+            return isDeleted();
+        }
+
+        @Override
+        public void setValue(java.lang.Boolean value) {
+            setDeleted(value);
+        }
+
+        @Override
+        protected void onChangeValue(java.lang.Boolean oldValue, java.lang.Boolean newValue) {
+            super.onChangeValue(oldValue, newValue);
+            addUndo(this, oldValue);
+        }
+
+    }
+
     // --- dirty ---
 
     private boolean dirty ;
@@ -801,6 +855,7 @@ public abstract class GRequirement
         String rejectDateAsString = (String) props.get("rejectDate");
         rejectDate  =  rejectDateAsString == null ? null : new ilarkesto.core.time.Date(rejectDateAsString);
         closed  = (Boolean) props.get("closed");
+        deleted  = (Boolean) props.get("deleted");
         dirty  = (Boolean) props.get("dirty");
         workEstimationVotingActive  = (Boolean) props.get("workEstimationVotingActive");
         workEstimationVotingShowoff  = (Boolean) props.get("workEstimationVotingShowoff");
@@ -824,6 +879,7 @@ public abstract class GRequirement
         properties.put("estimatedWork", this.estimatedWork);
         properties.put("rejectDate", this.rejectDate == null ? null : this.rejectDate.toString());
         properties.put("closed", this.closed);
+        properties.put("deleted", this.deleted);
         properties.put("dirty", this.dirty);
         properties.put("workEstimationVotingActive", this.workEstimationVotingActive);
         properties.put("workEstimationVotingShowoff", this.workEstimationVotingShowoff);

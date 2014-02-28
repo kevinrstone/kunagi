@@ -64,12 +64,6 @@ public class WorkspaceWidget extends AScrumWidget {
 		return locker;
 	}
 
-	@Override
-	protected void onUpdate() {
-		LOG.debug("Updating UI");
-		super.onUpdate();
-	}
-
 	public void abort(String messageHtml) {
 		lockInfo.showBug(messageHtml);
 		locker.lock(lockInfo);

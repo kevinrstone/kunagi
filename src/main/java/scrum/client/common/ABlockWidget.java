@@ -115,11 +115,13 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		Gwt.update(preHeaderPanel);
 	}
 
+	private static int toggleCounter = 1;
+
 	private void updateHref() {
 		if (ScrumScopeManager.isProjectScope() && object instanceof AGwtEntity) {
 			AGwtEntity entity = getHrefEntity();
 			String href = Navigator.getEntityHref(entity);
-			href += "|toggle=" + isExtended();
+			href += "|toggle=" + toggleCounter++;// + isExtended();
 			header.setHref(href);
 		}
 	}

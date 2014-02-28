@@ -118,7 +118,6 @@ public class Project extends GProject implements ForumSupport {
 	public Requirement getNextProductBacklogRequirement() {
 		List<Requirement> requirements = getProductBacklogRequirements();
 		if (requirements.isEmpty()) return null;
-		Collections.sort(requirements, getRequirementsOrderComparator());
 		return requirements.get(0);
 	}
 
@@ -284,6 +283,7 @@ public class Project extends GProject implements ForumSupport {
 
 	public void updateRequirementsOrder(List<Requirement> requirements) {
 		setRequirementsOrderIds(Gwt.getIdsAsList(requirements));
+		productBacklogRequirements = null;
 		updateRequirementsModificationTimes();
 	}
 
@@ -379,10 +379,10 @@ public class Project extends GProject implements ForumSupport {
 		return ret;
 	}
 
-	public List<Issue> getIdeas() {
+	public List<Issue> getOpenIdeas() {
 		List<Issue> ret = new ArrayList<Issue>();
 		for (Issue issue : getIssues()) {
-			if (issue.isIdea()) ret.add(issue);
+			if (!issue.isClosed() && issue.isIdea()) ret.add(issue);
 		}
 		return ret;
 	}
@@ -530,14 +530,38 @@ public class Project extends GProject implements ForumSupport {
 		getDao().deleteQuality(item);
 	}
 
+	private transient List<Requirement> productBacklogRequirements;
+	private transient String productBacklogRequirementsChangeSignature = "";
+
 	public List<Requirement> getProductBacklogRequirements() {
-		List<Requirement> ret = new ArrayList<Requirement>();
+		if (productBacklogRequirements != null) {
+			String signature = createProductBacklogRequirementsChangeSignature();
+			if (signature.equals(productBacklogRequirementsChangeSignature)) return productBacklogRequirements;
+			productBacklogRequirementsChangeSignature = signature;
+		}
+		productBacklogRequirements = new ArrayList<Requirement>();
 		for (Requirement requirement : getRequirements()) {
+			if (requirement.isDeleted()) continue;
 			if (requirement.isClosed()) continue;
 			if (requirement.isInCurrentSprint()) continue;
-			ret.add(requirement);
+			productBacklogRequirements.add(requirement);
 		}
-		return ret;
+		Collections.sort(productBacklogRequirements, getRequirementsOrderComparator());
+		return productBacklogRequirements;
+	}
+
+	private String createProductBacklogRequirementsChangeSignature() {
+		StringBuilder sb = new StringBuilder();
+		for (String id : getRequirementsOrderIds()) {
+			sb.append(id);
+		}
+		for (Requirement requirement : getRequirements()) {
+			if (requirement.isDeleted()) continue;
+			if (requirement.isClosed()) continue;
+			if (requirement.isInCurrentSprint()) continue;
+			sb.append(requirement.getNumber());
+		}
+		return sb.toString();
 	}
 
 	public List<Task> getTasks() {
@@ -574,14 +598,6 @@ public class Project extends GProject implements ForumSupport {
 		Sprint sprint = new Sprint(this, "New Sprint");
 		getDao().createSprint(sprint);
 		return sprint;
-	}
-
-	public boolean deleteTask(Task task) {
-		for (Requirement requirement : getRequirements()) {
-			boolean b = requirement.getTasks().remove(task);
-			if (b) return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -710,4 +726,5 @@ public class Project extends GProject implements ForumSupport {
 		};
 		return freeDaysWeekdaySelectorModel;
 	}
+
 }

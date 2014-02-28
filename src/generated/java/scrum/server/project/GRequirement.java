@@ -49,6 +49,7 @@ public abstract class GRequirement
         properties.put("estimatedWork", this.estimatedWork);
         properties.put("rejectDate", this.rejectDate == null ? null : this.rejectDate.toString());
         properties.put("closed", this.closed);
+        properties.put("deleted", this.deleted);
         properties.put("dirty", this.dirty);
         properties.put("workEstimationVotingActive", this.workEstimationVotingActive);
         properties.put("workEstimationVotingShowoff", this.workEstimationVotingShowoff);
@@ -584,6 +585,36 @@ public abstract class GRequirement
     }
 
     // -----------------------------------------------------------
+    // - deleted
+    // -----------------------------------------------------------
+
+    private boolean deleted;
+
+    public final boolean isDeleted() {
+        return deleted;
+    }
+
+    public final void setDeleted(boolean deleted) {
+        deleted = prepareDeleted(deleted);
+        if (isDeleted(deleted)) return;
+        this.deleted = deleted;
+        updateLastModified();
+        fireModified("deleted="+deleted);
+    }
+
+    protected boolean prepareDeleted(boolean deleted) {
+        return deleted;
+    }
+
+    public final boolean isDeleted(boolean deleted) {
+        return this.deleted == deleted;
+    }
+
+    protected final void updateDeleted(Object value) {
+        setDeleted((Boolean)value);
+    }
+
+    // -----------------------------------------------------------
     // - dirty
     // -----------------------------------------------------------
 
@@ -927,6 +958,7 @@ public abstract class GRequirement
             if (property.equals("estimatedWork")) updateEstimatedWork(value);
             if (property.equals("rejectDate")) updateRejectDate(value);
             if (property.equals("closed")) updateClosed(value);
+            if (property.equals("deleted")) updateDeleted(value);
             if (property.equals("dirty")) updateDirty(value);
             if (property.equals("workEstimationVotingActive")) updateWorkEstimationVotingActive(value);
             if (property.equals("workEstimationVotingShowoff")) updateWorkEstimationVotingShowoff(value);

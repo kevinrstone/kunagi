@@ -16,7 +16,6 @@ package scrum.server.common;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.integration.itext.PdfBuilder;
 import ilarkesto.testng.ATest;
@@ -230,8 +229,8 @@ public class PdfTest extends ATest {
 		PdfBuilder pdf = new PdfBuilder();
 		creator.build(pdf);
 		File file = new File(OUTPUT_DIR + "/" + creator.getFilename() + ".pdf");
-		Log.DEBUG("Writing PDF:", file);
 		pdf.write(file);
+		log.info("PDF created:", file.getAbsolutePath());
 	}
 
 }

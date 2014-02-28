@@ -232,14 +232,14 @@ public class WikiParser {
 	}
 
 	private void createImage(Paragraph p, String code) {
-		boolean thumb = code.contains("|thumb");
-		if (thumb) {
-			code = code.replace("|thumb", "");
+		String options = null;
+		int optionsIdx = code.indexOf('|');
+		if (optionsIdx > 0) {
+			options = code.substring(optionsIdx);
+			code = code.substring(0, optionsIdx).trim();
 		}
-		boolean left = code.contains("|left");
-		if (left) {
-			code = code.replace("|left", "");
-		}
+		boolean thumb = options != null && options.contains("thumb");
+		boolean left = options != null && options.contains("left");
 		p.add(new Image(code, thumb, left));
 	}
 
@@ -516,6 +516,7 @@ public class WikiParser {
 		if (s.startsWith("ftp://")) return true;
 		if (s.startsWith("apt://")) return true;
 		if (s.startsWith("mailto://")) return true;
+		if (s.startsWith("file://")) return true;
 		return false;
 	}
 

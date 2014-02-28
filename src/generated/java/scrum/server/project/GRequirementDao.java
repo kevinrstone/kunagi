@@ -62,6 +62,7 @@ public abstract class GRequirementDao
         requirementsByRejectDateCache.clear();
         rejectDatesCache = null;
         requirementsByClosedCache.clear();
+        requirementsByDeletedCache.clear();
         requirementsByDirtyCache.clear();
         requirementsByWorkEstimationVotingActiveCache.clear();
         requirementsByWorkEstimationVotingShowoffCache.clear();
@@ -514,6 +515,35 @@ public abstract class GRequirementDao
 
         public boolean test(Requirement e) {
             return value == e.isClosed();
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - deleted
+    // -----------------------------------------------------------
+
+    private final Cache<Boolean,Set<Requirement>> requirementsByDeletedCache = new Cache<Boolean,Set<Requirement>>(
+            new Cache.Factory<Boolean,Set<Requirement>>() {
+                public Set<Requirement> create(Boolean deleted) {
+                    return getEntities(new IsDeleted(deleted));
+                }
+            });
+
+    public final Set<Requirement> getRequirementsByDeleted(boolean deleted) {
+        return new HashSet<Requirement>(requirementsByDeletedCache.get(deleted));
+    }
+
+    private static class IsDeleted implements Predicate<Requirement> {
+
+        private boolean value;
+
+        public IsDeleted(boolean value) {
+            this.value = value;
+        }
+
+        public boolean test(Requirement e) {
+            return value == e.isDeleted();
         }
 
     }

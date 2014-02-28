@@ -10,7 +10,7 @@
         <a href="http://kunagi.org/${entry.reference}.html" title="Permalink" rel="bookmark">Permalink</a>
     </div>
     
-    #socialbuttons($entry.urlEncodedForUrl)
+    #socialbuttons($entry.url)
     
 </div>
 

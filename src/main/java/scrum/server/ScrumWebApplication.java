@@ -62,7 +62,7 @@ import scrum.server.project.Project;
 
 public class ScrumWebApplication extends GScrumWebApplication {
 
-	private static final int DATA_VERSION = 35;
+	private static final int DATA_VERSION = 36;
 
 	private static final Log log = Log.get(ScrumWebApplication.class);
 
@@ -320,7 +320,16 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	}
 
 	public void sendToConversationsByProject(Project project, AEntity entity) {
-		for (AGwtConversation c : getConversationsByProject(project, null)) {
+		Set<GwtConversation> conversations;
+		if (project == null && entity instanceof User) {
+			conversations = new HashSet<GwtConversation>();
+			for (Project p : getProjectDao().getEntities()) {
+				conversations.addAll(getConversationsByProject(p, null));
+			}
+		} else {
+			conversations = getConversationsByProject(project, null);
+		}
+		for (AGwtConversation c : conversations) {
 			c.sendToClient(entity);
 		}
 	}
@@ -380,6 +389,7 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	}
 
 	public void triggerRegisterNotification(User user, String host) {
+		if (getConfig().isAdminNotificationOnUserRegistrationDisabled()) return;
 		StringBuilder sb = new StringBuilder();
 		sb.append("Kunagi URL: ").append(createUrl(null)).append("\n");
 		sb.append("Name: ").append(user.getName()).append("\n");

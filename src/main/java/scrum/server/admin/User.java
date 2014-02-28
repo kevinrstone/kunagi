@@ -195,6 +195,7 @@ public class User extends GUser {
 		if (!isPublicNameSet()) setPublicName(getName());
 		if (!isColorSet()) setColor(getDefaultColor());
 		if (!isLoginTokenSet()) createLoginToken();
+		if (isCurrentProjectSet() && !getCurrentProject().containsParticipant(this)) setCurrentProject(null);
 	}
 
 	@Override

@@ -62,6 +62,10 @@ public interface ScrumService extends com.google.gwt.user.client.rpc.RemoteServi
 
     scrum.client.DataTransferObject createExampleProject(int conversationNumber);
 
+    scrum.client.DataTransferObject deleteStory(int conversationNumber, String storyId);
+
+    scrum.client.DataTransferObject moveRequirementToProject(int conversationNumber, String destinationProjectId, String requirementId);
+
     scrum.client.DataTransferObject selectProject(int conversationNumber, String projectId);
 
     scrum.client.DataTransferObject updateProjectHomepage(int conversationNumber);

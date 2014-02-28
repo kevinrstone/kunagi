@@ -48,6 +48,7 @@ public class CreateProjectAction extends GCreateProjectAction {
 		Project project = new Project(getCurrentUser());
 		getDao().createProject(project);
 		Scope.get().getComponent(UsersWorkspaceWidgets.class).getProjectSelector().select(project);
+		getNavigator().gotoProject(project.getId());
 	}
 
 }

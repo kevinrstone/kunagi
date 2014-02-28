@@ -103,7 +103,7 @@ public class CommentServlet extends AKunagiServlet {
 		if (!Str.isBlank(name)) message += " by " + name;
 		subscriptionService.notifySubscribers(entity, message, project, email);
 
-		project.updateHomepage(entity, true);
+		project.updateHomepage(entity);
 		String reference = ((ReferenceSupport) entity).getReference();
 		String label = ((LabelSupport) entity).getLabel();
 		ProjectEvent event = projectEventDao.postEvent(project, comment.getAuthorName() + " commented on " + reference

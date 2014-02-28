@@ -12,7 +12,7 @@ public class SplitRequirementAction extends GSplitRequirementAction {
 
 	@Override
 	public String getLabel() {
-		return "Split Story";
+		return "Split into two";
 	}
 
 	@Override

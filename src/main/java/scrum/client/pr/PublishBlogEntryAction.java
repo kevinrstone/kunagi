@@ -15,6 +15,7 @@
 package scrum.client.pr;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.time.DateAndTime;
 import scrum.client.common.TooltipBuilder;
 
 public class PublishBlogEntryAction extends GPublishBlogEntryAction {
@@ -50,6 +51,7 @@ public class PublishBlogEntryAction extends GPublishBlogEntryAction {
 
 	@Override
 	protected void onExecute() {
+		if (blogEntry.getDateAndTime() == null) blogEntry.setDateAndTime(DateAndTime.now());
 		blogEntry.setPublished(true);
 		addUndo(new Undo());
 	}

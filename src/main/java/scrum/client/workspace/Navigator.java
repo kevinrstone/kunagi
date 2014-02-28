@@ -55,7 +55,12 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		if (projectId == null) {
 			showUserMode(historyToken.getPage());
 		} else {
-			showProject(projectId, historyToken.getPage(), historyToken.getEntityId());
+			try {
+				showProject(projectId, historyToken.getPage(), historyToken.getEntityId());
+			} catch (Exception ex) {
+				log.error("Opening project failed:", projectId, ex);
+				showUserMode(historyToken.getPage());
+			}
 		}
 	}
 

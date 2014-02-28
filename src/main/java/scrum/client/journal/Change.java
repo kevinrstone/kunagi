@@ -58,6 +58,8 @@ public class Change extends GChange {
 		if (parent instanceof Requirement) {
 			if (CREATED.equals(key) && getNewValue() != null) return "splitted story from " + getNewValue();
 			if ("@split".equals(key)) return "splitted " + getNewValue();
+			if ("@moved".equals(key) && getNewValue() != null)
+				return "moved from project '" + getEntityReferenceAndLabel(getNewValue()) + "'";
 			if (REQ_COMPLETED_IN_SPRINT.equals(key))
 				return "Completed in " + getEntityReferenceAndLabel(getNewValue());
 			if (REQ_REJECTED_IN_SPRINT.equals(key)) return "Rejected in " + getEntityReferenceAndLabel(getNewValue());

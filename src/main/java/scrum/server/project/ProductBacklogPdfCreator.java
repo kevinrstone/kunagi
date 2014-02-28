@@ -32,10 +32,9 @@ public class ProductBacklogPdfCreator extends APdfCreator {
 	protected void build(APdfContainerElement pdf) {
 		reportHeader(pdf, "Product Backlog", project.getLabel());
 
-		List<Requirement> requirements = new ArrayList<Requirement>(project.getRequirements());
+		List<Requirement> requirements = new ArrayList<Requirement>(project.getProductBacklogRequirements());
 		Collections.sort(requirements, project.getRequirementsOrderComparator());
 		for (Requirement req : requirements) {
-			if (req.isClosed()) continue;
 			requirement(pdf, req, null, null);
 		}
 	}

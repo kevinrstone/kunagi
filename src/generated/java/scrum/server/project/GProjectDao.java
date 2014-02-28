@@ -121,6 +121,7 @@ public abstract class GProjectDao
         lastOpenedDateAndTimesCache = null;
         projectsByFreeDaysCache.clear();
         freeDayssCache = null;
+        projectsByAutoCreateTasksFromQualitiesCache.clear();
         projectsByReleasingInfoCache.clear();
         releasingInfosCache = null;
     }
@@ -1759,6 +1760,35 @@ public abstract class GProjectDao
 
         public boolean test(Project e) {
             return e.isFreeDays(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - autoCreateTasksFromQualities
+    // -----------------------------------------------------------
+
+    private final Cache<Boolean,Set<Project>> projectsByAutoCreateTasksFromQualitiesCache = new Cache<Boolean,Set<Project>>(
+            new Cache.Factory<Boolean,Set<Project>>() {
+                public Set<Project> create(Boolean autoCreateTasksFromQualities) {
+                    return getEntities(new IsAutoCreateTasksFromQualities(autoCreateTasksFromQualities));
+                }
+            });
+
+    public final Set<Project> getProjectsByAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        return new HashSet<Project>(projectsByAutoCreateTasksFromQualitiesCache.get(autoCreateTasksFromQualities));
+    }
+
+    private static class IsAutoCreateTasksFromQualities implements Predicate<Project> {
+
+        private boolean value;
+
+        public IsAutoCreateTasksFromQualities(boolean value) {
+            this.value = value;
+        }
+
+        public boolean test(Project e) {
+            return value == e.isAutoCreateTasksFromQualities();
         }
 
     }

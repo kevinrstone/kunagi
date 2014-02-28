@@ -24,7 +24,6 @@ import ilarkesto.gwt.client.editor.AFieldModel;
 import ilarkesto.gwt.client.editor.IntegerEditorWidget;
 import ilarkesto.gwt.client.editor.TextOutputWidget;
 
-import java.util.Collections;
 import java.util.List;
 
 import scrum.client.ScrumGwt;
@@ -80,7 +79,7 @@ public class ProductBacklogWidget extends AScrumWidget {
 		headerWrapper.setWidget(filterToggleAction.filterActive ? getFilterWidget() : getVelocityWidget());
 
 		Integer velocity;
-		List<Requirement> requirements = getCurrentProject().getProductBacklogRequirements();
+		List<Requirement> requirements;
 		if (filterToggleAction.filterActive) {
 			velocity = null;
 			requirements = filterWidget.getRequirements();
@@ -89,7 +88,6 @@ public class ProductBacklogWidget extends AScrumWidget {
 			requirements = getCurrentProject().getProductBacklogRequirements();
 		}
 
-		Collections.sort(requirements, getCurrentProject().getRequirementsOrderComparator());
 		EstimationBarFactory.createEstimationBars(requirements, velocity);
 
 		list.setObjects(requirements);
@@ -166,7 +164,6 @@ public class ProductBacklogWidget extends AScrumWidget {
 				Requirement requirement = requirements.get(index);
 				boolean movedUp = index < filterWidget.getRequirements().indexOf(requirement);
 				List<Requirement> allRequirements = getCurrentProject().getProductBacklogRequirements();
-				Collections.sort(allRequirements, getCurrentProject().getRequirementsOrderComparator());
 				if (movedUp) {
 					Requirement next = requirements.get(index + 1);
 					allRequirements.remove(requirement);

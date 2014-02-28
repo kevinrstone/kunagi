@@ -152,10 +152,6 @@ public class SprintReportPdfCreator extends APdfCreator {
 		table.createCellBorders(Color.GRAY, 0.2f);
 	}
 
-	private void sectionHeader(APdfContainerElement pdf, String label) {
-		pdf.paragraph().nl().text(label, headerFonts[1]).nl();
-	}
-
 	@Override
 	protected String getFilename() {
 		return "report-" + sprint.getReference();

@@ -21,11 +21,14 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.webapp.Servlet;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -37,6 +40,13 @@ import scrum.server.project.Project;
 public class FileUploadServlet extends UploadAction {
 
 	private static final Log log = Log.get(FileUploadServlet.class);
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
+			ServletException {
+		request.setCharacterEncoding(IO.UTF_8);
+		super.doPost(request, response);
+	}
 
 	@Override
 	public String executeAction(HttpServletRequest req, List<FileItem> sessionFiles) throws UploadActionException {
@@ -92,6 +102,14 @@ public class FileUploadServlet extends UploadAction {
 
 	private String getFilename(String name) {
 		if (name == null) return "unnamed.bin";
+		try {
+			String a = new String(name.getBytes(IO.ISO_LATIN_1), IO.ISO_LATIN_1);
+			String b = new String(name.getBytes(IO.UTF_8), IO.ISO_LATIN_1);
+			String c = new String(name.getBytes(IO.ISO_LATIN_1), IO.UTF_8);
+			log.warn(name, a, b, c);
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
 		name = name.replace('\\', '/');
 		int idx = name.lastIndexOf('/');
 		if (idx >= 0) return name.substring(idx + 1);

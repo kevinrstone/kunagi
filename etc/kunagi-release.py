@@ -136,14 +136,14 @@ execute('ant releaseHomepage', workDir + '/kunagi')
 
 
 # upload to sourceforge
-print '  Upload artifacts to SourceForge'
-sourceForgePath = 'koczewski,kunagi@frs.sourceforge.net:/home/frs/project/k/ku/kunagi/' + releaseLabel
-execute('scp ' + packageWar + ' ' + sourceForgePath + '/kunagi.war')
-execute('scp ' + packageExe32 + ' ' + sourceForgePath + '/kunagi32.exe')
-execute('scp ' + packageExe64 + ' ' + sourceForgePath + '/kunagi64.exe')
-execute('scp ' + packageDeb + ' ' + sourceForgePath + '/kunagi_' + releaseLabel + '.deb')
-execute('scp ' + packageTar + ' ' + sourceForgePath + '/kunagi-' + releaseLabel + '.tar.gz')
-execute('scp ' + packageZip + ' ' + sourceForgePath + '/kunagi-' + releaseLabel + '.zip')
+#print '  Upload artifacts to SourceForge'
+#sourceForgePath = 'koczewski,kunagi@frs.sourceforge.net:/home/frs/project/k/ku/kunagi/' + releaseLabel
+#execute('scp ' + packageWar + ' ' + sourceForgePath + '/kunagi.war')
+#execute('scp ' + packageExe32 + ' ' + sourceForgePath + '/kunagi32.exe')
+#execute('scp ' + packageExe64 + ' ' + sourceForgePath + '/kunagi64.exe')
+#execute('scp ' + packageDeb + ' ' + sourceForgePath + '/kunagi_' + releaseLabel + '.deb')
+#execute('scp ' + packageTar + ' ' + sourceForgePath + '/kunagi-' + releaseLabel + '.tar.gz')
+#execute('scp ' + packageZip + ' ' + sourceForgePath + '/kunagi-' + releaseLabel + '.zip')
 
 
 # copy artifacts

@@ -51,6 +51,45 @@ public class Sprint extends GSprint implements Numbered {
 
 	// --- ---
 
+	public void cleanup() {
+		if (!isCompleted())
+			throw new IllegalStateException("Sprint is not completed, therefor it can not be cleaned up.");
+
+		// TODO export PDF
+		// TODO export data (json)
+
+		setCompletedRequirementsData(null);
+		setIncompletedRequirementsData(null);
+		clearRequirementsOrderIds();
+		clearProductOwners();
+		clearScrumMasters();
+		clearTeamMembers();
+
+		SprintReport report = getSprintReport();
+		if (report != null) sprintReportDao.deleteEntity(report);
+
+		// getClosedRequirements()
+		// getClosedTasksInPasts()
+		// getCompletedRequirementsData()
+		// getDaySnapshots()
+		// getFixedIssues()
+		// getIncompletedRequirementsData()
+		// getProductOwners()
+		// getProjectSprintSnapshot()
+		// getReleases()
+		// getRequirements()
+		// getRequirementsOrderIds()
+		// getScrumMasters()
+		// getSprintDaySnapshots()
+		// getSprintReport()
+		// getTasks()
+		// getTeamMembers()
+	}
+
+	public boolean isCompleted() {
+		return isVelocitySet();
+	}
+
 	public List<Requirement> getClosedRequirementsAsList() {
 		return Utl.sort(getClosedRequirements(), getRequirementsOrderComparator());
 	}
@@ -71,15 +110,16 @@ public class Sprint extends GSprint implements Numbered {
 		return releases.isEmpty() ? null : Utl.getElement(releases, 0);
 	}
 
-	public void pullRequirement(Requirement requirement, User user) {
-		requirement.setSprint(this);
-		for (Task task : requirement.getTasksInSprint()) {
+	public void pullStory(Requirement story, User user) {
+		story.setSprint(this);
+		moveToBottom(story);
+		for (Task task : story.getTasksInSprint()) {
 			task.reset();
 		}
-		moveToBottom(requirement);
+		if (getProject().isAutoCreateTasksFromQualities()) story.createTasksFromQualities();
 		getDaySnapshot(Date.today()).updateWithCurrentSprint();
 
-		changeDao.postChange(requirement, user, "sprintId", null, getId());
+		changeDao.postChange(story, user, "sprintId", null, getId());
 	}
 
 	public void kickRequirement(Requirement requirement, User user) {
@@ -92,6 +132,7 @@ public class Sprint extends GSprint implements Numbered {
 		requirement.setClosed(false);
 		requirement.setSprint(null);
 		requirement.setDirty(burned > 0);
+		removeRequirementsOrderId(requirement.getId());
 		requirement.getProject().moveRequirementToTop(requirement);
 		SprintDaySnapshot daySnapshot = getDaySnapshot(Date.today());
 		daySnapshot.addBurnedWorkFromDeleted(burned);
@@ -273,6 +314,15 @@ public class Sprint extends GSprint implements Numbered {
 			if (getEnd().isYesterday()) setEnd(Date.today());
 
 			updateNextSprintDates();
+
+			// update order ids
+			List<String> ids = new ArrayList<String>();
+			for (Requirement story : getRequirements()) {
+				ids.add(story.getId());
+			}
+			List<String> orderIds = getRequirementsOrderIds();
+			orderIds.retainAll(ids);
+			setRequirementsOrderIds(orderIds);
 		}
 
 		if (project.isNextSprint(this)) {

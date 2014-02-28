@@ -14,45 +14,52 @@
  */
 package scrum.client.project;
 
+import java.util.List;
+
 import scrum.client.common.TooltipBuilder;
-import scrum.client.sprint.KickStoryFromSprintServiceCall;
 
-public class RemoveRequirementFromSprintAction extends GRemoveRequirementFromSprintAction {
+public class MoveRequirementToBottomAction extends GMoveRequirementToBottomAction {
 
-	public RemoveRequirementFromSprintAction(Requirement requirement) {
+	public MoveRequirementToBottomAction(scrum.client.project.Requirement requirement) {
 		super(requirement);
 	}
 
 	@Override
 	public String getLabel() {
-		return "Kick from Sprint";
+		return "Move to bottom";
 	}
 
 	@Override
 	protected void updateTooltip(TooltipBuilder tb) {
-		tb.setText("Remove this Story from the current Sprint.");
-		if (!requirement.getProject().isProductOwner(getCurrentUser())) {
+		tb.setText("Move this story to the bottom of the product backlog.");
+		if (!getCurrentProject().isProductOwner(getCurrentUser())) {
 			tb.addRemark(TooltipBuilder.NOT_PRODUCT_OWNER);
-		} else {
-			if (!requirement.isSprintSet()) tb.addRemark("Story is not in in the current Sprint.");
 		}
 	}
 
 	@Override
-	public boolean isExecutable() {
-		if (!requirement.isInCurrentSprint()) return false;
+	public boolean isPermitted() {
+		if (!getCurrentProject().isProductOwner(getCurrentUser())) return false;
 		return true;
 	}
 
 	@Override
-	public boolean isPermitted() {
-		if (!requirement.getProject().isProductOwner(getCurrentUser())) return false;
+	public boolean isExecutable() {
+		if (requirement.isInCurrentSprint()) return false;
+		if (requirement.isClosed()) return false;
+		List<String> order = requirement.getProject().getRequirementsOrderIds();
+		int index = order.indexOf(requirement.getId());
+		if (index == order.size() - 1) return false;
 		return true;
 	}
 
 	@Override
 	protected void onExecute() {
-		new KickStoryFromSprintServiceCall(requirement.getId()).execute();
+		Project project = requirement.getProject();
+		List<String> order = project.getRequirementsOrderIds();
+		order.remove(requirement.getId());
+		order.add(requirement.getId());
+		project.setRequirementsOrderIds(order);
 	}
 
 }

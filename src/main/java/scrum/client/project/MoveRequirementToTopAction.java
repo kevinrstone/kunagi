@@ -14,41 +14,51 @@
  */
 package scrum.client.project;
 
-import ilarkesto.gwt.client.Gwt;
+import java.util.List;
+
 import scrum.client.common.TooltipBuilder;
 
-public class DeleteProjectAction extends GDeleteProjectAction {
+public class MoveRequirementToTopAction extends GMoveRequirementToTopAction {
 
-	public DeleteProjectAction(Project project) {
-		super(project);
+	public MoveRequirementToTopAction(scrum.client.project.Requirement requirement) {
+		super(requirement);
 	}
 
 	@Override
 	public String getLabel() {
-		return "Delete Project";
+		return "Move to top";
 	}
 
 	@Override
 	protected void updateTooltip(TooltipBuilder tb) {
-		tb.setText("Delete this project and destroy all its data permanently.");
-		if (!getCurrentUser().isAdmin()) tb.addRemark(TooltipBuilder.NOT_SYS_ADMIN);
-	}
-
-	@Override
-	public boolean isExecutable() {
-		return true;
+		tb.setText("Move this story to the top of the product backlog.");
+		if (!getCurrentProject().isProductOwner(getCurrentUser())) {
+			tb.addRemark(TooltipBuilder.NOT_PRODUCT_OWNER);
+		}
 	}
 
 	@Override
 	public boolean isPermitted() {
-		if (!getCurrentUser().isAdmin()) return false;
+		if (!getCurrentProject().isProductOwner(getCurrentUser())) return false;
+		return true;
+	}
+
+	@Override
+	public boolean isExecutable() {
+		if (requirement.isInCurrentSprint()) return false;
+		if (requirement.isClosed()) return false;
+		int index = requirement.getProject().getRequirementsOrderIds().indexOf(requirement.getId());
+		if (index == 0) return false;
 		return true;
 	}
 
 	@Override
 	protected void onExecute() {
-		if (!Gwt.confirm("Delete project " + project.getLabel() + "?")) return;
-		getDao().deleteProject(project);
+		Project project = requirement.getProject();
+		List<String> order = project.getRequirementsOrderIds();
+		order.remove(requirement.getId());
+		order.add(0, requirement.getId());
+		project.setRequirementsOrderIds(order);
 	}
 
 }

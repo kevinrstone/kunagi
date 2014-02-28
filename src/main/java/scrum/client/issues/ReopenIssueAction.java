@@ -43,7 +43,10 @@ public class ReopenIssueAction extends GReopenIssueAction {
 
 	@Override
 	protected void updateTooltip(TooltipBuilder tb) {
-		tb.setText("Reactivate this issue.");
+		tb.setText(issue.isClosed() ? "Re-Open this issue." : "Move this issue back to inbox.");
+		if (!isPermitted()) {
+			tb.addRemark(TooltipBuilder.NOT_PRODUCT_OWNER_NOR_SCRUMMASTER);
+		}
 	}
 
 	@Override

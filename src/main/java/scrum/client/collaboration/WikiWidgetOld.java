@@ -14,7 +14,6 @@
  */
 package scrum.client.collaboration;
 
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.DropdownMenuButtonWidget;
@@ -56,7 +55,6 @@ public class WikiWidgetOld extends AScrumWidget {
 
 	@Override
 	protected Widget onInitialization() {
-		Log.TEST("WikiWidget.onInitialization() pageName:", pageName, " editor:", editor);
 		wiki = Scope.get().getComponent(Wiki.class);
 
 		FlowPanel panel = new FlowPanel();

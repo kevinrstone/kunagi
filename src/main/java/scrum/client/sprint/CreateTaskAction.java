@@ -15,6 +15,7 @@
 package scrum.client.sprint;
 
 import ilarkesto.core.scope.Scope;
+import ilarkesto.gwt.client.Gwt;
 import scrum.client.common.TooltipBuilder;
 import scrum.client.project.Requirement;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
@@ -53,6 +54,28 @@ public class CreateTaskAction extends GCreateTaskAction {
 	protected void onExecute() {
 		Task task = requirement.createNewTask();
 		Scope.get().getComponent(ProjectWorkspaceWidgets.class).showEntity(task);
+		addUndo(new Undo(task));
+	}
+
+	class Undo extends ALocalUndo {
+
+		private Task task;
+
+		public Undo(Task task) {
+			this.task = task;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Undo Create " + task.getReference() + " " + task.getLabel();
+		}
+
+		@Override
+		protected void onUndo() {
+			requirement.deleteTask(task);
+			Gwt.updateRootWidget();
+		}
+
 	}
 
 }

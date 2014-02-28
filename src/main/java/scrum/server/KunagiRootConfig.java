@@ -127,6 +127,10 @@ public class KunagiRootConfig {
 		return file == null ? null : file.getParentFile();
 	}
 
+	public boolean isAdminNotificationOnUserRegistrationDisabled() {
+		return props.getBoolean("userRegistration.notification.disabled", false);
+	}
+
 	public String getUrl() {
 		return props.get("url", Sys.isDevelopmentMode() ? "http://localhost:8888/" : null);
 	}

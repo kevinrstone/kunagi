@@ -37,7 +37,9 @@ public abstract class RequirementsOrderComparator implements Comparator<Requirem
 			ib = additional;
 			additional++;
 		}
-		return ia - ib;
+		if (ia > ib) return 1;
+		if (ia < ib) return -1;
+		return 0;
 	}
 
 }

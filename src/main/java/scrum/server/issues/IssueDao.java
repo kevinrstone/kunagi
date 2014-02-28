@@ -1,13 +1,13 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -20,6 +20,7 @@ import ilarkesto.fp.Predicate;
 import java.util.Set;
 
 import scrum.server.project.Project;
+import scrum.server.project.Requirement;
 
 public class IssueDao extends GIssueDao {
 
@@ -124,4 +125,17 @@ public class IssueDao extends GIssueDao {
 		saveEntity(issue);
 		return issue;
 	}
+
+	public Issue postIssue(Project project, Requirement requirement) {
+		Issue issue = newEntityInstance();
+		issue.setProject(project);
+		issue.setLabel(requirement.getLabel());
+		StringBuilder sb = new StringBuilder();
+		if (requirement.isDescriptionSet()) sb.append(requirement.getDescription());
+		if (requirement.isTestDescriptionSet()) sb.append("\n\n").append(requirement.getTestDescription());
+		issue.addThemes(requirement.getThemes());
+		saveEntity(issue);
+		return issue;
+	}
+
 }

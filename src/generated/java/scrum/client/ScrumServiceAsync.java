@@ -62,6 +62,10 @@ public interface ScrumServiceAsync {
 
     void createExampleProject(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback);
 
+    void deleteStory(int conversationNumber, String storyId, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback);
+
+    void moveRequirementToProject(int conversationNumber, String destinationProjectId, String requirementId, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback);
+
     void selectProject(int conversationNumber, String projectId, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback);
 
     void updateProjectHomepage(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback);

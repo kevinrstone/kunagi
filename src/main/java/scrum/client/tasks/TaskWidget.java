@@ -83,7 +83,8 @@ public class TaskWidget extends AScrumWidget {
 
 			@Override
 			protected void onMinusClicked() {
-				task.decrementBurnedWork();
+				boolean decreased = task.decrementBurnedWork();
+				if (!decreased) return;
 				task.adjustRemainingWork(-1);
 			}
 

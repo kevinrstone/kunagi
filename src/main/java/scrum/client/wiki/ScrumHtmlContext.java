@@ -16,8 +16,10 @@ package scrum.client.wiki;
 
 import ilarkesto.core.scope.Scope;
 import scrum.client.Dao;
+import scrum.client.ScrumScopeManager;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.common.AScrumGwtEntity;
+import scrum.client.project.Project;
 import scrum.client.workspace.Navigator;
 
 import com.google.gwt.core.client.GWT;
@@ -60,7 +62,9 @@ public class ScrumHtmlContext implements HtmlContext {
 
 	@Override
 	public String getDownloadUrlByReference(String reference) {
-		return GWT.getModuleBaseURL() + "fileDownload?reference=" + reference;
+		Project project = ScrumScopeManager.getProject();
+		String projectId = project == null ? null : project.getId();
+		return GWT.getModuleBaseURL() + "fileDownload?projectId=" + projectId + "&reference=" + reference;
 	}
 
 }

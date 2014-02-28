@@ -157,7 +157,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 		String administrationKey = "administration";
 		projectUserConfig = new ProjectUserConfigWidget();
 		pages.addPage(new Page(projectUserConfig, "Personal Settings", administrationKey));
-		if (project.isScrumTeamMember(user)) {
+		if (user.isAdmin() || project.isScrumTeamMember(user)) {
 			projectAdmin = new ProjectAdminWidget();
 			pages.addPage(new Page(projectAdmin, "Project Settings", administrationKey));
 		}

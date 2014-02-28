@@ -38,7 +38,6 @@ public class DeleteRequirementAction extends GDeleteRequirementAction {
 		Project project = getCurrentProject();
 		if (!project.getProductBacklogRequirements().contains(requirement)) return false;
 		if (project.isCurrentSprint(requirement.getSprint())) return false;
-		if (project.isInHistory(requirement)) return false;
 		return true;
 	}
 
@@ -50,7 +49,11 @@ public class DeleteRequirementAction extends GDeleteRequirementAction {
 
 	@Override
 	protected void onExecute() {
-		requirement.getProject().deleteRequirement(requirement);
+		if (getCurrentProject().isInHistory(requirement)) {
+			new DeleteStoryServiceCall(requirement.getId()).execute();
+		} else {
+			requirement.getProject().deleteRequirement(requirement);
+		}
 		addUndo(new Undo());
 	}
 
@@ -63,7 +66,11 @@ public class DeleteRequirementAction extends GDeleteRequirementAction {
 
 		@Override
 		protected void onUndo() {
-			getDao().createRequirement(requirement);
+			if (requirement.isDeleted()) {
+				requirement.setDeleted(false);
+			} else {
+				getDao().createRequirement(requirement);
+			}
 		}
 
 	}

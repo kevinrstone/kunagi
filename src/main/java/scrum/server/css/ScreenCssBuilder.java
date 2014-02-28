@@ -444,6 +444,7 @@ public class ScreenCssBuilder implements CssBuilder {
 	private void actions(CssRenderer css) {
 		css.style(".ActionsPanel").background(cActionsBackground, "../specialarea-bg.png", "repeat-x")
 				.border(1, cActionsBorder).padding(7).borderRadius(10);
+		css.style(".ProjectList").width100();
 	}
 
 	private void userGuide(CssRenderer css) {

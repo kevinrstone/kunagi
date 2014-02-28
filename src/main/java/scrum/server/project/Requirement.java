@@ -46,6 +46,23 @@ public class Requirement extends GRequirement implements Numbered, ReferenceSupp
 	}
 
 	// --- ---
+
+	public void createTasksFromQualities() {
+		for (Quality quality : getQualitys()) {
+			String taskLabel = "Ensure quality: " + quality.getLabel();
+			if (getTaskBylabel(taskLabel) != null) continue;
+			Task task = taskDao.postTask(this, taskLabel, 1);
+			task.setDescription("Auto-generated for " + quality.getReferenceAndLabel());
+		}
+	}
+
+	private Task getTaskBylabel(String taskLabel) {
+		for (Task task : getTasks()) {
+			if (task.isLabel(taskLabel)) return task;
+		}
+		return null;
+	}
+
 	public String getHistoryLabel(final Sprint sprint) {
 		if (sprint == null) return getLabel();
 		Set<Change> changes = changeDao.getChangesByParent(this);

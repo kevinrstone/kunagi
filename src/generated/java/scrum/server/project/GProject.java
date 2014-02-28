@@ -79,6 +79,7 @@ public abstract class GProject
         properties.put("subscriberNotificationTemplate", this.subscriberNotificationTemplate);
         properties.put("lastOpenedDateAndTime", this.lastOpenedDateAndTime == null ? null : this.lastOpenedDateAndTime.toString());
         properties.put("freeDays", this.freeDays);
+        properties.put("autoCreateTasksFromQualities", this.autoCreateTasksFromQualities);
         properties.put("releasingInfo", this.releasingInfo);
     }
 
@@ -1973,6 +1974,36 @@ public abstract class GProject
     }
 
     // -----------------------------------------------------------
+    // - autoCreateTasksFromQualities
+    // -----------------------------------------------------------
+
+    private boolean autoCreateTasksFromQualities;
+
+    public final boolean isAutoCreateTasksFromQualities() {
+        return autoCreateTasksFromQualities;
+    }
+
+    public final void setAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        autoCreateTasksFromQualities = prepareAutoCreateTasksFromQualities(autoCreateTasksFromQualities);
+        if (isAutoCreateTasksFromQualities(autoCreateTasksFromQualities)) return;
+        this.autoCreateTasksFromQualities = autoCreateTasksFromQualities;
+        updateLastModified();
+        fireModified("autoCreateTasksFromQualities="+autoCreateTasksFromQualities);
+    }
+
+    protected boolean prepareAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        return autoCreateTasksFromQualities;
+    }
+
+    public final boolean isAutoCreateTasksFromQualities(boolean autoCreateTasksFromQualities) {
+        return this.autoCreateTasksFromQualities == autoCreateTasksFromQualities;
+    }
+
+    protected final void updateAutoCreateTasksFromQualities(Object value) {
+        setAutoCreateTasksFromQualities((Boolean)value);
+    }
+
+    // -----------------------------------------------------------
     // - releasingInfo
     // -----------------------------------------------------------
 
@@ -2054,6 +2085,7 @@ public abstract class GProject
             if (property.equals("subscriberNotificationTemplate")) updateSubscriberNotificationTemplate(value);
             if (property.equals("lastOpenedDateAndTime")) updateLastOpenedDateAndTime(value);
             if (property.equals("freeDays")) updateFreeDays(value);
+            if (property.equals("autoCreateTasksFromQualities")) updateAutoCreateTasksFromQualities(value);
             if (property.equals("releasingInfo")) updateReleasingInfo(value);
         }
     }

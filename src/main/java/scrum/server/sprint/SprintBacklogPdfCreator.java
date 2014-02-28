@@ -24,6 +24,8 @@ import java.util.List;
 
 import scrum.server.common.APdfCreator;
 import scrum.server.common.BurndownChart;
+import scrum.server.common.ScrumPdfContext;
+import scrum.server.common.WikiToPdfConverter;
 import scrum.server.project.Project;
 import scrum.server.project.Requirement;
 
@@ -54,6 +56,12 @@ public class SprintBacklogPdfCreator extends APdfCreator {
 		fields.field("Product Owner").text(sprint.getProductOwnersAsString());
 		fields.field("Scrum Master").text(sprint.getScrumMastersAsString());
 		fields.field("Team").text(sprint.getTeamMembersAsString());
+
+		ScrumPdfContext pdfContext = new ScrumPdfContext(sprint.getProject());
+		if (sprint.isGoalSet()) {
+			sectionHeader(pdf, "Goal");
+			WikiToPdfConverter.buildPdf(pdf, sprint.getGoal(), pdfContext);
+		}
 
 		pdf.nl();
 		pdf.image(BurndownChart.createBurndownChartAsByteArray(sprint, 1000, 500)).setScaleByWidth(150f);

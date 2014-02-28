@@ -46,6 +46,7 @@ public abstract class APdfCreator {
 	protected FontStyle referenceFont;
 	protected FontStyle fieldLabelFont;
 	protected FontStyle miniLabelFont;
+	protected FontStyle spacerFont;
 	protected FontStyle[] headerFonts = new FontStyle[4];
 	protected Color tableHeaderBackground = Color.LIGHT_GRAY;
 
@@ -66,6 +67,7 @@ public abstract class APdfCreator {
 				.setFont(FontStyle.FONT_DEFAULT_FIXED).setItalic(true);
 		fieldLabelFont = new FontStyle(defaultFont).setItalic(true);
 		miniLabelFont = new FontStyle(defaultFont).setSize(defaultFont.getSize() - 1f).setItalic(true);
+		spacerFont = new FontStyle(defaultFont).setSize(defaultFont.getSize() - 3.5f);
 		headerFonts[3] = new FontStyle(defaultFont).setSize(defaultFont.getSize() + 0.2f).setBold(true);
 		headerFonts[2] = new FontStyle(defaultFont).setSize(headerFonts[3].getSize() + 0.7f).setBold(true);
 		headerFonts[1] = new FontStyle(defaultFont).setSize(headerFonts[2].getSize() + 0.7f).setBold(true);
@@ -81,8 +83,14 @@ public abstract class APdfCreator {
 
 	protected void reportHeader(APdfContainerElement pdf, String title, String projectLabel) {
 		pdf.paragraph().setDefaultFontStyle(headerFonts[0]).text(projectLabel);
+		pdf.nl(spacerFont);
 		pdf.paragraph().setDefaultFontStyle(miniLabelFont).text(title + ", ")
 				.text(Tm.FORMAT_LONGMONTH_DAY_YEAR.format(Date.today()));
+	}
+
+	protected void sectionHeader(APdfContainerElement pdf, String label) {
+		pdf.paragraph().nl().text(label, headerFonts[1]).nl();
+		pdf.nl(spacerFont);
 	}
 
 	protected void wiki(APdfContainerElement parent, String wikiCode) {

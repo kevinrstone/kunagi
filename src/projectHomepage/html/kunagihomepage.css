@@ -34,7 +34,7 @@ input, textarea {border: 1px solid #192666; font: 14px/19px monospace; padding: 
         .middle {float: left; width: 500px;}
         .sidebar {float: right;}
 #content .starter {background: orange url("img/button_bg.png") 0 0 repeat-x; border: 1px solid orange; width: 150px; padding: 5px; text-align: center; -moz-border-radius: 5px; margin-bottom: 5px;}
-    #content .starter a {color: #B37400; font-size: 16px; font-weight: bold; text-decoration: none; cursor: pointer;}
+    #content .starter a {display: block; color: #B37400; font-size: 16px; font-weight: bold; text-decoration: none; cursor: pointer;}
         h3 {font: 12pt/16pt "georgia",serif; font-weight: bold; margin-bottom: 10px;}
         img.screenshotthumb {margin: 0px 0px 10px 10px; border: 1px solid #DDD;}
         .featureseparator {clear: both; height: 10px;}

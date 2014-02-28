@@ -106,6 +106,7 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 			throw new IllegalArgumentException("a Task cannot be set done without claiming Task ownership");
 		setOwner(user);
 		setRemainingWork(0);
+		if (getBurnedWork() == 0) setBurnedWork(1);
 	}
 
 	public void setUnDone(User user) {
@@ -158,9 +159,10 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 		setBurnedWork(getBurnedWork() + 1);
 	}
 
-	public void decrementBurnedWork() {
-		if (getBurnedWork() == 0) return;
+	public boolean decrementBurnedWork() {
+		if (getBurnedWork() == 0) return false;
 		setBurnedWork(getBurnedWork() - 1);
+		return true;
 	}
 
 	public void adjustRemainingWork(int burned) {

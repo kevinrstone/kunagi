@@ -93,11 +93,16 @@ public class HomepageUpdater {
 	public void processEntityTemplate(AEntity entity) {
 		executeScript("pre-update");
 		if (entity instanceof Issue) {
-			processIssueTemplate((Issue) entity);
+			Issue issue = (Issue) entity;
+			if (!issue.isPublished()) return;
+			processIssueTemplate(issue);
 		} else if (entity instanceof Requirement) {
-			processStoryTemplate((Requirement) entity);
+			Requirement story = (Requirement) entity;
+			processStoryTemplate(story);
 		} else if (entity instanceof BlogEntry) {
-			processBlogEntryTemplate((BlogEntry) entity);
+			BlogEntry blogEntry = (BlogEntry) entity;
+			if (!blogEntry.isPublished()) return;
+			processBlogEntryTemplate(blogEntry);
 		}
 		executeScript("post-update");
 	}
@@ -204,7 +209,7 @@ public class HomepageUpdater {
 	private void processStoryTemplates() {
 		List<Requirement> requirements = new ArrayList<Requirement>(project.getRequirements());
 		for (Requirement requirement : requirements) {
-			if (requirement.isClosed()) continue;
+			// if (requirement.isClosed()) continue;
 			processStoryTemplate(requirement);
 		}
 	}
@@ -285,6 +290,7 @@ public class HomepageUpdater {
 		context.put("statusText", toHtml(issue.getStatusText()));
 		if (issue.isOwnerSet()) context.put("owner", issue.getOwner().getPublicName());
 		if (issue.isFixed()) context.put("fixed", "true");
+		context.put("themes", toHtml(issue.getThemes()));
 		fillComments(context, issue);
 	}
 
@@ -391,10 +397,9 @@ public class HomepageUpdater {
 	}
 
 	private void fillProductBacklog(ContextBuilder context) {
-		List<Requirement> requirements = new ArrayList<Requirement>(project.getRequirements());
+		List<Requirement> requirements = new ArrayList<Requirement>(project.getProductBacklogRequirements());
 		Collections.sort(requirements, project.getRequirementsOrderComparator());
 		for (Requirement requirement : requirements) {
-			if (requirement.isClosed() || requirement.isInCurrentSprint()) continue;
 			fillStory(context.addSubContext("stories"), requirement);
 		}
 	}
@@ -414,6 +419,7 @@ public class HomepageUpdater {
 		context.put("testDescription", wikiToHtml(requirement.getTestDescription()));
 		if (requirement.isEstimatedWorkSet() && !requirement.isDirty())
 			context.put("estimatedWork", requirement.getEstimatedWorkAsString());
+		context.put("themes", toHtml(requirement.getThemes()));
 		fillComments(context, requirement);
 	}
 
@@ -445,6 +451,14 @@ public class HomepageUpdater {
 	public static String wikiToText(String wikitext) {
 		if (Str.isBlank(wikitext)) return null;
 		return wikitext;
+	}
+
+	public static List<String> toHtml(Collection<String> strings) {
+		List<String> ret = new ArrayList<String>(strings.size());
+		for (String string : strings) {
+			ret.add(toHtml(string));
+		}
+		return ret;
 	}
 
 	public static String toHtml(String text) {

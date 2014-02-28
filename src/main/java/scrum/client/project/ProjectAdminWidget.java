@@ -43,6 +43,7 @@ public class ProjectAdminWidget extends AScrumWidget {
 		ProjectBlock.addRolesFieldRows(project, tbPro);
 		tbPro.addFieldRow("Free days", new WeekdaySelectorEditorWidget(project.getFreeDaysWeekdaySelectorModel()));
 		tbPro.addFieldRow("Release info", project.getReleasingInfoModel());
+		tbPro.addFieldRow("Create tasks from qualities", project.getAutoCreateTasksFromQualitiesModel());
 		page.addSection(tbPro.createTable());
 
 		page.addHeader("Product descriptions");
@@ -57,7 +58,7 @@ public class ProjectAdminWidget extends AScrumWidget {
 		TableBuilder tbHomepage = ScrumGwt.createFieldTable();
 		tbHomepage.addFieldRow("Homepage directory", project.getHomepageDirModel());
 		tbHomepage.addFieldRow("Homepage URL", project.getHomepageUrlModel());
-		tbHomepage.addFieldRow("Update automatically", project.getAutoUpdateHomepageModel());
+		// tbHomepage.addFieldRow("Update automatically", project.getAutoUpdateHomepageModel());
 		page.addSection(tbHomepage.createTable());
 
 		page.addHeader("Script integration");

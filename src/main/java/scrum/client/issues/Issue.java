@@ -222,9 +222,13 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	public void reopen() {
-		// setAcceptDate(null);
-		// setUrgent(false);
-		setCloseDate(null);
+		if (isClosed()) {
+			setCloseDate(null);
+		} else {
+			setAcceptDate(null);
+			setUrgent(false);
+			setCloseDate(null);
+		}
 	}
 
 	public String getSeverityLabel() {

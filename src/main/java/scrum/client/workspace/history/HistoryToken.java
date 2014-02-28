@@ -38,7 +38,7 @@ public class HistoryToken {
 	private String projectId;
 	private String page;
 	private String entityId;
-	private boolean toggle;
+	private int toggle;
 
 	public HistoryToken(HistoryTokenObserver observer) {
 		this.observer = observer;
@@ -56,12 +56,13 @@ public class HistoryToken {
 		String oldProjectId = projectId;
 		String oldPage = page;
 		String oldEntityId = entityId;
-		boolean oldToggle = toggle;
+		int oldToggle = 0;
 
 		projectId = props.get("project");
 		page = props.get("page");
 		entityId = props.get("entity");
-		toggle = Str.isTrue(props.get("toggle"));
+		String sToggle = props.get("toggle");
+		toggle = sToggle != null ? Integer.parseInt(sToggle) : 0; // Str.isTrue(props.get("toggle"));
 
 		if (projectId == null || !Utl.equals(oldProjectId, projectId)) {
 			observer.onProjectChanged();
@@ -139,7 +140,7 @@ public class HistoryToken {
 	}
 
 	public boolean isToggle() {
-		return toggle;
+		return toggle != 0;
 	}
 
 	class TokenChangeHandler implements ValueChangeHandler<String> {

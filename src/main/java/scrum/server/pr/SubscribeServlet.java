@@ -68,7 +68,7 @@ public class SubscribeServlet extends AKunagiServlet {
 		}
 
 		String returnUrl = req.get("returnUrl");
-		if (returnUrl == null) returnUrl = "http://kunagi.org/message.html?#{message}";
+		if (returnUrl == null) returnUrl = "http://kunagi.org/message.html?#{message}"; // FIXME !!!
 		returnUrl = returnUrl.replace("{message}", Str.encodeUrlParameter(message));
 
 		req.sendRedirect(returnUrl);
