@@ -33,6 +33,7 @@ import scrum.client.issues.Issue;
 import scrum.client.project.Requirement;
 import scrum.client.risks.Risk;
 import scrum.client.risks.RiskComputer;
+import scrum.client.sprint.Task;
 
 public class Change extends GChange {
 
@@ -82,7 +83,8 @@ public class Change extends GChange {
 
 		if (parent instanceof Issue) {
 			if (key.equals("closeDate")) return Str.isBlank(newValue) ? "reopened issue" : "closed issue";
-			if (key.equals("storyId")) return "converted issue to story " + getEntityReferenceAndLabel(newValue);
+			if (key.equals("storyId")) return "converted issue to " + getEntityReferenceAndLabel(newValue);
+			if (key.equals("taskId")) return "created from " + getEntityReferenceAndLabel(newValue);
 		} else if (parent instanceof Impediment) {
 			if (key.equals("closed")) return Str.isTrue(newValue) ? "closed impediment" : "reopened impediment";
 		} else if (parent instanceof Requirement) {
@@ -90,7 +92,9 @@ public class Change extends GChange {
 			if (key.equals("sprintId"))
 				return newValue == null ? "kicked story from " + getEntityReferenceAndLabel(oldValue)
 						: "pulled story to " + getEntityReferenceAndLabel(newValue);
-			if (key.equals("issueId")) return "created story from issue " + getEntityReferenceAndLabel(newValue);
+			if (key.equals("issueId")) return "created from " + getEntityReferenceAndLabel(newValue);
+		} else if (parent instanceof Task) {
+			if (key.equals("issueId")) return "created " + getEntityReferenceAndLabel(newValue);
 		}
 
 		if (Str.isBlank(oldValue)) return "created " + getFieldLabel();

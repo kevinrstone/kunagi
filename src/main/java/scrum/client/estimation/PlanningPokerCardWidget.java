@@ -46,6 +46,7 @@ public class PlanningPokerCardWidget extends AScrumWidget {
 		if (visible) {
 			String label = ScrumGwt.getEstimationAsString(value);
 			card.setWidget(Gwt.createDiv("PlanningPokerCardWidget-text", label));
+			if (mouseOverHandler != null) card.addMouseOverHandler(mouseOverHandler);
 		} else {
 			card.setWidget(Gwt.createEmptyDiv("PlanningPokerCardWidget-back"));
 		}
@@ -54,7 +55,6 @@ public class PlanningPokerCardWidget extends AScrumWidget {
 			card.addStyleName("PlanningPokerCardWidget-clickable");
 			card.setTitle(clickTooltip);
 		}
-		if (mouseOverHandler != null) card.addMouseOverHandler(mouseOverHandler);
 
 		return card;
 	}

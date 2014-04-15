@@ -14,6 +14,7 @@
  */
 package scrum.server.sprint;
 
+import ilarkesto.core.base.Str;
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;
@@ -21,6 +22,17 @@ import scrum.server.common.Numbered;
 import scrum.server.project.Project;
 
 public class Task extends GTask implements Numbered, ReferenceSupport, LabelSupport {
+
+	public void appendToDescription(String text) {
+		if (Str.isBlank(text)) return;
+		String description = getDescription();
+		if (Str.isBlank(description)) {
+			description = text;
+		} else {
+			description += "\n\n" + text;
+		}
+		setDescription(description);
+	}
 
 	public String getReferenceAndLabel() {
 		return getReference() + " " + getLabel();

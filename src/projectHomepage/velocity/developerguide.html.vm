@@ -19,21 +19,4 @@
     $wiki.DevDoc
 </div>
 
-
-<div class="separator"></div>
-
-<div class="section">
-    <h2>Project management</h2>
-    <div class="middle">
-        <p>We use Kunagi, of course.</p>        
-    </div>
-    <div class="sidebar">
-        <div class="starter">
-            <a target="_blank" href="https://servisto.de/scrum/">Kunagi Kunagi</a>
-        </div>
-    </div>
-    <div class="clear"></div>
-</div>
-
-
 #footer()

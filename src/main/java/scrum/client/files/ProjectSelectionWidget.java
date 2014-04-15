@@ -88,7 +88,7 @@ public class ProjectSelectionWidget extends AScrumWidget {
 		projectList.addStyleName("listAvailableProjects");
 		for (Project project : projects) {
 			if (project.equals(ScrumScopeManager.getProject())) continue;
-			if (!project.isProductOwner(getCurrentUser())) continue;
+			// if (!project.isProductOwner(getCurrentUser())) continue;
 			projectList.addItem(project.getLabel(), project.getId());
 		}
 

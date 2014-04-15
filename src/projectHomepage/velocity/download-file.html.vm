@@ -1,0 +1,78 @@
+#header("download-file", "Download - Kunagi", "Kunagi free download.", "")
+
+<div class="section">
+    <h2>Debian, Ubuntu, Linux Mint,...</h2>
+    <div class="middle">
+        <p>
+            We recommend installing Kunagi on Debian or a derivative like Ubuntu or Mint.
+            This is by far the easiest way to install and upgrade Kunagi.
+        </p>
+    </div>
+    <div class="sidebar">
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi_${project.currentRelease}.deb" target="_blank" onclick="_gaq.push(['_trackEvent','Download','deb',this.href]);">kunagi.deb</a>
+        </div>
+    </div>
+    <div class="clear"></div><br>
+</div>
+
+
+    
+<div class="separator"></div>
+<div class="section">
+    <h2>Java Web Application</h2>
+    <div class="middle">
+        <p>
+            For all platforms you can deploy Kunagi into your favorite Java web application server.
+        </p>
+        <p>
+            We recommend using <a href="https://tomcat.apache.org/download-70.cgi" target="_blank">Apache Tomcat 7</a>.
+            Just copy the <code>kunagi.war</code> into the <code>webapps</code> directory.
+        </p>
+    </div>
+    <div class="sidebar">
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi.war" target="_blank" target="_blank" onclick="_gaq.push(['_trackEvent','Download','war',this.href]);">kunagi.war</a>
+        </div>
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi-${project.currentRelease}.tar.gz" target="_blank" target="_blank" onclick="_gaq.push(['_trackEvent','Download','tgz',this.href]);">kunagi.tar.gz</a>
+        </div>
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi-${project.currentRelease}.zip" target="_blank" target="_blank" onclick="_gaq.push(['_trackEvent','Download','zip',this.href]);">kunagi.zip</a>
+        </div>
+    </div>
+    <div class="clear"></div><br>
+</div>
+
+
+    
+<div class="separator"></div>
+<div class="section">
+    <h2>Windows</h2>
+    <div class="middle">
+        <p>
+            For Windows users this executables contain a prepackaged web application server with a simple
+            control application. This is fine for testing on client computers. For production we recommend installing
+            an application server and deploying <code>kunagi.war</code> manually.  
+        </p>
+    </div>
+    <div class="sidebar">
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi32.exe" target="_blank" target="_blank" onclick="_gaq.push(['_trackEvent','Download','exe32',this.href]);">kunagi32.exe</a>
+        </div>
+        <div class="starter">
+            <a href="releases/$project.currentRelease/kunagi64.exe" target="_blank" target="_blank" onclick="_gaq.push(['_trackEvent','Download','exe64',this.href]);">kunagi64.exe</a>
+        </div>
+    </div>
+    <div class="clear"></div><br>        
+</div>
+
+
+
+<div class="separator"></div>
+<div class="section">
+    <div class="smallText">Current release is $project.currentRelease</div>
+</div>
+
+
+#footer()

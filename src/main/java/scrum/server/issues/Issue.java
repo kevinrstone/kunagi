@@ -15,6 +15,7 @@
 package scrum.server.issues;
 
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.Str;
 import ilarkesto.core.time.DateAndTime;
 
 import java.util.Comparator;
@@ -27,6 +28,17 @@ import scrum.server.common.Numbered;
 import scrum.server.release.Release;
 
 public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSupport {
+
+	public void appendToDescription(String text) {
+		if (Str.isBlank(text)) return;
+		String description = getDescription();
+		if (Str.isBlank(description)) {
+			description = text;
+		} else {
+			description += "\n\n" + text;
+		}
+		setDescription(description);
+	}
 
 	public void appendToStatement(String text) {
 		if (!isStatementSet()) {

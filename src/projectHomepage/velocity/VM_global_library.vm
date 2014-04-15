@@ -309,15 +309,11 @@
     <table border="0" style="margin: 10px 0 10px 0;"><tr>
     
     <td>
-        <div class="g-plusone" data-size="medium"></div>
-        <script type="text/javascript">
-          (function() {
-            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-            po.src = 'https://apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-          })();
-        </script>
+        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+        <g:plusone size="tall"></g:plusone>
     </td>    
+
+    <td>&nbsp;</td>
     
     <td>
         <iframe src="http://www.facebook.com/plugins/like.php?href=${url}" scrolling="no" frameborder="0" style="border:none; width:450px; height:80px;"></iframe>

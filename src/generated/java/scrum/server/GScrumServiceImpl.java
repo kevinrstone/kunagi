@@ -76,6 +76,8 @@ public abstract class GScrumServiceImpl extends ilarkesto.gwt.server.AGwtService
 
     public abstract void onSearch(GwtConversation conversation, String text);
 
+    public abstract void onCreateIssueFromTask(GwtConversation conversation, String taskId);
+
     public abstract void onKickStoryFromSprint(GwtConversation conversation, String storyId);
 
     public abstract void onPullStoryToSprint(GwtConversation conversation, String storyId);
@@ -1025,6 +1027,33 @@ public abstract class GScrumServiceImpl extends ilarkesto.gwt.server.AGwtService
                 onServiceMethodExecuted(context);
             } catch (Throwable ex) {
                 handleServiceMethodException(conversationNumber, "Search", ex);
+            }
+            return (scrum.client.DataTransferObject) conversation.popNextData();
+        }
+    }
+
+    @Override
+    public scrum.client.DataTransferObject createIssueFromTask(int conversationNumber, String taskId) {
+        log.debug("Handling service call: CreateIssueFromTask");
+        WebSession session = (WebSession) getSession();
+        synchronized (session) {
+            GwtConversation conversation = null;
+            try {
+                conversation = session.getGwtConversation(conversationNumber);
+            } catch (Throwable ex) {
+                log.info("Getting conversation failed:", conversationNumber);
+                scrum.client.DataTransferObject dto = new scrum.client.DataTransferObject();
+                dto.addError(new ilarkesto.gwt.client.ErrorWrapper(ex));
+                return dto;
+            }
+            ilarkesto.di.Context context = ilarkesto.di.Context.get();
+            context.setName("gwt-srv:CreateIssueFromTask");
+            context.bindCurrentThread();
+            try {
+                onCreateIssueFromTask(conversation, taskId);
+                onServiceMethodExecuted(context);
+            } catch (Throwable ex) {
+                handleServiceMethodException(conversationNumber, "CreateIssueFromTask", ex);
             }
             return (scrum.client.DataTransferObject) conversation.popNextData();
         }

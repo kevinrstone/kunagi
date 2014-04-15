@@ -38,6 +38,7 @@ public class CreateTaskImpedimentAction extends GCreateTaskImpedimentAction {
 
 	@Override
 	public boolean isExecutable() {
+		if (task.isClosed()) return false;
 		if (task.isImpedimentSet()) return false;
 		return true;
 	}
