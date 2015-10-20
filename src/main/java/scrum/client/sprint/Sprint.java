@@ -18,6 +18,7 @@ import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.TimePeriod;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.editor.ATextEditorModel;
 
@@ -59,6 +60,16 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 
 	public Sprint(Map data) {
 		super(data);
+	}
+
+	public void updateRequirementsOrder() {
+		List<Requirement> requirements = getRequirements();
+		Collections.sort(requirements, getRequirementsOrderComparator());
+		updateRequirementsOrder(requirements);
+	}
+
+	public void updateRequirementsOrder(List<Requirement> requirements) {
+		setRequirementsOrderIds(Gwt.getIdsAsList(requirements));
 	}
 
 	public List<Requirement> getCompletedUnclosedRequirements() {

@@ -1180,6 +1180,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		AEntity newRequirement;
 		if (destinationProject.containsProductOwner(currentUser)) {
 			newRequirement = requirementDao.postRequirement(destinationProject, requirement);
+			Requirement r = (Requirement) newRequirement;
 		} else {
 			newRequirement = issueDao.postIssue(destinationProject, requirement);
 			Issue issue = (Issue) newRequirement;
