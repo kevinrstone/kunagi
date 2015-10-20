@@ -42,7 +42,7 @@ public class SprintReport extends GSprintReport {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		Sprint sprint = getSprint();
 		return sprint == null ? "! sprint==null" : sprint.toString();
 	}

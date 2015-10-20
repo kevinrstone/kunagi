@@ -8,8 +8,6 @@ public abstract class GChat {
 
     protected scrum.client.admin.Auth auth;
 
-    protected scrum.client.Dao dao;
-
     protected scrum.client.project.Project project;
 
     protected scrum.client.workspace.ProjectWorkspaceWidgets projectWorkspaceWidgets;

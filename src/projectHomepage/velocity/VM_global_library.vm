@@ -25,8 +25,10 @@
     <meta name="robots" content="index">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="kunagihomepage.css" type="text/css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     <link rel="alternate" type="application/rss+xml" title="Kunagi Blog" href="http://feeds.feedburner.com/kunagi">
-    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script type="text/javascript" src="js/kunagihomepage.js"></script>
 
     <script type="text/javascript">

@@ -15,6 +15,8 @@
 package scrum.server.sprint;
 
 import ilarkesto.base.Tm;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.time.Date;
 import ilarkesto.pdf.APdfContainerElement;
 import ilarkesto.pdf.FieldList;
 
@@ -76,7 +78,8 @@ public class SprintBacklogPdfCreator extends APdfCreator {
 
 	@Override
 	protected String getFilename() {
-		return "sprintbacklog-" + project.getCurrentSprint().getReference();
+		return "kunagi-sprintbacklog_" + project.getCurrentSprint().getReference() + "_" + Date.today().toString()
+				+ "_" + Str.toFileCompatibleString(project.getLabel());
 	}
 
 }

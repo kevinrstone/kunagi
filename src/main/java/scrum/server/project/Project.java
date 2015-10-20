@@ -14,16 +14,18 @@
  */
 package scrum.server.project;
 
-import ilarkesto.base.Money;
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
+import ilarkesto.core.money.Money;
+import ilarkesto.core.search.SearchText;
+import ilarkesto.core.search.Searchable;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
+import ilarkesto.feeds.Feed;
+import ilarkesto.feeds.FeedItem;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.Persist;
-import ilarkesto.rss.Rss20Builder;
-import ilarkesto.search.Searchable;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import scrum.client.common.WeekdaySelector;
+import scrum.client.workspace.history.HistoryToken;
 import scrum.server.KunagiRootConfig;
 import scrum.server.ScrumWebApplication;
 import scrum.server.admin.ProjectUserConfig;
@@ -228,54 +231,50 @@ public class Project extends GProject {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public ArrayList<AEntity> search(String text) {
-		String[] keys = Str.tokenizeToArray(text, " ");
-		ArrayList ret = new ArrayList();
-		ret.addAll(getMatching(getRequirements(), keys));
-		ret.addAll(getMatching(getQualitys(), keys));
-		ret.addAll(getMatching(getTasks(), keys));
-		ret.addAll(getMatching(getWikipages(), keys));
-		ret.addAll(getMatching(getIssues(), keys));
-		ret.addAll(getMatching(getImpediments(), keys));
-		ret.addAll(getMatching(getRisks(), keys));
-		ret.addAll(getMatching(getFiles(), keys));
-		ret.addAll(getMatching(getReleases(), keys));
-		ret.addAll(getMatching(getBlogEntrys(), keys));
+		SearchText search = new SearchText(text);
+		ArrayList<AEntity> ret = new ArrayList<AEntity>();
+		addMatching(getRequirements(), search, ret);
+		addMatching(getQualitys(), search, ret);
+		addMatching(getTasks(), search, ret);
+		addMatching(getWikipages(), search, ret);
+		addMatching(getIssues(), search, ret);
+		addMatching(getImpediments(), search, ret);
+		addMatching(getRisks(), search, ret);
+		addMatching(getFiles(), search, ret);
+		addMatching(getReleases(), search, ret);
+		addMatching(getBlogEntrys(), search, ret);
 		return ret;
 	}
 
-	private <T extends Searchable> List<T> getMatching(Collection<T> entities, String[] keys) {
-		List<T> ret = new ArrayList<T>();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <T extends Searchable> void addMatching(Collection<T> entities, SearchText search, Collection ret) {
 		for (T entity : entities) {
-			if (matchesKeys(entity, keys)) ret.add(entity);
+			if (entity.matches(search)) ret.add(entity);
 		}
-		return ret;
-	}
-
-	private boolean matchesKeys(Searchable entity, String[] keys) {
-		for (String key : keys) {
-			if (!entity.matchesKey(key)) return false;
-		}
-		return true;
 	}
 
 	public void writeJournalAsRss(OutputStream out, String encoding) {
-		Rss20Builder rss = new Rss20Builder();
-		rss.setTitle(getLabel() + " Event Journal");
-		rss.setLanguage("en");
-		rss.setLink(webApplication.createUrl(this, null));
+		Feed feed = new Feed(getLabel() + " Event Journal", webApplication.createUrl(this, null), null);
+		feed.setLanguage("en");
+		// Rss20Builder rss = new Rss20Builder();
+		// rss.setTitle(getLabel() + " Event Journal");
+		// rss.setLanguage("en");
+		// rss.setLink(webApplication.createUrl(this, null));
 		for (ProjectEvent event : getLatestProjectEvents(30)) {
-			Rss20Builder.Item item = rss.addItem();
-			item.setTitle(event.getLabel());
-			item.setDescription(event.getLabel());
-			String link = webApplication.createUrl(this, event.getSubject()) + "|fromEvent=" + event.getId();
+			FeedItem item = new FeedItem(event.getLabel(), event.getLabel());
+			feed.addItem(item);
+			// Rss20Builder.Item item = rss.addItem();
+			// item.setTitle(event.getLabel());
+			// item.setDescription(event.getLabel());
+			String link = webApplication.createUrl(this, event.getSubject()) + HistoryToken.SEPARATOR + "fromEvent="
+					+ event.getId();
 			item.setLink(link);
 			item.setGuid(link);
 			item.setPubDate(event.getDateAndTime());
 		}
-		rss.sortItems();
-		rss.write(out, encoding);
+		feed.sortItems();
+		feed.writeRss(out, encoding);
 	}
 
 	public String getFileRepositoryPath() {
@@ -534,7 +533,7 @@ public class Project extends GProject {
 
 		for (Task task : oldSprint.getTasks()) {
 			if (task.isClosed()) {
-				taskDao.deleteEntity(task);
+				task.delete();
 			}
 		}
 
@@ -545,7 +544,7 @@ public class Project extends GProject {
 		ProjectSprintSnapshot snapshot = projectSprintSnapshotDao.newEntityInstance();
 		snapshot.setSprint(getCurrentSprint());
 		snapshot.update();
-		projectSprintSnapshotDao.saveEntity(snapshot);
+		projectSprintSnapshotDao.persist(snapshot);
 		return snapshot;
 	}
 
@@ -558,7 +557,7 @@ public class Project extends GProject {
 			Integer length = getCurrentSprint().getLengthInDays();
 			if (length != null) sprint.setEnd(sprint.getBegin().addDays(length));
 		}
-		sprintDao.saveEntity(sprint);
+		sprintDao.persist(sprint);
 		setNextSprint(sprint);
 		return sprint;
 	}
@@ -673,13 +672,13 @@ public class Project extends GProject {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getLabel();
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		addParticipants(getAdmins());
 		addParticipants(getProductOwners());
 		addParticipants(getScrumMasters());
@@ -687,7 +686,7 @@ public class Project extends GProject {
 		if (!isCurrentSprintSet()) {
 			Sprint sprint = sprintDao.newEntityInstance();
 			sprint.setProject(this);
-			sprintDao.saveEntity(sprint);
+			sprintDao.persist(sprint);
 			setCurrentSprint(sprint);
 		}
 		if (!isNextSprintSet()) {
@@ -1011,6 +1010,18 @@ public class Project extends GProject {
 			if (quality.isLabel(label)) return quality;
 		}
 		return null;
+	}
+
+	public String getProductOwnersAsString() {
+		return Str.concat(User.getNames(getProductOwners()), ", ");
+	}
+
+	public String getScrumMastersAsString() {
+		return Str.concat(User.getNames(getScrumMasters()), ", ");
+	}
+
+	public String getTeamMembersAsString() {
+		return Str.concat(User.getNames(getTeamMembers()), ", ");
 	}
 
 }

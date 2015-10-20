@@ -18,6 +18,8 @@ import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,12 +80,18 @@ public class Release extends GRelease implements Numbered, ReferenceSupport {
 		}
 	}
 
+	public DateAndTime getReleaseDateAndTime() {
+		if (!isReleaseDateSet()) return null;
+		return new DateAndTime(getReleaseDate(), getReleaseTime());
+	}
+
 	public boolean isScriptAvailable() {
 		return getProject().isReleaseScriptPathSet();
 	}
 
 	public void markReleased(Project project, User user, ScrumWebApplication webApplication) {
 		setReleaseDate(Date.today());
+		setReleaseTime(Time.now());
 		setReleased(true);
 		webApplication.postProjectEvent(project, user.getName() + " released " + getReferenceAndLabel(), this);
 		webApplication.sendToConversationsByProject(project, this);
@@ -130,14 +138,15 @@ public class Release extends GRelease implements Numbered, ReferenceSupport {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		updateNumber();
+		if (isReleaseDateSet() && !isReleaseTimeSet()) setReleaseTime(new Time(12, 0));
 	}
 
 	public static final Comparator<Release> DATE_COMPARATOR = new Comparator<Release>() {

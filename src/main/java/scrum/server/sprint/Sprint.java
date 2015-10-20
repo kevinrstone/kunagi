@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -51,6 +51,30 @@ public class Sprint extends GSprint implements Numbered {
 
 	// --- ---
 
+	// --- copies ---
+
+	@Override
+	public String getRetrospectiveNoteTemplate() {
+		return null;
+	}
+
+	@Override
+	public String getGoalTemplate() {
+		return null;
+	}
+
+	@Override
+	public String getPlanningNoteTemplate() {
+		return null;
+	}
+
+	@Override
+	public String getReviewNoteTemplate() {
+		return null;
+	}
+
+	// --- ---
+
 	public void cleanup() {
 		if (!isCompleted())
 			throw new IllegalStateException("Sprint is not completed, therefor it can not be cleaned up.");
@@ -66,7 +90,7 @@ public class Sprint extends GSprint implements Numbered {
 		clearTeamMembers();
 
 		SprintReport report = getSprintReport();
-		if (report != null) sprintReportDao.deleteEntity(report);
+		if (report != null) report.delete();
 
 		// getClosedRequirements()
 		// getClosedTasksInPasts()
@@ -162,7 +186,7 @@ public class Sprint extends GSprint implements Numbered {
 		Collections.sort(requirements, getRequirementsOrderComparator());
 		for (Requirement requirement : requirements) {
 			releaseNotes.append("* " + (requirement.isClosed() ? "" : "(UNFINISHED) "))
-					.append(requirement.getReferenceAndLabel()).append("\n");
+			.append(requirement.getReferenceAndLabel()).append("\n");
 			for (Task task : requirement.getTasksInSprint()) {
 				if (task.isClosed()) {
 					report.addClosedTask(task);
@@ -173,7 +197,7 @@ public class Sprint extends GSprint implements Numbered {
 			if (requirement.isClosed()) {
 				completedRequirements.add(requirement);
 				changeDao
-						.postChange(requirement, null, Change.REQ_COMPLETED_IN_SPRINT, requirement.getLabel(), getId());
+				.postChange(requirement, null, Change.REQ_COMPLETED_IN_SPRINT, requirement.getLabel(), getId());
 			} else {
 				getProject().addRequirementsOrderId(incompletedRequirements.size(), requirement.getId());
 				incompletedRequirements.add(requirement);
@@ -300,8 +324,8 @@ public class Sprint extends GSprint implements Numbered {
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		updateNumber();
 
 		Project project = getProject();
@@ -387,7 +411,7 @@ public class Sprint extends GSprint implements Numbered {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 

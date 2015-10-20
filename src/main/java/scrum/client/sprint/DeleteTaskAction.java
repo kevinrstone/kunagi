@@ -52,7 +52,7 @@ public class DeleteTaskAction extends GDeleteTaskAction {
 
 	@Override
 	protected void onExecute() {
-		task.getRequirement().deleteTask(task);
+		task.delete();
 		addUndo(new Undo());
 	}
 
@@ -65,7 +65,7 @@ public class DeleteTaskAction extends GDeleteTaskAction {
 
 		@Override
 		protected void onUndo() {
-			getDao().createTask(task);
+			task.persist();
 		}
 
 	}

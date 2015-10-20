@@ -14,11 +14,12 @@
 package scrum.server.impediments;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GImpedimentDao
             extends ilarkesto.persistence.ADao<Impediment> {
@@ -65,8 +66,8 @@ public abstract class GImpedimentDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Impediment) {
             clearCaches();
         }

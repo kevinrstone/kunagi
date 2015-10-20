@@ -16,6 +16,7 @@ package scrum.server.pr;
 
 import ilarkesto.base.Utl;
 import ilarkesto.core.time.DateAndTime;
+
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;
@@ -62,8 +63,8 @@ public class BlogEntry extends GBlogEntry implements Numbered, ReferenceSupport,
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		updateNumber();
 		if (isPublished() && !isDateAndTimeSet()) setDateAndTime(DateAndTime.now());
 	}
@@ -74,7 +75,7 @@ public class BlogEntry extends GBlogEntry implements Numbered, ReferenceSupport,
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 }

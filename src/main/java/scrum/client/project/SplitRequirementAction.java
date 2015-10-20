@@ -1,6 +1,7 @@
 package scrum.client.project;
 
 import ilarkesto.core.scope.Scope;
+
 import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
 
@@ -50,7 +51,7 @@ public class SplitRequirementAction extends GSplitRequirementAction {
 
 		@Override
 		protected void onUndo() {
-			getDao().deleteRequirement(newRequirement);
+			newRequirement.delete();
 		}
 
 	}

@@ -15,9 +15,9 @@
 package scrum.client;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 
@@ -79,7 +79,7 @@ public class ScrumGwt extends Gwt {
 		throw new IllegalArgumentException("No previous value for " + value);
 	}
 
-	public static String getReferenceAndLabel(AGwtEntity entity) {
+	public static String getReferenceAndLabel(AEntity entity) {
 		StringBuilder sb = new StringBuilder();
 		if (entity instanceof ReferenceSupport) {
 			sb.append(((ReferenceSupport) entity).getReference()).append(" ");

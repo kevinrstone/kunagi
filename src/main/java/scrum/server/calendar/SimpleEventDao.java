@@ -14,9 +14,9 @@
  */
 package scrum.server.calendar;
 
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.Time;
-import ilarkesto.fp.Predicate;
 import scrum.server.project.Project;
 
 public class SimpleEventDao extends GSimpleEventDao {
@@ -45,7 +45,7 @@ public class SimpleEventDao extends GSimpleEventDao {
 		event.setDate(date);
 		event.setTime(time);
 		event.setDuration(duration);
-		saveEntity(event);
+		persist(event);
 		return event;
 	}
 

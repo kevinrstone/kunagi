@@ -16,11 +16,12 @@ package scrum.client.tasks;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.undo.AUndoOperation;
+
 import scrum.client.admin.User;
+import scrum.client.core.EventBus;
 import scrum.client.dnd.BlockListDropAction;
 import scrum.client.project.Requirement;
 import scrum.client.sprint.Task;
-import scrum.client.workspace.VisibleDataChangedEvent;
 
 public class ClaimTaskDropAction implements BlockListDropAction<Task> {
 
@@ -41,7 +42,7 @@ public class ClaimTaskDropAction implements BlockListDropAction<Task> {
 	public boolean onDrop(Task task) {
 		User owner = task.getOwner();
 		task.claim();
-		new VisibleDataChangedEvent().fireInCurrentScope();
+		EventBus.get().visibleDataChanged();
 		Scope.get().getComponent(scrum.client.undo.Undo.class).getManager().add(new Undo(owner, task, requirement));
 		return true;
 	}
@@ -67,7 +68,7 @@ public class ClaimTaskDropAction implements BlockListDropAction<Task> {
 		protected void onUndo() {
 			task.setRequirement(requirement);
 			task.setOwner(owner);
-			new VisibleDataChangedEvent().fireInCurrentScope();
+			EventBus.get().visibleDataChanged();
 		}
 
 	}

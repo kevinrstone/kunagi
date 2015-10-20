@@ -1,21 +1,42 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.admin;
 
-public class LogoutServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    public  LogoutServiceCall() {
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class LogoutServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
+
+    private static scrum.client.ScrumServiceAsync service;
+
+
+    public LogoutServiceCall() {
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().logout(serviceCaller.getConversationNumber(), new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.logout(conversationNumber, callback);
     }
 
     @Override
     public String toString() {
-        return "Logout";
+        return "logout";
     }
 
 }
-

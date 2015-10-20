@@ -14,7 +14,7 @@
  */
 package scrum.server.sprint;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 import java.util.Set;
 
@@ -67,7 +67,7 @@ public class TaskDao extends GTaskDao {
 		task.setRequirement(requirement);
 		task.setLabel(label);
 		task.setRemainingWork(work);
-		saveEntity(task);
+		persist(task);
 		task.updateNumber();
 		return task;
 	}

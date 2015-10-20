@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.search;
 
-public class SearchServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String text;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class SearchServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  SearchServiceCall(String text) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    java.lang.String text;
+
+    public SearchServiceCall(java.lang.String text) {
         this.text = text;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().search(serviceCaller.getConversationNumber(), text, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.search(conversationNumber, text, callback);
     }
 
     @Override
     public String toString() {
-        return "Search";
+        return "search";
     }
 
 }
-

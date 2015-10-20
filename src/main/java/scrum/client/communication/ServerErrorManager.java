@@ -19,13 +19,11 @@ import ilarkesto.gwt.client.ErrorWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerErrorManager extends GServerErrorManager implements ServerDataReceivedHandler {
+public class ServerErrorManager extends GServerErrorManager {
 
 	private List<ErrorWrapper> errors = new ArrayList<ErrorWrapper>();
 
-	@Override
-	public void onServerDataReceived(ServerDataReceivedEvent event) {
-		List<ErrorWrapper> serverErrors = event.getData().getErrors();
+	public void handleErrors(List<ErrorWrapper> serverErrors) {
 		if (serverErrors != null) {
 			errors.addAll(serverErrors);
 			log.info("Errors received:", serverErrors);

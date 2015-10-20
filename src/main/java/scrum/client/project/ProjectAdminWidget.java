@@ -17,6 +17,7 @@ package scrum.client.project;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
+
 import scrum.client.ScrumGwt;
 import scrum.client.admin.ProjectBlock;
 import scrum.client.common.AScrumWidget;
@@ -72,6 +73,12 @@ public class ProjectAdminWidget extends AScrumWidget {
 		tbSupport.addFieldRow("Issue reply template", project.getIssueReplyTemplateModel());
 		tbSupport.addFieldRow("Subscriber notification template", project.getSubscriberNotificationTemplateModel());
 		page.addSection(tbSupport.createTable());
+
+		page.addHeader("External Tracking System");
+		TableBuilder tbExternalTracker = ScrumGwt.createFieldTable();
+		tbExternalTracker.addFieldRow("Tracker label", project.getExternalTrackerLabelModel());
+		tbExternalTracker.addFieldRow("URL template", project.getExternalTrackerUrlTemplateModel());
+		page.addSection(tbExternalTracker.createTable());
 
 		return page;
 	}

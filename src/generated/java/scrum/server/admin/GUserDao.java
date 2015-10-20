@@ -14,14 +14,15 @@
 package scrum.server.admin;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GUserDao
-            extends ilarkesto.auth.AUserDao<User> {
+            extends ilarkesto.persistence.ADao<User> {
 
     public final String getEntityName() {
         return User.TYPE;
@@ -42,6 +43,10 @@ public abstract class GUserDao
     // --- clear caches ---
     public void clearCaches() {
         namesCache = null;
+        usersByPasswordCache.clear();
+        passwordsCache = null;
+        usersByPasswordSaltCache.clear();
+        passwordSaltsCache = null;
         usersByPublicNameCache.clear();
         publicNamesCache = null;
         usersByFullNameCache.clear();
@@ -86,8 +91,8 @@ public abstract class GUserDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof User) {
             clearCaches();
         }
@@ -122,6 +127,86 @@ public abstract class GUserDao
 
         public boolean test(User e) {
             return e.isName(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - password
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<User>> usersByPasswordCache = new Cache<java.lang.String,Set<User>>(
+            new Cache.Factory<java.lang.String,Set<User>>() {
+                public Set<User> create(java.lang.String password) {
+                    return getEntities(new IsPassword(password));
+                }
+            });
+
+    public final Set<User> getUsersByPassword(java.lang.String password) {
+        return new HashSet<User>(usersByPasswordCache.get(password));
+    }
+    private Set<java.lang.String> passwordsCache;
+
+    public final Set<java.lang.String> getPasswords() {
+        if (passwordsCache == null) {
+            passwordsCache = new HashSet<java.lang.String>();
+            for (User e : getEntities()) {
+                if (e.isPasswordSet()) passwordsCache.add(e.getPassword());
+            }
+        }
+        return passwordsCache;
+    }
+
+    private static class IsPassword implements Predicate<User> {
+
+        private java.lang.String value;
+
+        public IsPassword(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(User e) {
+            return e.isPassword(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - passwordSalt
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<User>> usersByPasswordSaltCache = new Cache<java.lang.String,Set<User>>(
+            new Cache.Factory<java.lang.String,Set<User>>() {
+                public Set<User> create(java.lang.String passwordSalt) {
+                    return getEntities(new IsPasswordSalt(passwordSalt));
+                }
+            });
+
+    public final Set<User> getUsersByPasswordSalt(java.lang.String passwordSalt) {
+        return new HashSet<User>(usersByPasswordSaltCache.get(passwordSalt));
+    }
+    private Set<java.lang.String> passwordSaltsCache;
+
+    public final Set<java.lang.String> getPasswordSalts() {
+        if (passwordSaltsCache == null) {
+            passwordSaltsCache = new HashSet<java.lang.String>();
+            for (User e : getEntities()) {
+                if (e.isPasswordSaltSet()) passwordSaltsCache.add(e.getPasswordSalt());
+            }
+        }
+        return passwordSaltsCache;
+    }
+
+    private static class IsPasswordSalt implements Predicate<User> {
+
+        private java.lang.String value;
+
+        public IsPasswordSalt(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(User e) {
+            return e.isPasswordSalt(value);
         }
 
     }

@@ -14,7 +14,7 @@
  */
 package scrum.server.project;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public class QualityDao extends GQualityDao {
 
@@ -40,7 +40,7 @@ public class QualityDao extends GQualityDao {
 		Quality quality = newEntityInstance();
 		quality.setProject(project);
 		quality.setLabel(label);
-		saveEntity(quality);
+		persist(quality);
 		return quality;
 	}
 }

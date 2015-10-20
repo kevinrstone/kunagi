@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="kunagi">
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/generated/java"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
+        <dependent-module archiveName="openid4java-0.9.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/openid4java-0.9.8.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="codemirror_V-0.4-gwt16.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/codemirror_V-0.4-gwt16.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jfreechart-1.0.19.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/jfreechart-1.0.19.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jcommon-1.0.23.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/jcommon-1.0.23.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="itext-asian-5.2.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/itext-asian-5.2.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-collections-3.2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-collections-3.2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="core-1.47.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/core-1.47.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-io-2.4.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-io-2.4.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-fileupload-1.3.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-fileupload-1.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jaudiotagger-2.0.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/jaudiotagger-2.0.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="junit-4.12.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/junit-4.12.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gwt-dnd-3.3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/gwt-dnd-3.3.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="itext-pdfa-5.5.6-1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/itext-pdfa-5.5.6-1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="guava-18.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/guava-18.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jdom2-2.0.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/jdom2-2.0.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-net-3.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-net-3.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="itextpdf-5.5.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/itextpdf-5.5.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-logging-1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-logging-1.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="httpclient-4.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/httpclient-4.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="velocity-1.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/velocity-1.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mysql-connector-java-5.1.35.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/mysql-connector-java-5.1.35.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xstream-1.4.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/xstream-1.4.8.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="itext-xtra-5.5.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/itext-xtra-5.5.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="scribe-1.3.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/scribe-1.3.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="guice-4.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/guice-4.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gwtupload-1.0.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/gwtupload-1.0.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xmlbeans-2.6.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/xmlbeans-2.6.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xercesImpl-2.11.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/xercesImpl-2.11.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang-2.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/commons-lang-2.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gwt-codeserver-2.7.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/gwt-codeserver-2.7.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="google-api-client-1.19.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/google-api-client-1.19.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jcip-annotations-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/jcip-annotations-1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ilarkesto.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ilarkesto/ilarkesto">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="javax.mail.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ilarkesto/lib/javax.mail.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="kunagi"/>
+        <property name="java-output-path" value="/kunagi/build/webapp/WEB-INF/classes"/>
+    </wb-module>
+</project-modules>

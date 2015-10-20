@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.admin;
 
-public class ResetPasswordServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String userId;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class ResetPasswordServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  ResetPasswordServiceCall(String userId) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    java.lang.String userId;
+
+    public ResetPasswordServiceCall(java.lang.String userId) {
         this.userId = userId;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().resetPassword(serviceCaller.getConversationNumber(), userId, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.resetPassword(conversationNumber, userId, callback);
     }
 
     @Override
     public String toString() {
-        return "ResetPassword";
+        return "resetPassword";
     }
 
 }
-

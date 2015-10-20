@@ -17,6 +17,7 @@ package scrum.server.project;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+
 import scrum.server.admin.User;
 import scrum.server.admin.UserDao;
 
@@ -45,7 +46,7 @@ public class ProjectDao extends GProjectDao {
 		Project project = newEntityInstance();
 		project.setLabel(createProjectLabel("Project"));
 		project.addAdmin(admin);
-		saveEntity(project);
+		persist(project);
 		return project;
 	}
 
@@ -105,6 +106,11 @@ public class ProjectDao extends GProjectDao {
 		po.setCurrentProject(project);
 
 		return project;
+	}
+
+	@Override
+	protected int getOrderIndex() {
+		return -10;
 	}
 
 }

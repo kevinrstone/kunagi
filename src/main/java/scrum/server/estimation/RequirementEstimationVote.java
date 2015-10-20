@@ -30,11 +30,11 @@ public class RequirementEstimationVote extends GRequirementEstimationVote {
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		Requirement requirement = getRequirement();
 		if (!requirement.isWorkEstimationVotingActive() || requirement.isClosed()) {
-			getDao().deleteEntity(this);
+			delete();
 			return;
 		}
 	}

@@ -14,24 +14,27 @@
  */
 package scrum.client.journal;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.time.DateAndTime;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.collaboration.Wiki;
 import scrum.client.project.Project;
 
 public class ProjectEvent extends GProjectEvent {
 
-	public ProjectEvent(Map data) {
-		super(data);
-	}
+	public static ProjectEvent post(Project project, String label) {
+		Args.assertNotNull(project, "project");
+		Args.assertNotBlank(label, "label");
 
-	public ProjectEvent(Project project, String label) {
-		setDateAndTime(DateAndTime.now());
-		setProject(project);
-		setLabel(label);
+		ProjectEvent event = new ProjectEvent();
+		event.setDateAndTime(DateAndTime.now());
+		event.setProject(project);
+		event.setLabel(label);
+
+		event.persist();
+		return event;
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public class ProjectEvent extends GProjectEvent {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getLabel();
 	}
 

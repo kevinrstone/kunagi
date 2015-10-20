@@ -14,6 +14,7 @@
  */
 package scrum.client.project;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
@@ -33,7 +34,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import scrum.client.ScrumGwt;
@@ -42,12 +42,10 @@ import scrum.client.admin.ProjectUserConfig;
 import scrum.client.admin.User;
 import scrum.client.collaboration.Comment;
 import scrum.client.collaboration.ForumSupport;
-import scrum.client.collaboration.Subject;
 import scrum.client.collaboration.Wikipage;
 import scrum.client.common.ShowEntityAction;
 import scrum.client.common.WeekdaySelector;
 import scrum.client.dashboard.DashboardWidget;
-import scrum.client.files.File;
 import scrum.client.impediments.Impediment;
 import scrum.client.issues.Issue;
 import scrum.client.journal.ProjectEvent;
@@ -68,22 +66,31 @@ public class Project extends GProject implements ForumSupport {
 	private static final String effortUnit = "pts";
 	public static final String INIT_LABEL = "New Project";
 
-	public transient boolean historyLoaded;
 	private transient RequirementsOrderComparator requirementsOrderComparator;
 	private transient Comparator<Issue> issuesOrderComparator;
 
-	public Project(User creator) {
-		setLabel(INIT_LABEL + " " + DateAndTime.now());
-		addParticipant(creator);
-		addAdmin(creator);
-		addProductOwner(creator);
-		addScrumMaster(creator);
-		addTeamMember(creator);
-		setLastOpenedDateAndTime(DateAndTime.now());
+	public static Project post(User creator) {
+		Args.assertNotNull(creator, "creaator");
+
+		Project project = new Project();
+		project.setLabel(INIT_LABEL + " " + DateAndTime.now());
+		project.addParticipant(creator);
+		project.addAdmin(creator);
+		project.addProductOwner(creator);
+		project.addScrumMaster(creator);
+		project.addTeamMember(creator);
+		project.setLastOpenedDateAndTime(DateAndTime.now());
+
+		project.persist();
+		return project;
 	}
 
-	public Project(Map data) {
-		super(data);
+	public Set<Task> getTasks() {
+		HashSet<Task> ret = new HashSet<Task>();
+		for (Requirement requirement : getRequirements()) {
+			ret.addAll(requirement.getTasks());
+		}
+		return ret;
 	}
 
 	public boolean isInHistory(Requirement requirement) {
@@ -138,7 +145,7 @@ public class Project extends GProject implements ForumSupport {
 
 	public void updateRequirementsModificationTimes() {
 		for (Requirement requirement : getRequirements()) {
-			requirement.updateLocalModificationTime();
+			requirement.updateLastModified();
 		}
 	}
 
@@ -195,8 +202,7 @@ public class Project extends GProject implements ForumSupport {
 	}
 
 	public List<ProjectEvent> getLatestProjectEvents(int min) {
-		List<ProjectEvent> events = getProjectEvents();
-		Collections.sort(events, ProjectEvent.DATE_AND_TIME_COMPARATOR);
+		List<ProjectEvent> events = Utl.sort(getProjectEvents(), ProjectEvent.DATE_AND_TIME_COMPARATOR);
 
 		DateAndTime deadline = new DateAndTime(Date.today().prevDay(), Time.now());
 		List<ProjectEvent> ret = new ArrayList<ProjectEvent>();
@@ -212,14 +218,14 @@ public class Project extends GProject implements ForumSupport {
 
 	public Wikipage getWikipage(String name) {
 		name = name.toLowerCase();
-		for (Wikipage page : getDao().getWikipagesByProject(this)) {
+		for (Wikipage page : Wikipage.listByProject(this)) {
 			if (page.getName().toLowerCase().equals(name)) return page;
 		}
 		return null;
 	}
 
 	public ProjectUserConfig getUserConfig(User user) {
-		for (ProjectUserConfig config : getDao().getProjectUserConfigsByProject(this)) {
+		for (ProjectUserConfig config : ProjectUserConfig.listByProject(this)) {
 			if (config.isUser(user)) return config;
 		}
 		return null;
@@ -303,53 +309,10 @@ public class Project extends GProject implements ForumSupport {
 		return effortUnit;
 	}
 
-	public Wikipage createNewWikipage(String name) {
-		Wikipage page = new Wikipage(this, name);
-		getDao().createWikipage(page);
-		return page;
-	}
-
-	public Subject createNewSubject() {
-		Subject subject = new Subject(this);
-		getDao().createSubject(subject);
-		return subject;
-	}
-
-	public Issue createNewIssue() {
-		Issue issue = new Issue(this);
-		getDao().createIssue(issue);
-		return issue;
-	}
-
-	public Impediment createNewImpediment() {
-		Impediment impediment = new Impediment(this);
-		getDao().createImpediment(impediment);
-		return impediment;
-	}
-
-	public void deleteImpediment(Impediment impediment) {
-		for (Task task : getDao().getTasksByImpediment(impediment)) {
-			task.setImpediment(null);
-		}
-		getDao().deleteImpediment(impediment);
-	}
-
-	public void deleteFile(File file) {
-		getDao().deleteFile(file);
-	}
-
-	public void deleteIssue(Issue issue) {
-		getDao().deleteIssue(issue);
-	}
-
-	public void deleteRisk(Risk risk) {
-		getDao().deleteRisk(risk);
-	}
-
 	public Set<ForumSupport> getEntitiesWithComments() {
 		Set<ForumSupport> ret = new HashSet<ForumSupport>();
 		ret.addAll(getSubjects());
-		for (Comment comment : getDao().getComments()) {
+		for (Comment comment : Comment.listAll()) {
 			AGwtEntity entity = comment.getParent();
 			if (!(entity instanceof ForumSupport)) {
 				LOG.error(entity.getClass().getName() + " needs to implement ForumSupport");
@@ -436,54 +399,46 @@ public class Project extends GProject implements ForumSupport {
 	}
 
 	public List<Risk> getHighestRisks(int max) {
-		List<Risk> ret = getRisks();
-		Collections.sort(ret, Risk.PRIORITY_COMPARATOR);
+		List<Risk> ret = Utl.sort(getRisks(), Risk.PRIORITY_COMPARATOR);
 		while (ret.size() > max) {
 			ret.remove(ret.size() - 1);
 		}
 		return ret;
 	}
 
-	public Risk createNewRisk() {
-		Risk risk = new Risk(this);
-		getDao().createRisk(risk);
-		return risk;
-	}
-
-	public BlogEntry createNewBlogEntry() {
-		BlogEntry blogEntry = new BlogEntry(this);
-		getDao().createBlogEntry(blogEntry);
-		return blogEntry;
-	}
-
 	public BlogEntry createNewBlogEntry(Release release) {
-		BlogEntry blogEntry = new BlogEntry(this);
+		BlogEntry blogEntry = BlogEntry.post(this);
 		blogEntry.setTitle("Release " + release.getLabel());
 		String text = release.isReleased() ? release.getReleaseNotes() : release.createIzemizedReleaseNotes();
 		blogEntry.setText(text);
-		getDao().createBlogEntry(blogEntry);
 		return blogEntry;
 	}
 
 	public Release createNewRelease(Release parentRelease) {
-		Release release = new Release(this);
 		Date date = Date.today();
+		Release release = Release.post(this, date);
 		if (parentRelease != null) {
 			release.setParentRelease(parentRelease);
-			release.setLabel(parentRelease.getLabel() + " Bugfix " + (parentRelease.getBugfixReleases().size() + 1));
+			release.setLabel(createBugfixLabel(parentRelease));
 			Date parentDate = parentRelease.getReleaseDate();
-			if (parentDate != null && parentDate.isAfter(date)) date = parentDate;
+			if (parentDate != null && parentDate.isAfter(date)) release.setReleaseDate(parentDate);
 		}
-		release.setReleaseDate(date);
-		getDao().createRelease(release);
 		return release;
+	}
+
+	private String createBugfixLabel(Release parentRelease) {
+		String s = parentRelease.getLabel();
+
+		int dotIdx = s.lastIndexOf('.');
+		if (dotIdx > 0) return s.substring(0, dotIdx + 1) + (parentRelease.getBugfixReleases().size() + 1);
+		return s + " Bugfix " + (parentRelease.getBugfixReleases().size() + 1);
 	}
 
 	/**
 	 * @param relative The story, before which the new story should be placed. Optional.
 	 */
 	public Requirement createNewRequirement(Requirement relative, boolean before, boolean split) {
-		Requirement item = new Requirement(this);
+		Requirement item = Requirement.post(this);
 
 		if (split) {
 			String theme = relative.getLabel();
@@ -512,22 +467,11 @@ public class Project extends GProject implements ForumSupport {
 			updateRequirementsOrder(requirements);
 		}
 
-		getDao().createRequirement(item);
+		for (Quality quality : getQualitys()) {
+			if (quality.isAutoAdd()) item.addQuality(quality);
+		}
+
 		return item;
-	}
-
-	public Quality createNewQuality() {
-		Quality item = new Quality(this);
-		getDao().createQuality(item);
-		return item;
-	}
-
-	public void deleteRequirement(Requirement item) {
-		getDao().deleteRequirement(item);
-	}
-
-	public void deleteQuality(Quality item) {
-		getDao().deleteQuality(item);
 	}
 
 	private transient List<Requirement> productBacklogRequirements;
@@ -564,10 +508,6 @@ public class Project extends GProject implements ForumSupport {
 		return sb.toString();
 	}
 
-	public List<Task> getTasks() {
-		return getDao().getTasks();
-	}
-
 	public List<Issue> getIssuesByThemes(Collection<String> themes) {
 		List<Issue> ret = new ArrayList<Issue>();
 		for (Issue issue : getIssues()) {
@@ -589,19 +529,11 @@ public class Project extends GProject implements ForumSupport {
 	}
 
 	public List<Requirement> getRequirementsOrdered() {
-		List<Requirement> requirements = getRequirements();
-		Collections.sort(requirements, getRequirementsOrderComparator());
-		return requirements;
-	}
-
-	public Sprint createNewSprint() {
-		Sprint sprint = new Sprint(this, "New Sprint");
-		getDao().createSprint(sprint);
-		return sprint;
+		return Utl.sort(getRequirements(), getRequirementsOrderComparator());
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getLabel();
 	}
 
@@ -668,14 +600,10 @@ public class Project extends GProject implements ForumSupport {
 
 	public Set<User> getUsersSelecting(AGwtEntity entity) {
 		Set<User> users = new HashSet<User>();
-		for (ProjectUserConfig config : getUserConfigs()) {
+		for (ProjectUserConfig config : getProjectUserConfigs()) {
 			if (config.getSelectedEntitysIds().contains(entity.getId())) users.add(config.getUser());
 		}
 		return users;
-	}
-
-	public List<ProjectUserConfig> getUserConfigs() {
-		return getDao().getProjectUserConfigsByProject(this);
 	}
 
 	@Override
@@ -725,6 +653,12 @@ public class Project extends GProject implements ForumSupport {
 
 		};
 		return freeDaysWeekdaySelectorModel;
+	}
+
+	public String getExternalTrackerLabelOrDefault() {
+		String label = getExternalTrackerLabel();
+		if (Str.isBlank(label)) return "External Tracker";
+		return label;
 	}
 
 }

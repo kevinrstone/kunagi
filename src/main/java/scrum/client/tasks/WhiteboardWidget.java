@@ -14,6 +14,7 @@
  */
 package scrum.client.tasks;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.Gwt;
 
@@ -110,8 +111,7 @@ public class WhiteboardWidget extends AScrumWidget implements TaskBlockContainer
 				+ " to do, " + hours(sprint.getBurnedWorkInClaimedTasks()) + " done)");
 		doneLabel.setHTML("<strong>Completed Tasks</strong> (" + hours(sprint.getBurnedWorkInClosedTasks()) + " done)");
 
-		List<Requirement> requirements = sprint.getRequirements();
-		Collections.sort(requirements, sprint.getRequirementsOrderComparator());
+		List<Requirement> requirements = Utl.sort(sprint.getRequirements(), sprint.getRequirementsOrderComparator());
 
 		if (requirements.equals(knownRequirements)) {
 			// quick update without recreating whole gui
@@ -129,11 +129,11 @@ public class WhiteboardWidget extends AScrumWidget implements TaskBlockContainer
 
 		for (Requirement requirement : requirements) {
 			openTasks.put(requirement, new TaskListWidget(requirement, this, new UnclaimTaskDropAction(requirement),
-					true));
+					true, "#f99"));
 			ownedTasks.put(requirement, new TaskListWidget(requirement, this, new ClaimTaskDropAction(requirement),
-					false));
+					false, "#ff9"));
 			closedTasks.put(requirement, new TaskListWidget(requirement, this, new CloseTaskDropAction(requirement),
-					false));
+				false, "#9e9"));
 		}
 
 		setWidget(0, 0, openLabel, "33%", "WhiteboardWidget-header");
@@ -154,9 +154,9 @@ public class WhiteboardWidget extends AScrumWidget implements TaskBlockContainer
 			updateTaskLists(requirement);
 
 			// grid.setWidget(row, 0, new Label(requirement.getLabel()));
-			setWidget(row, 0, openTasks.get(requirement), null, "WhiteboardWidget-open");
-			setWidget(row, 1, ownedTasks.get(requirement), null, "WhiteboardWidget-owned");
-			setWidget(row, 2, closedTasks.get(requirement), null, "WhiteboardWidget-done");
+			setWidget(row, 0, openTasks.get(requirement), "33%", "WhiteboardWidget-open");
+			setWidget(row, 1, ownedTasks.get(requirement), "33%", "WhiteboardWidget-owned");
+			setWidget(row, 2, closedTasks.get(requirement), "33%", "WhiteboardWidget-done");
 
 			row++;
 		}

@@ -14,30 +14,31 @@
  */
 package scrum.client.collaboration;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
-
-import java.util.Map;
 
 import scrum.client.admin.User;
 import scrum.client.project.Project;
 
 public class ChatMessage extends GChatMessage implements Comparable<ChatMessage> {
 
-	public ChatMessage(Project project, User author, String text) {
-		setProject(project);
-		setAuthor(author);
-		setText(text);
-		setDateAndTime(DateAndTime.now());
-	}
+	public static ChatMessage post(Project project, User author, String text) {
+		Args.assertNotNull(project, "project");
 
-	public ChatMessage(Map data) {
-		super(data);
+		ChatMessage msg = new ChatMessage();
+		msg.setProject(project);
+		msg.setAuthor(author);
+		msg.setText(text);
+		msg.setDateAndTime(DateAndTime.now());
+
+		msg.persist();
+		return msg;
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getAuthor() + ": " + getText();
 	}
 

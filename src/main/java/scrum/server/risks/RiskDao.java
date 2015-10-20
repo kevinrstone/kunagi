@@ -33,7 +33,7 @@ public class RiskDao extends GRiskDao {
 		risk.setLabel(label);
 		risk.setProbability(probability);
 		risk.setImpact(impact);
-		saveEntity(risk);
+		persist(risk);
 		return risk;
 	}
 }

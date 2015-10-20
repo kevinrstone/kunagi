@@ -14,11 +14,13 @@
  */
 package scrum.client.workspace;
 
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.AWidget;
-import ilarkesto.gwt.client.EntityDoesNotExistException;
 import ilarkesto.gwt.client.SwitcherWidget;
+
 import scrum.client.admin.ProjectUserConfigWidget;
 import scrum.client.admin.PunishmentsWidget;
 import scrum.client.admin.SystemConfigWidget;
@@ -27,12 +29,12 @@ import scrum.client.admin.User;
 import scrum.client.admin.UserListWidget;
 import scrum.client.calendar.CalendarWidget;
 import scrum.client.calendar.SimpleEvent;
-import scrum.client.collaboration.Chat;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.collaboration.ForumWidget;
 import scrum.client.collaboration.Subject;
 import scrum.client.collaboration.WikiWidget;
 import scrum.client.collaboration.Wikipage;
+import scrum.client.common.AScrumGwtEntity;
 import scrum.client.context.UserHighlightSupport;
 import scrum.client.core.RequestEntityByReferenceServiceCall;
 import scrum.client.core.RequestEntityServiceCall;
@@ -50,8 +52,6 @@ import scrum.client.pr.BlogWidget;
 import scrum.client.project.ProductBacklogWidget;
 import scrum.client.project.Project;
 import scrum.client.project.ProjectAdminWidget;
-import scrum.client.project.ProjectDataReceivedEvent;
-import scrum.client.project.ProjectDataReceivedHandler;
 import scrum.client.project.ProjectOverviewWidget;
 import scrum.client.project.Quality;
 import scrum.client.project.QualityBacklogWidget;
@@ -66,12 +66,13 @@ import scrum.client.sprint.NextSprintWidget;
 import scrum.client.sprint.Sprint;
 import scrum.client.sprint.SprintBacklogWidget;
 import scrum.client.sprint.SprintHistoryWidget;
+import scrum.client.sprint.SprintReport;
 import scrum.client.sprint.Task;
 import scrum.client.tasks.WhiteboardWidget;
 
 import com.google.gwt.user.client.ui.Widget;
 
-public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements ProjectDataReceivedHandler {
+public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets {
 
 	private ProjectSidebarWidget sidebar = new ProjectSidebarWidget();
 	private DashboardWidget dashboard;
@@ -186,8 +187,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 		}
 	}
 
-	@Override
-	public void onProjectDataReceived(ProjectDataReceivedEvent event) {
+	public void projectDataReceived() {
 		Scope.get().getComponent(Ui.class).show(sidebar, dashboard);
 	}
 
@@ -207,7 +207,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 	public void showEntityByReference(final String reference) {
 		log.debug("Showing entity by reference:", reference);
 
-		AGwtEntity entity = dao.getEntityByReference(reference);
+		AGwtEntity entity = AScrumGwtEntity.getEntityByReference(reference);
 		if (entity != null) {
 			showEntity(entity);
 			return;
@@ -217,7 +217,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 
 			@Override
 			public void run() {
-				AGwtEntity entity = dao.getEntityByReference(reference);
+				AGwtEntity entity = AScrumGwtEntity.getEntityByReference(reference);
 				Ui ui = Scope.get().getComponent(Ui.class);
 				if (entity == null) {
 					ui.unlock();
@@ -225,8 +225,8 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 						String pageName = reference.substring(2, reference.length() - 2);
 						showWiki(pageName);
 					} else {
-						Scope.get().getComponent(Chat.class)
-								.postSystemMessage("Object does not exist: " + reference, false);
+						// TODO show to user
+						log.warn("Object does not exist: " + reference);
 					}
 					return;
 				}
@@ -239,14 +239,14 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 	public void showEntityById(final String entityId) {
 		log.debug("Showing entity by id:", entityId);
 
-		AGwtEntity entity;
+		AEntity entity;
 		try {
-			entity = dao.getEntity(entityId);
+			entity = AGwtEntity.getById(entityId);
 		} catch (EntityDoesNotExistException ex) {
 			entity = null;
 		}
 		if (entity != null) {
-			showEntity(entity);
+			showEntity((AGwtEntity) entity);
 			return;
 		}
 		Scope.get().getComponent(Ui.class).lock("Searching for " + entityId);
@@ -254,20 +254,21 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 
 			@Override
 			public void run() {
-				AGwtEntity entity;
+				AEntity entity;
 				try {
-					entity = dao.getEntity(entityId);
+					entity = AGwtEntity.getById(entityId);
 				} catch (EntityDoesNotExistException ex) {
 					entity = null;
 				}
 				Ui ui = Scope.get().getComponent(Ui.class);
 				if (entity == null) {
 					ui.unlock();
-					Scope.get().getComponent(Chat.class).postSystemMessage("Entity does not exist: " + entityId, false);
+					// TODO display to user
+					log.warn("Entity does not exist: " + entityId);
 					return;
 				}
 				ui.unlock();
-				showEntity(entity);
+				showEntity((AGwtEntity) entity);
 			}
 		});
 	}
@@ -310,12 +311,12 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 			throw new RuntimeException("Showing entity not supported: " + entity.getClass().getName());
 		}
 
-		navigator.updateHistory(Page.getPageName(getWorkarea().getCurrentWidget()), entity);
+		navigator.updateHistoryTokenWithoutChangingUi(Page.getPageName(getWorkarea().getCurrentWidget()), entity);
 	}
 
 	public String getPageForEntity(String entityId) {
 		try {
-			return getPageForEntity(dao.getEntityByReference(entityId));
+			return getPageForEntity(AScrumGwtEntity.getEntityByReference(entityId));
 		} catch (EntityDoesNotExistException ex) {
 			return null;
 		}
@@ -337,7 +338,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets implements
 
 			if (getWorkarea().isShowing(sprintHistory)) {
 				// FIXME multiple requirements on same page
-				boolean existsInHistory = !dao.getSprintReportsByRejectedRequirement(requirement).isEmpty();
+				boolean existsInHistory = !SprintReport.listByRejectedRequirement(requirement).isEmpty();
 				if (existsInHistory) return sprintHistory;
 			}
 

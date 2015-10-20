@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.collaboration;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.AViewEditWidget;
 import ilarkesto.gwt.client.Gwt;
@@ -24,7 +25,6 @@ import ilarkesto.gwt.client.editor.ATextEditorModel;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +90,7 @@ public class CommentsWidget extends AScrumWidget {
 			if (widget.isEditMode()) return;
 		}
 		commentListPanel.clear();
-		List<Comment> comments = parent.getComments();
-		Collections.sort(comments, Comment.REVERSE_DATEANDTIME_COMPARATOR);
+		List<Comment> comments = Utl.sort(parent.getComments(), Comment.REVERSE_DATEANDTIME_COMPARATOR);
 		List<Comment> pageComments = filterCurrentPageComments(comments);
 		for (Comment comment : pageComments) {
 			CommentWidget widget = getWidget(comment);
@@ -112,7 +111,7 @@ public class CommentsWidget extends AScrumWidget {
 		tb.addSpacer(5, 1);
 		if (currentPage > 1) {
 			tb.add(Gwt.createDiv("CommentsWidget-pageNavigator-page", new HyperlinkWidget(new ShowPageAction("<",
-					currentPage - 1))));
+				currentPage - 1))));
 		} else {
 			tb.add(Gwt.createDiv("CommentsWidget-pageNavigator-page-disabled", "<"));
 		}
@@ -132,7 +131,7 @@ public class CommentsWidget extends AScrumWidget {
 		tb.addSpacer(10, 1);
 		if (page > currentPage) {
 			tb.add(Gwt.createDiv("CommentsWidget-pageNavigator-page", new HyperlinkWidget(new ShowPageAction(">",
-					currentPage + 1))));
+				currentPage + 1))));
 		} else {
 			tb.add(Gwt.createDiv("CommentsWidget-pageNavigator-page-disabled", ">"));
 		}
@@ -162,8 +161,7 @@ public class CommentsWidget extends AScrumWidget {
 	private void postComment(String text) {
 		if (Str.isBlank(text)) return;
 		text = text.trim();
-		Comment comment = new Comment(parent, getAuth().getUser(), text);
-		getDao().createComment(comment);
+		Comment.post(parent, getAuth().getUser(), text);
 		update();
 	}
 

@@ -2,6 +2,7 @@ package scrum.server.pr;
 
 import ilarkesto.auth.Auth;
 import ilarkesto.core.time.TimePeriod;
+
 import scrum.server.admin.User;
 
 public class Subscription extends GSubscription {
@@ -14,10 +15,10 @@ public class Subscription extends GSubscription {
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		if (isSubscribersEmailsEmpty() && getLastModified().getPeriodToNow().isGreaterThen(TTL)) {
-			getDao().deleteEntity(this);
+			delete();
 		}
 	}
 

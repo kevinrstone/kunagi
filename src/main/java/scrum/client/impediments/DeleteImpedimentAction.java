@@ -46,7 +46,7 @@ public class DeleteImpedimentAction extends GDeleteImpedimentAction {
 
 	@Override
 	protected void onExecute() {
-		getCurrentProject().deleteImpediment(impediment);
+		impediment.delete();
 		addUndo(new Undo());
 	}
 
@@ -59,7 +59,7 @@ public class DeleteImpedimentAction extends GDeleteImpedimentAction {
 
 		@Override
 		protected void onUndo() {
-			getDao().createImpediment(impediment);
+			impediment.persist();
 		}
 
 	}

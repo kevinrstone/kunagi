@@ -14,11 +14,12 @@
 package scrum.server.issues;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GIssueDao
             extends ilarkesto.persistence.ADao<Issue> {
@@ -57,6 +58,8 @@ public abstract class GIssueDao
         labelsCache = null;
         issuesByDescriptionCache.clear();
         descriptionsCache = null;
+        issuesByAdditionalInfoCache.clear();
+        additionalInfosCache = null;
         issuesByStatementCache.clear();
         statementsCache = null;
         issuesByIssuerNameCache.clear();
@@ -83,6 +86,8 @@ public abstract class GIssueDao
         issuesByPublishedCache.clear();
         issuesByThemeCache.clear();
         themesCache = null;
+        issuesByExternalTrackerIdCache.clear();
+        externalTrackerIdsCache = null;
     }
 
     @Override
@@ -94,8 +99,8 @@ public abstract class GIssueDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Issue) {
             clearCaches();
         }
@@ -417,6 +422,46 @@ public abstract class GIssueDao
 
         public boolean test(Issue e) {
             return e.isDescription(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - additionalInfo
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<Issue>> issuesByAdditionalInfoCache = new Cache<java.lang.String,Set<Issue>>(
+            new Cache.Factory<java.lang.String,Set<Issue>>() {
+                public Set<Issue> create(java.lang.String additionalInfo) {
+                    return getEntities(new IsAdditionalInfo(additionalInfo));
+                }
+            });
+
+    public final Set<Issue> getIssuesByAdditionalInfo(java.lang.String additionalInfo) {
+        return new HashSet<Issue>(issuesByAdditionalInfoCache.get(additionalInfo));
+    }
+    private Set<java.lang.String> additionalInfosCache;
+
+    public final Set<java.lang.String> getAdditionalInfos() {
+        if (additionalInfosCache == null) {
+            additionalInfosCache = new HashSet<java.lang.String>();
+            for (Issue e : getEntities()) {
+                if (e.isAdditionalInfoSet()) additionalInfosCache.add(e.getAdditionalInfo());
+            }
+        }
+        return additionalInfosCache;
+    }
+
+    private static class IsAdditionalInfo implements Predicate<Issue> {
+
+        private java.lang.String value;
+
+        public IsAdditionalInfo(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(Issue e) {
+            return e.isAdditionalInfo(value);
         }
 
     }
@@ -959,6 +1004,46 @@ public abstract class GIssueDao
 
     }
 
+    // -----------------------------------------------------------
+    // - externalTrackerId
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<Issue>> issuesByExternalTrackerIdCache = new Cache<java.lang.String,Set<Issue>>(
+            new Cache.Factory<java.lang.String,Set<Issue>>() {
+                public Set<Issue> create(java.lang.String externalTrackerId) {
+                    return getEntities(new IsExternalTrackerId(externalTrackerId));
+                }
+            });
+
+    public final Set<Issue> getIssuesByExternalTrackerId(java.lang.String externalTrackerId) {
+        return new HashSet<Issue>(issuesByExternalTrackerIdCache.get(externalTrackerId));
+    }
+    private Set<java.lang.String> externalTrackerIdsCache;
+
+    public final Set<java.lang.String> getExternalTrackerIds() {
+        if (externalTrackerIdsCache == null) {
+            externalTrackerIdsCache = new HashSet<java.lang.String>();
+            for (Issue e : getEntities()) {
+                if (e.isExternalTrackerIdSet()) externalTrackerIdsCache.add(e.getExternalTrackerId());
+            }
+        }
+        return externalTrackerIdsCache;
+    }
+
+    private static class IsExternalTrackerId implements Predicate<Issue> {
+
+        private java.lang.String value;
+
+        public IsExternalTrackerId(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(Issue e) {
+            return e.isExternalTrackerId(value);
+        }
+
+    }
+
     // --- valueObject classes ---
     @Override
     protected Set<Class> getValueObjectClasses() {
@@ -984,6 +1069,12 @@ public abstract class GIssueDao
 
     public void setRequirementDao(scrum.server.project.RequirementDao requirementDao) {
         this.requirementDao = requirementDao;
+    }
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
     }
 
     scrum.server.release.ReleaseDao releaseDao;

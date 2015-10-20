@@ -1,6 +1,6 @@
 // ----------> GENERATED FILE - DON'T TOUCH! <----------
 
-// generator: ilarkesto.mda.legacy.generator.GwtEntityGenerator
+// generator: scrum.mda.KunagiModelApplication$1
 
 
 
@@ -14,78 +14,504 @@
 package scrum.client.project;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
-import scrum.client.common.*;
-import ilarkesto.gwt.client.*;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GQuality
-            extends scrum.client.common.AScrumGwtEntity {
+            extends scrum.client.common.AScrumGwtEntity
+            implements java.lang.Comparable<Quality> {
 
-    protected scrum.client.Dao getDao() {
-        return scrum.client.Dao.get();
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Quality.class);
+
+    private static transient ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Quality> projectBackReferencesCache = new ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Quality>() {
+    @Override
+        protected Set<Quality> loadById(final String id) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return id.equals(entity.getProjectId());
+            }
+            @Override
+            public String toString() {
+                return "Quality:byProject";
+            }
+        }.list();
+        }
+    };
+
+    public static Set< Quality> listByProject(final scrum.client.project.Project project) {
+        if (project == null) return new HashSet<Quality>();
+        return projectBackReferencesCache.getById(project.getId());
+    }
+
+    public static Set< Quality> listByNumber(final int number) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isNumber(number);
+            }
+            @Override
+            public String toString() {
+                return "Quality:byNumber";
+            }
+        }.list();
+    }
+
+    public static Set< Quality> listByLabel(final java.lang.String label) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isLabel(label);
+            }
+            @Override
+            public String toString() {
+                return "Quality:byLabel";
+            }
+        }.list();
+    }
+
+    public static Set< Quality> listByDescription(final java.lang.String description) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isDescription(description);
+            }
+            @Override
+            public String toString() {
+                return "Quality:byDescription";
+            }
+        }.list();
+    }
+
+    public static Set< Quality> listByTestDescription(final java.lang.String testDescription) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isTestDescription(testDescription);
+            }
+            @Override
+            public String toString() {
+                return "Quality:byTestDescription";
+            }
+        }.list();
+    }
+
+    public static Set< Quality> listByAutoAdd(final boolean autoAdd) {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isAutoAdd(autoAdd);
+            }
+            @Override
+            public String toString() {
+                return "Quality:byAutoAdd";
+            }
+        }.list();
+    }
+
+    @Override
+    protected void onAfterPersist() {
+        super.onAfterPersist();
+        projectBackReferencesCache.clear(getProjectId());
     }
 
     public abstract boolean isEditable();
 
-    public GQuality() {
+    public static Set<Quality> listByIsEditable() {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isEditable();
+            }
+            @Override
+            public String toString() {
+                return "Quality:byIsEditable";
+            }
+        }.list();
     }
 
-    public GQuality(Map data) {
-        super(data);
-        updateProperties(data);
+    public final boolean isNotEditable() {
+        return !isEditable();
     }
 
-    public static final String ENTITY_TYPE = "quality";
+    public static Set<Quality> listByIsNotEditable() {
+        return new AQualityQuery() {
+            @Override
+            public boolean test(Quality entity) {
+                return entity.isNotEditable();
+            }
+            @Override
+            public String toString() {
+                return "Quality:byIsNotEditable";
+            }
+        }.list();
+    }
+
+    public abstract static class AQualityQuery extends ilarkesto.core.persistance.AEntityQuery<Quality> {
+    @Override
+        public Class<Quality> getType() {
+            return Quality.class;
+        }
+    }
+
+    public static Set<Quality> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Quality.class).list();
+    }
+
+    public static Quality getById(String id) {
+        return (Quality) AEntity.getById(id);
+    }
 
     @Override
-    public final String getEntityType() {
-        return ENTITY_TYPE;
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getProject()); } catch(EntityDoesNotExistException ex) {}
+    // --- back references ---
+        ret.addAll(getProjectUserConfigs());
+        ret.addAll(getRequirements());
+        return ret;
     }
 
-    // --- project ---
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+        properties.put("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+        properties.put("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+        properties.put("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
+        properties.put("testDescription", ilarkesto.core.persistance.Persistence.propertyAsString(this.testDescription));
+        properties.put("autoAdd", ilarkesto.core.persistance.Persistence.propertyAsString(this.autoAdd));
+    }
+
+    @Override
+    public int compareTo(Quality other) {
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
+    }
+
+    public final Set<scrum.client.admin.ProjectUserConfig> getProjectUserConfigs() {
+        return scrum.client.admin.ProjectUserConfig.listByPblFilterQuality((Quality)this);
+    }
+
+    public final Set<scrum.client.project.Requirement> getRequirements() {
+        return scrum.client.project.Requirement.listByQuality((Quality)this);
+    }
+
+    private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GQuality.class);
+
+    public static final String TYPE = "Quality";
+
+
+    // -----------------------------------------------------------
+    // - Searchable
+    // -----------------------------------------------------------
+
+    @Override
+    public boolean matches(ilarkesto.core.search.SearchText search) {
+         return search.matches(getLabel(), getDescription(), getTestDescription());
+    }
+
+    // -----------------------------------------------------------
+    // - project
+    // -----------------------------------------------------------
 
     private String projectId;
 
+    public final String getProjectId() {
+        return this.projectId;
+    }
+
     public final scrum.client.project.Project getProject() {
-        if (projectId == null) return null;
-        return getDao().getProject(this.projectId);
+        try {
+            return this.projectId == null ? null : (scrum.client.project.Project) AEntity.getById(this.projectId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Quality.project");
+        }
+    }
+
+    public final void setProject(scrum.client.project.Project project) {
+        project = prepareProject(project);
+        if (isProject(project)) return;
+        setProjectId(project == null ? null : project.getId());
+    }
+
+    public final void setProjectId(String id) {
+        if (Utl.equals(projectId, id)) return;
+        clearProjectBackReferenceCache(id, this.projectId);
+        this.projectId = id;
+            updateLastModified();
+            fireModified("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+    }
+
+    private void clearProjectBackReferenceCache(String oldId, String newId) {
+        projectBackReferencesCache.clear(oldId);
+        projectBackReferencesCache.clear(newId);
+    }
+
+    private final void updateProjectId(String id) {
+        setProjectId(id);
+    }
+
+    protected scrum.client.project.Project prepareProject(scrum.client.project.Project project) {
+        return project;
+    }
+
+    protected void repairDeadProjectReference(String entityId) {
+        if (!isPersisted()) return;
+        if (this.projectId == null || entityId.equals(this.projectId)) {
+            repairMissingMaster();
+        }
     }
 
     public final boolean isProjectSet() {
-        return projectId != null;
-    }
-
-    public final Quality setProject(scrum.client.project.Project project) {
-        String id = project == null ? null : project.getId();
-        if (equals(this.projectId, id)) return (Quality) this;
-        this.projectId = id;
-        propertyChanged("projectId", this.projectId);
-        return (Quality)this;
+        return this.projectId != null;
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        String id = project==null ? null : project.getId();
-        return equals(this.projectId, id);
+        if (this.projectId == null && project == null) return true;
+        return project != null && project.getId().equals(this.projectId);
     }
 
-    // --- number ---
 
-    private int number ;
+    // -----------------------------------------------------------
+    // - number
+    // -----------------------------------------------------------
+
+    private int number;
 
     public final int getNumber() {
-        return this.number ;
+        return number;
     }
 
-    public final Quality setNumber(int number) {
-        if (isNumber(number)) return (Quality)this;
-        this.number = number ;
-        propertyChanged("number", this.number);
-        return (Quality)this;
+    public final void setNumber(int number) {
+        number = prepareNumber(number);
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    private final void updateNumber(int number) {
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    protected int prepareNumber(int number) {
+        return number;
     }
 
     public final boolean isNumber(int number) {
-        return equals(this.number, number);
+        return this.number == number;
     }
+
+    protected final void updateNumber(Object value) {
+        setNumber((Integer)value);
+    }
+
+    // -----------------------------------------------------------
+    // - label
+    // -----------------------------------------------------------
+
+    private java.lang.String label;
+
+    public final java.lang.String getLabel() {
+        return label;
+    }
+
+    public final void setLabel(java.lang.String label) {
+        label = prepareLabel(label);
+        if (isLabel(label)) return;
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    private final void updateLabel(java.lang.String label) {
+        if (isLabel(label)) return;
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    protected java.lang.String prepareLabel(java.lang.String label) {
+        // label = Str.removeUnreadableChars(label);
+        return label;
+    }
+
+    public final boolean isLabelSet() {
+        return this.label != null;
+    }
+
+    public final boolean isLabel(java.lang.String label) {
+        if (this.label == null && label == null) return true;
+        return this.label != null && this.label.equals(label);
+    }
+
+    protected final void updateLabel(Object value) {
+        setLabel((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - description
+    // -----------------------------------------------------------
+
+    private java.lang.String description;
+
+    public final java.lang.String getDescription() {
+        return description;
+    }
+
+    public final void setDescription(java.lang.String description) {
+        description = prepareDescription(description);
+        if (isDescription(description)) return;
+        this.description = description;
+            updateLastModified();
+            fireModified("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
+    }
+
+    private final void updateDescription(java.lang.String description) {
+        if (isDescription(description)) return;
+        this.description = description;
+            updateLastModified();
+            fireModified("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
+    }
+
+    protected java.lang.String prepareDescription(java.lang.String description) {
+        // description = Str.removeUnreadableChars(description);
+        return description;
+    }
+
+    public final boolean isDescriptionSet() {
+        return this.description != null;
+    }
+
+    public final boolean isDescription(java.lang.String description) {
+        if (this.description == null && description == null) return true;
+        return this.description != null && this.description.equals(description);
+    }
+
+    protected final void updateDescription(Object value) {
+        setDescription((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - testDescription
+    // -----------------------------------------------------------
+
+    private java.lang.String testDescription;
+
+    public final java.lang.String getTestDescription() {
+        return testDescription;
+    }
+
+    public final void setTestDescription(java.lang.String testDescription) {
+        testDescription = prepareTestDescription(testDescription);
+        if (isTestDescription(testDescription)) return;
+        this.testDescription = testDescription;
+            updateLastModified();
+            fireModified("testDescription", ilarkesto.core.persistance.Persistence.propertyAsString(this.testDescription));
+    }
+
+    private final void updateTestDescription(java.lang.String testDescription) {
+        if (isTestDescription(testDescription)) return;
+        this.testDescription = testDescription;
+            updateLastModified();
+            fireModified("testDescription", ilarkesto.core.persistance.Persistence.propertyAsString(this.testDescription));
+    }
+
+    protected java.lang.String prepareTestDescription(java.lang.String testDescription) {
+        // testDescription = Str.removeUnreadableChars(testDescription);
+        return testDescription;
+    }
+
+    public final boolean isTestDescriptionSet() {
+        return this.testDescription != null;
+    }
+
+    public final boolean isTestDescription(java.lang.String testDescription) {
+        if (this.testDescription == null && testDescription == null) return true;
+        return this.testDescription != null && this.testDescription.equals(testDescription);
+    }
+
+    protected final void updateTestDescription(Object value) {
+        setTestDescription((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - autoAdd
+    // -----------------------------------------------------------
+
+    private boolean autoAdd;
+
+    public final boolean isAutoAdd() {
+        return autoAdd;
+    }
+
+    public final void setAutoAdd(boolean autoAdd) {
+        autoAdd = prepareAutoAdd(autoAdd);
+        if (isAutoAdd(autoAdd)) return;
+        this.autoAdd = autoAdd;
+            updateLastModified();
+            fireModified("autoAdd", ilarkesto.core.persistance.Persistence.propertyAsString(this.autoAdd));
+    }
+
+    private final void updateAutoAdd(boolean autoAdd) {
+        if (isAutoAdd(autoAdd)) return;
+        this.autoAdd = autoAdd;
+            updateLastModified();
+            fireModified("autoAdd", ilarkesto.core.persistance.Persistence.propertyAsString(this.autoAdd));
+    }
+
+    protected boolean prepareAutoAdd(boolean autoAdd) {
+        return autoAdd;
+    }
+
+    public final boolean isAutoAdd(boolean autoAdd) {
+        return this.autoAdd == autoAdd;
+    }
+
+    protected final void updateAutoAdd(Object value) {
+        setAutoAdd((Boolean)value);
+    }
+
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
+            if (property.equals("id")) continue;
+            String value = entry.getValue();
+            if (property.equals("projectId")) updateProjectId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("number")) updateNumber(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+            if (property.equals("label")) updateLabel(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("description")) updateDescription(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("testDescription")) updateTestDescription(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("autoAdd")) updateAutoAdd(ilarkesto.core.persistance.Persistence.parsePropertyboolean(value));
+        }
+    }
+
+    // --- ensure integrity ---
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
+        if (!isProjectSet()) {
+            repairMissingMaster();
+        }
+        try {
+            getProject();
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            LOG.info("Repairing dead project reference");
+            repairDeadProjectReference(this.projectId);
+        }
+        Collection<scrum.client.admin.ProjectUserConfig> projectUserConfig = getProjectUserConfigs();
+        Collection<scrum.client.project.Requirement> requirement = getRequirements();
+    }
+
+    // --- PLUGIN: GwtEntityPropertyEditorClassGeneratorPlugin ---
 
     private transient NumberModel numberModel;
 
@@ -124,31 +550,15 @@ public abstract class GQuality
             }
 
         @Override
+        public boolean isMandatory() { return true; }
+
+        @Override
         protected void onChangeValue(java.lang.Integer oldValue, java.lang.Integer newValue) {
             super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- label ---
-
-    private java.lang.String label ;
-
-    public final java.lang.String getLabel() {
-        return this.label ;
-    }
-
-    public final Quality setLabel(java.lang.String label) {
-        if (isLabel(label)) return (Quality)this;
-        if (ilarkesto.core.base.Str.isBlank(label)) throw new RuntimeException("Field is mandatory.");
-        this.label = label ;
-        propertyChanged("label", this.label);
-        return (Quality)this;
-    }
-
-    public final boolean isLabel(java.lang.String label) {
-        return equals(this.label, label);
     }
 
     private transient LabelModel labelModel;
@@ -178,9 +588,6 @@ public abstract class GQuality
         }
 
         @Override
-        public boolean isMandatory() { return true; }
-
-        @Override
         public boolean isEditable() { return GQuality.this.isEditable(); }
         @Override
         public String getTooltip() { return "The label should be short (as it appears where the Quality is referenced), yet give a hint strong enough to make the content of it come to mind."; }
@@ -188,29 +595,9 @@ public abstract class GQuality
         @Override
         protected void onChangeValue(java.lang.String oldValue, java.lang.String newValue) {
             super.onChangeValue(oldValue, newValue);
-            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- description ---
-
-    private java.lang.String description ;
-
-    public final java.lang.String getDescription() {
-        return this.description ;
-    }
-
-    public final Quality setDescription(java.lang.String description) {
-        if (isDescription(description)) return (Quality)this;
-        this.description = description ;
-        propertyChanged("description", this.description);
-        return (Quality)this;
-    }
-
-    public final boolean isDescription(java.lang.String description) {
-        return equals(this.description, description);
     }
 
     private transient DescriptionModel descriptionModel;
@@ -255,25 +642,6 @@ public abstract class GQuality
 
     }
 
-    // --- testDescription ---
-
-    private java.lang.String testDescription ;
-
-    public final java.lang.String getTestDescription() {
-        return this.testDescription ;
-    }
-
-    public final Quality setTestDescription(java.lang.String testDescription) {
-        if (isTestDescription(testDescription)) return (Quality)this;
-        this.testDescription = testDescription ;
-        propertyChanged("testDescription", this.testDescription);
-        return (Quality)this;
-    }
-
-    public final boolean isTestDescription(java.lang.String testDescription) {
-        return equals(this.testDescription, testDescription);
-    }
-
     private transient TestDescriptionModel testDescriptionModel;
 
     public TestDescriptionModel getTestDescriptionModel() {
@@ -316,42 +684,47 @@ public abstract class GQuality
 
     }
 
-    // --- update properties by map ---
+    private transient AutoAddModel autoAddModel;
 
-    public void updateProperties(Map props) {
-        projectId = (String) props.get("projectId");
-        number  = (Integer) props.get("number");
-        label  = (java.lang.String) props.get("label");
-        description  = (java.lang.String) props.get("description");
-        testDescription  = (java.lang.String) props.get("testDescription");
-        updateLocalModificationTime();
+    public AutoAddModel getAutoAddModel() {
+        if (autoAddModel == null) autoAddModel = createAutoAddModel();
+        return autoAddModel;
     }
 
-    @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("projectId", this.projectId);
-        properties.put("number", this.number);
-        properties.put("label", this.label);
-        properties.put("description", this.description);
-        properties.put("testDescription", this.testDescription);
-    }
+    protected AutoAddModel createAutoAddModel() { return new AutoAddModel(); }
 
-    public final java.util.List<scrum.client.admin.ProjectUserConfig> getProjectUserConfigs() {
-        return getDao().getProjectUserConfigsByPblFilterQuality((Quality)this);
-    }
+    protected class AutoAddModel extends ilarkesto.gwt.client.editor.ABooleanEditorModel {
 
-    public final java.util.List<scrum.client.project.Requirement> getRequirements() {
-        return getDao().getRequirementsByQuality((Quality)this);
-    }
+        @Override
+        public String getId() {
+            return "Quality_autoAdd";
+        }
 
-    @Override
-    public boolean matchesKey(String key) {
-        if (super.matchesKey(key)) return true;
-        if (matchesKey(getLabel(), key)) return true;
-        if (matchesKey(getDescription(), key)) return true;
-        if (matchesKey(getTestDescription(), key)) return true;
-        return false;
+        @Override
+        public java.lang.Boolean getValue() {
+            return isAutoAdd();
+        }
+
+        @Override
+        public void setValue(java.lang.Boolean value) {
+            setAutoAdd(value);
+        }
+
+        @Override
+        public boolean isMandatory() { return true; }
+
+        @Override
+        public boolean isEditable() { return GQuality.this.isEditable(); }
+        @Override
+        public String getTooltip() { return "If enabled this quality will be added to all new Stories."; }
+
+        @Override
+        protected void onChangeValue(java.lang.Boolean oldValue, java.lang.Boolean newValue) {
+            super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
+            addUndo(this, oldValue);
+        }
+
     }
 
 }

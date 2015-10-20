@@ -1,21 +1,22 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- * 
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
+ * General Public License as published by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- * 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+ * License for more details.
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.collaboration;
 
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.gwt.client.AGwtEntity;
-import ilarkesto.gwt.client.EntityDoesNotExistException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +24,16 @@ import java.util.List;
 import scrum.client.admin.User;
 import scrum.client.common.AScrumGwtEntity;
 import scrum.client.core.RequestEntityServiceCall;
-import scrum.client.workspace.BlockCollapsedEvent;
-import scrum.client.workspace.BlockCollapsedHandler;
-import scrum.client.workspace.BlockExpandedEvent;
-import scrum.client.workspace.BlockExpandedHandler;
 
-public class UsersStatus extends GUsersStatus implements BlockCollapsedHandler, BlockExpandedHandler {
+public class UsersStatus extends GUsersStatus {
 
-	@Override
-	public void onBlockExpanded(BlockExpandedEvent event) {
-		Object object = event.getObject();
+	public void onBlockExpanded(Object object) {
 		if (object instanceof AGwtEntity) {
 			addSelectedEntity((AGwtEntity) object);
 		}
 	}
 
-	@Override
-	public void onBlockCollapsed(BlockCollapsedEvent event) {
-		Object object = event.getObject();
+	public void onBlockCollapsed(Object object) {
 		if (object instanceof AGwtEntity) {
 			removeSelectedEntity((AGwtEntity) object);
 		}
@@ -75,7 +68,7 @@ public class UsersStatus extends GUsersStatus implements BlockCollapsedHandler, 
 		List<AScrumGwtEntity> ret = new ArrayList<AScrumGwtEntity>(ids.size());
 		for (String id : ids) {
 			try {
-				AGwtEntity entity = dao.getEntity(id);
+				AEntity entity = AGwtEntity.getById(id);
 				ret.add((AScrumGwtEntity) entity);
 			} catch (EntityDoesNotExistException ex) {
 				new RequestEntityServiceCall(id).execute();

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -291,6 +291,8 @@ public class HomepageUpdater {
 		if (issue.isOwnerSet()) context.put("owner", issue.getOwner().getPublicName());
 		if (issue.isFixed()) context.put("fixed", "true");
 		context.put("themes", toHtml(issue.getThemes()));
+		context.put("fixReleasesAsString", issue.getFixReleasesAsString());
+		context.put("externalTrackerId", issue.getExternalTrackerId());
 		fillComments(context, issue);
 	}
 
@@ -313,7 +315,7 @@ public class HomepageUpdater {
 		}
 		context.put("date", Tm.FORMAT_WEEKDAY_LONGMONTH_DAY_YEAR_HOUR_MINUTE.format(comment.getDateAndTime()));
 		context.put("dateDe", new SimpleDateFormat("EEE, d. MMMMM yyyy, HH:mm", Locale.GERMANY).format(comment
-				.getDateAndTime().toJavaDate()));
+			.getDateAndTime().toJavaDate()));
 	}
 
 	private void fillRelease(ContextBuilder context, Release release) {
@@ -385,12 +387,18 @@ public class HomepageUpdater {
 		Sprint sprint = project.getCurrentSprint();
 		context.put("label", toHtml(sprint.getLabel()));
 		context.put("goal", wikiToHtml(sprint.getGoal()));
-		context.put("begin", Tm.FORMAT_LONGMONTH_DAY_YEAR.format(sprint.getBegin()));
-		context.put("end", Tm.FORMAT_LONGMONTH_DAY_YEAR.format(sprint.getEnd()));
+		if (sprint.isBeginSet()) {
+			context.put("begin", Tm.FORMAT_LONGMONTH_DAY_YEAR.format(sprint.getBegin()));
+			context.put("beginDe", sprint.getBegin().formatDayMonthYear());
+		}
+		if (sprint.isEndSet()) {
+			context.put("end", Tm.FORMAT_LONGMONTH_DAY_YEAR.format(sprint.getEnd()));
+			context.put("endDe", sprint.getEnd().formatDayMonthYear());
+		}
 		Release release = sprint.getNextRelease();
 		if (release != null) context.put("release", release.getLabel());
 		List<Requirement> requirements = new ArrayList<Requirement>(sprint.getRequirements());
-		Collections.sort(requirements, project.getRequirementsOrderComparator());
+		Collections.sort(requirements, sprint.getRequirementsOrderComparator());
 		for (Requirement requirement : requirements) {
 			fillStory(context.addSubContext("stories"), requirement);
 		}
@@ -420,6 +428,11 @@ public class HomepageUpdater {
 		if (requirement.isEstimatedWorkSet() && !requirement.isDirty())
 			context.put("estimatedWork", requirement.getEstimatedWorkAsString());
 		context.put("themes", toHtml(requirement.getThemes()));
+		context.put("tasksClosed", requirement.isTasksClosed());
+		context.put("closed", requirement.isClosed());
+		context.put("burnedWork", requirement.getBurnedWork());
+		context.put("remainingWork", requirement.getRemainingWork());
+		context.put("externalTrackerId", requirement.getExternalTrackerId());
 		fillComments(context, requirement);
 	}
 
@@ -437,8 +450,23 @@ public class HomepageUpdater {
 		context.put("description", wikiToHtml(project.getDescription()));
 		context.put("longDescription", wikiToHtml(project.getLongDescription()));
 		context.put("homepageUrl", project.getHomepageUrl());
+		for (User user : project.getProductOwners()) {
+			fillProjectParticipant(context.addSubContext("productOwners"), user);
+		}
+		for (User user : project.getScrumMasters()) {
+			fillProjectParticipant(context.addSubContext("scrumMasters"), user);
+		}
+		for (User user : project.getTeamMembers()) {
+			fillProjectParticipant(context.addSubContext("teamMembers"), user);
+		}
 		Release currentRelease = project.getCurrentRelease();
 		context.put("currentRelease", currentRelease == null ? "?" : toHtml(currentRelease.getLabel()));
+	}
+
+	private void fillProjectParticipant(ContextBuilder context, User user) {
+		context.put("name", toHtml(user.getName()));
+		context.put("fullName", toHtml(user.getFullName()));
+		context.put("publicName", toHtml(user.getPublicName()));
 	}
 
 	public String wikiToHtml(String wikitext) {

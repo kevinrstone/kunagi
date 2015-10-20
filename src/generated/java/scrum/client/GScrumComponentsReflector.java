@@ -22,8 +22,6 @@ public class GScrumComponentsReflector implements ilarkesto.core.scope.Component
 
     protected ilarkesto.core.scope.ComponentReflector richtextAutosaverReflector = createRichtextAutosaverReflector();
 
-    protected ilarkesto.core.scope.ComponentReflector serviceCallerReflector = createServiceCallerReflector();
-
     protected ilarkesto.core.scope.ComponentReflector uploaderReflector = createUploaderReflector();
 
     protected ilarkesto.core.scope.ComponentReflector localizerReflector = createLocalizerReflector();
@@ -56,7 +54,6 @@ public class GScrumComponentsReflector implements ilarkesto.core.scope.Component
         if (component instanceof scrum.client.communication.Pinger) pingerReflector.injectComponents(component, scope);
         if (component instanceof scrum.client.communication.ServerErrorManager) serverErrorManagerReflector.injectComponents(component, scope);
         if (component instanceof scrum.client.core.RichtextAutosaver) richtextAutosaverReflector.injectComponents(component, scope);
-        if (component instanceof scrum.client.core.ServiceCaller) serviceCallerReflector.injectComponents(component, scope);
         if (component instanceof scrum.client.files.Uploader) uploaderReflector.injectComponents(component, scope);
         if (component instanceof scrum.client.i18n.Localizer) localizerReflector.injectComponents(component, scope);
         if (component instanceof scrum.client.issues.IssueManager) issueManagerReflector.injectComponents(component, scope);
@@ -80,7 +77,6 @@ public class GScrumComponentsReflector implements ilarkesto.core.scope.Component
         if (component instanceof scrum.client.communication.Pinger) pingerReflector.callInitializationMethods(component);
         if (component instanceof scrum.client.communication.ServerErrorManager) serverErrorManagerReflector.callInitializationMethods(component);
         if (component instanceof scrum.client.core.RichtextAutosaver) richtextAutosaverReflector.callInitializationMethods(component);
-        if (component instanceof scrum.client.core.ServiceCaller) serviceCallerReflector.callInitializationMethods(component);
         if (component instanceof scrum.client.files.Uploader) uploaderReflector.callInitializationMethods(component);
         if (component instanceof scrum.client.i18n.Localizer) localizerReflector.callInitializationMethods(component);
         if (component instanceof scrum.client.issues.IssueManager) issueManagerReflector.callInitializationMethods(component);
@@ -104,7 +100,6 @@ public class GScrumComponentsReflector implements ilarkesto.core.scope.Component
         if (component instanceof scrum.client.communication.Pinger) pingerReflector.outjectComponents(component, scope);
         if (component instanceof scrum.client.communication.ServerErrorManager) serverErrorManagerReflector.outjectComponents(component, scope);
         if (component instanceof scrum.client.core.RichtextAutosaver) richtextAutosaverReflector.outjectComponents(component, scope);
-        if (component instanceof scrum.client.core.ServiceCaller) serviceCallerReflector.outjectComponents(component, scope);
         if (component instanceof scrum.client.files.Uploader) uploaderReflector.outjectComponents(component, scope);
         if (component instanceof scrum.client.i18n.Localizer) localizerReflector.outjectComponents(component, scope);
         if (component instanceof scrum.client.issues.IssueManager) issueManagerReflector.outjectComponents(component, scope);
@@ -152,10 +147,6 @@ public class GScrumComponentsReflector implements ilarkesto.core.scope.Component
 
     public ilarkesto.core.scope.ComponentReflector createRichtextAutosaverReflector() {
         return new scrum.client.core.GRichtextAutosaverReflector();
-    }
-
-    public ilarkesto.core.scope.ComponentReflector createServiceCallerReflector() {
-        return new scrum.client.core.GServiceCallerReflector();
     }
 
     public ilarkesto.core.scope.ComponentReflector createUploaderReflector() {

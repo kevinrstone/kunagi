@@ -14,7 +14,7 @@
  */
 package scrum.server.pr;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import scrum.server.project.Project;
 
 public class BlogEntryDao extends GBlogEntryDao {

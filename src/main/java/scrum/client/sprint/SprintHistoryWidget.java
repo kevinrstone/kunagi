@@ -15,10 +15,9 @@
 package scrum.client.sprint;
 
 import ilarkesto.core.base.ChangeIndicator;
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.Gwt;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ public class SprintHistoryWidget extends AScrumWidget {
 
 			@Override
 			public void run() {
-				getCurrentProject().historyLoaded = true;
 				update();
 			}
 		});
@@ -54,7 +52,8 @@ public class SprintHistoryWidget extends AScrumWidget {
 		if (changeIndicator.update(sprints)) {
 			page.clear();
 			for (Sprint sprint : sprints) {
-				page.addHeader(sprint.getReferenceAndLabel());
+				page.addHeader(sprint.getReferenceAndLabel() + " | " + sprint.getBegin().format() + " - "
+						+ sprint.getEnd());
 
 				SprintHistorySprintWidget widget = sprintWidgets.get(sprint);
 				if (widget == null) {
@@ -69,8 +68,7 @@ public class SprintHistoryWidget extends AScrumWidget {
 	}
 
 	private Sprint getSprint(Requirement requirement) {
-		List<Sprint> sprints = new ArrayList<Sprint>(getDao().getSprints());
-		Collections.sort(sprints, Sprint.END_DATE_COMPARATOR);
+		List<Sprint> sprints = Utl.sort(Sprint.listAll(), Sprint.END_DATE_COMPARATOR);
 		for (Sprint sprint : sprints) {
 			SprintReport report = sprint.getSprintReport();
 			if (report == null) {

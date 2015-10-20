@@ -26,21 +26,33 @@ import ilarkesto.gwt.client.editor.AOptionEditorModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import scrum.client.Dao;
 import scrum.client.admin.Auth;
 import scrum.client.admin.User;
+import scrum.client.calendar.SimpleEvent;
 import scrum.client.collaboration.Comment;
 import scrum.client.collaboration.Emoticon;
 import scrum.client.collaboration.ForumSupport;
+import scrum.client.collaboration.Subject;
+import scrum.client.collaboration.Wikipage;
+import scrum.client.files.File;
+import scrum.client.impediments.Impediment;
+import scrum.client.issues.Issue;
+import scrum.client.pr.BlogEntry;
+import scrum.client.project.Quality;
+import scrum.client.project.Requirement;
+import scrum.client.release.Release;
+import scrum.client.risks.Risk;
+import scrum.client.sprint.Sprint;
+import scrum.client.sprint.Task;
 
 public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSupport, HtmlLabelSupport {
 
 	public AScrumGwtEntity() {}
 
-	public List<Comment> getComments() {
-		return getDao().getCommentsByParent(this);
+	public Set<Comment> getComments() {
+		return Comment.listByParent(this);
 	}
 
 	public Comment getLatestComment() {
@@ -56,23 +68,22 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 		return latest == null ? null : latest.getDateAndTime();
 	}
 
-	public List<Emoticon> getEmoticons() {
-		return getDao().getEmoticonsByParent(this);
+	public Set<Emoticon> getEmoticons() {
+		return Emoticon.listByParent(this);
 	}
 
 	public void setCurrentUserEmoticon(String emotion) {
-		updateLocalModificationTime();
+		updateLastModified();
 		boolean delete = Str.isBlank(emotion);
 		Emoticon emoticon = getCurrentUserEmoticon();
 		if (emoticon == null) {
 			if (!delete) {
-				emoticon = new Emoticon(this, emotion);
-				getDao().createEmoticon(emoticon);
+				emoticon = Emoticon.post(this, emotion);
 				return;
 			}
 		} else {
 			if (delete) {
-				getDao().deleteEmoticon(emoticon);
+				emoticon.delete();
 			} else {
 				emoticon.setEmotion(emotion);
 			}
@@ -108,18 +119,6 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 				return emoticon == null ? null : emoticon.getEmotion();
 			}
 		};
-	}
-
-	@Override
-	public boolean matchesKey(String key) {
-		if (this instanceof ReferenceSupport) {
-			if (matchesKey(((ReferenceSupport) this).getReference(), key)) return true;
-		}
-		return super.matchesKey(key);
-	}
-
-	public AScrumGwtEntity(Map data) {
-		super(data);
 	}
 
 	@Override
@@ -175,9 +174,85 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 		return Gwt.escapeHtml(toString());
 	}
 
-	@Override
-	protected Dao getDao() {
-		return Dao.get();
+	public static AScrumGwtEntity getEntityByReference(String reference) {
+
+		if (reference.length() > 4 && reference.startsWith("[[")) {
+			String pageName = reference.substring(2, reference.length() - 2);
+			for (Wikipage e : Wikipage.listAll()) {
+				if (e.isName(pageName)) return e;
+			}
+			return null;
+		}
+
+		int number;
+		try {
+			number = Integer.parseInt(reference.substring(Requirement.REFERENCE_PREFIX.length()));
+		} catch (NumberFormatException ex) {
+			return null;
+		}
+		if (reference.startsWith(Requirement.REFERENCE_PREFIX)) {
+			for (Requirement e : Requirement.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Task.REFERENCE_PREFIX)) {
+			for (Task e : Task.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Quality.REFERENCE_PREFIX)) {
+			for (Quality e : Quality.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Issue.REFERENCE_PREFIX)) {
+			for (Issue e : Issue.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Sprint.REFERENCE_PREFIX)) {
+			for (Sprint e : Sprint.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Risk.REFERENCE_PREFIX)) {
+			for (Risk e : Risk.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Impediment.REFERENCE_PREFIX)) {
+			for (Impediment e : Impediment.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(File.REFERENCE_PREFIX)) {
+			for (File e : File.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Subject.REFERENCE_PREFIX)) {
+			for (Subject e : Subject.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(SimpleEvent.REFERENCE_PREFIX)) {
+			for (SimpleEvent e : SimpleEvent.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(Release.REFERENCE_PREFIX)) {
+			for (Release e : Release.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else if (reference.startsWith(BlogEntry.REFERENCE_PREFIX)) {
+			for (BlogEntry e : BlogEntry.listAll()) {
+				if (e.isNumber(number)) return e;
+			}
+			return null;
+		} else {
+			throw new RuntimeException("Unsupported entity reference: " + reference);
+		}
 	}
 
 }

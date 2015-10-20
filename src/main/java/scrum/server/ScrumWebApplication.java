@@ -1,22 +1,23 @@
 /*
  * Copyright 2008, 2009, 2010 Witoslaw Koczewski, Artjom Kochtchi, Fabian Hager, Kacper Grubalski.
- * 
+ *
  * This file is part of Kunagi.
- * 
+ *
  * Kunagi is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
  * option) any later version.
- * 
+ *
  * Kunagi is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with Foobar. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 
 package scrum.server;
 
+import ilarkesto.auth.Auth;
 import ilarkesto.auth.OpenId;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
@@ -24,6 +25,7 @@ import ilarkesto.base.Utl;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.EntitiesBackend;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.di.app.BackupApplicationDataDirTask;
@@ -34,8 +36,9 @@ import ilarkesto.persistence.AEntity;
 import ilarkesto.webapp.AWebApplication;
 import ilarkesto.webapp.AWebSession;
 import ilarkesto.webapp.DestroyTimeoutedSessionsTask;
-import ilarkesto.webapp.Servlet;
+import ilarkesto.webapp.GwtSuperDevMode;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -45,13 +48,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import scrum.client.ApplicationInfo;
 import scrum.client.admin.SystemMessage;
+import scrum.client.workspace.Navigator;
 import scrum.server.admin.DeleteDisabledUsersTask;
 import scrum.server.admin.DisableInactiveUsersTask;
 import scrum.server.admin.DisableUsersWithUnverifiedEmailsTask;
+import scrum.server.admin.KunagiAuthenticationContext;
 import scrum.server.admin.ProjectUserConfig;
 import scrum.server.admin.SystemConfig;
 import scrum.server.admin.User;
-import scrum.server.admin.UserDao;
 import scrum.server.common.BurndownChart;
 import scrum.server.journal.ProjectEvent;
 import scrum.server.pr.EmailSender;
@@ -62,7 +66,7 @@ import scrum.server.project.Project;
 
 public class ScrumWebApplication extends GScrumWebApplication {
 
-	private static final int DATA_VERSION = 36;
+	private static final int DATA_VERSION = 37;
 
 	private static final Log log = Log.get(ScrumWebApplication.class);
 
@@ -82,6 +86,11 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	@Override
 	protected int getDataVersion() {
 		return DATA_VERSION;
+	}
+
+	@Override
+	protected EntitiesBackend createEntitiesBackend() {
+		return getEntityStore();
 	}
 
 	// --- composites ---
@@ -113,8 +122,8 @@ public class ScrumWebApplication extends GScrumWebApplication {
 
 	public ApplicationInfo getApplicationInfo() {
 		boolean defaultAdminPassword = isAdminPasswordDefault();
-		return new ApplicationInfo(getApplicationLabel(), getReleaseLabel(), getBuild(), defaultAdminPassword,
-				getCurrentRelease(), getApplicationDataDir());
+		return new ApplicationInfo(getApplicationLabel(), getBuildProperties().getReleaseLabel(), getBuildProperties()
+			.getBuild(), defaultAdminPassword, getCurrentRelease(), getApplicationDataDir());
 	}
 
 	@Override
@@ -143,34 +152,15 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	// --- ---
 
 	@Override
-	public void ensureIntegrity() {
+	protected void onPreStart() {
+		super.onPreStart();
+
 		if (getConfig().isStartupDelete()) {
 			log.warn("DELETING ALL ENTITIES (set startup.delete=false in config.properties to prevent this behavior)");
 			IO.delete(getApplicationDataDir() + "/entities");
 		}
 
-		super.ensureIntegrity();
-	}
-
-	@Override
-	protected void onStartWebApplication() {
 		Log.setDebugEnabled(isDevelopmentMode() || getConfig().isLoggingDebug());
-
-		String url = getConfig().getUrl();
-		if (!Str.isBlank(url)) getSystemConfig().setUrl(url);
-
-		if (getUserDao().getEntities().isEmpty()) {
-			String password = getSystemConfig().getDefaultUserPassword();
-			log.warn("No users. Creating initial user <admin> with password <" + password + ">");
-			User admin = getUserDao().postUserWithDefaultPassword("admin");
-			admin.setPassword(password);
-			admin.setAdmin(true);
-			getTransactionService().commit();
-		}
-
-		getReleaseDao().resetScripts();
-		getProjectDao().scanFiles();
-		getTransactionService().commit();
 
 		String httpProxy = getConfig().getHttpProxyHost();
 		if (!Str.isBlank(httpProxy)) {
@@ -180,12 +170,56 @@ public class ScrumWebApplication extends GScrumWebApplication {
 			OpenId.setHttpProxy(httpProxy, httpProxyPort);
 		}
 
+	}
+
+	@Override
+	protected void ensureIntegrity() {
+		super.ensureIntegrity();
+
+		String url = getConfig().getUrl();
+		if (!Str.isBlank(url)) getSystemConfig().setUrl(url);
+
+		if (getUserDao().getEntities().isEmpty()) {
+			log.warn("No users. Creating initial user <admin> with default password <"
+					+ getSystemConfig().getDefaultUserPassword() + ">");
+			User admin = getUserDao().postUser("admin");
+			admin.setAdmin(true);
+		}
+
+		getReleaseDao().resetScripts();
+		getProjectDao().scanFiles();
+
 		// test data
-		if (getConfig().isCreateTestData() && getProjectDao().getEntities().isEmpty()) createTestData();
+		if (getConfig().isCreateTestData() && getProjectDao().getEntities().isEmpty() && !isUnitTestMode()) {
+			createTestData();
+		}
 
 		for (ProjectUserConfig config : getProjectUserConfigDao().getEntities()) {
 			config.reset();
 		}
+	}
+
+	@Override
+	protected void onStartWebApplication() {
+
+	}
+
+	@Override
+	protected GwtSuperDevMode createGwtSuperDevMode() {
+		File nocachefile = new File("src/main/webapp/scrum.ScrumGwtApplication/scrum.ScrumGwtApplication.nocache.js");
+		if (!nocachefile.exists()) {
+			IO.copyFile(new File("etc/" + nocachefile.getName()), nocachefile);
+			throw new IllegalStateException("GWT file " + nocachefile.getPath()
+				+ " was missing. It is created now. Just restart your web application server.");
+		}
+
+		GwtSuperDevMode sdm = new GwtSuperDevMode();
+		sdm.setPrecompile(true);
+		sdm.setIncremental(false);
+		sdm.addSources("src/main/java", "src/generated/java", "../ilarkesto/src/main/java");
+		sdm.addModules("scrum.ScrumGwtApplication");
+		sdm.setWorkDir(new File("current").getAbsoluteFile().getParentFile().getParentFile());
+		return sdm;
 	}
 
 	public String createUrl(String relativePath) {
@@ -205,23 +239,20 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	}
 
 	public String createUrl(Project project, AEntity entity) {
-		String hashtag = "project=" + project.getId();
-		if (entity != null) hashtag += "|entity=" + entity.getId();
-		return createUrl("#" + Str.encodeUrlParameter(hashtag));
+		return createUrl("#" + Navigator.createToken(project.getId(), null, entity == null ? null : entity.getId()));
 	}
 
 	private void createTestData() {
 		log.warn("Creating test data");
 
-		getUserDao().postUserWithDefaultPassword("homer");
-		getUserDao().postUserWithDefaultPassword("cartman");
-		getUserDao().postUserWithDefaultPassword("duke");
-		getUserDao().postUserWithDefaultPassword("spinne");
+		getUserDao().postUser("homer");
+		getUserDao().postUser("cartman");
+		getUserDao().postUser("duke");
+		getUserDao().postUser("spinne");
 
 		getProjectDao().postExampleProject(getUserDao().getUserByName("admin"), getUserDao().getUserByName("cartman"),
 			getUserDao().getUserByName("admin"));
 
-		getTransactionService().commit();
 	}
 
 	@Override
@@ -249,7 +280,6 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	@Override
 	protected void onShutdownWebApplication() {
 		getSubscriptionService().flush();
-		getTransactionService().commit();
 	}
 
 	public void shutdown(final long delayInMillis) {
@@ -271,6 +301,8 @@ public class ScrumWebApplication extends GScrumWebApplication {
 
 	@Override
 	public void backupApplicationDataDir() {
+		if (isDevelopmentMode()) return;
+
 		updateSystemMessage(new SystemMessage(
 				"Data backup in progress. All your changes are delayed until backup finishes."));
 		Utl.sleep(3000);
@@ -286,20 +318,11 @@ public class ScrumWebApplication extends GScrumWebApplication {
 		return url == null ? "http://localhost:8080/kunagi/" : url;
 	}
 
-	private UserDao userDao;
-
-	public UserDao getUserDao() {
-		if (userDao == null) {
-			userDao = new UserDao();
-			autowire(userDao);
-		}
-		return userDao;
-	}
-
 	public boolean isAdminPasswordDefault() {
-		User admin = userDao.getUserByName("admin");
+		User admin = getUserDao().getUserByName("admin");
 		if (admin == null) return false;
-		return admin.matchesPassword(getSystemConfig().getDefaultUserPassword());
+
+		return Auth.isPasswordMatchingDefaultPassword(admin, new KunagiAuthenticationContext());
 	}
 
 	public synchronized void postProjectEvent(Project project, String message, AEntity subject) {
@@ -385,7 +408,7 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	public static synchronized ScrumWebApplication get(ServletConfig servletConfig) {
 		if (AWebApplication.isStarted()) return get();
 		return (ScrumWebApplication) WebApplicationStarter.startWebApplication(ScrumWebApplication.class.getName(),
-			Servlet.getContextPath(servletConfig));
+			servletConfig);
 	}
 
 	public void triggerRegisterNotification(User user, String host) {

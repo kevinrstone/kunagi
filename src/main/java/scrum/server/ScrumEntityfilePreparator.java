@@ -14,7 +14,9 @@
  */
 package scrum.server;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.integration.jdom.JDom;
 import ilarkesto.io.IO;
 import ilarkesto.persistence.EntityfilePreparator;
 
@@ -42,12 +44,34 @@ public class ScrumEntityfilePreparator implements EntityfilePreparator {
 
 		try {
 			if ("_template_".equalsIgnoreCase(alias)) prepare_template_(file);
-			if ("sprint".equalsIgnoreCase(alias)) prepareSprint(file);
+			if ("task".equalsIgnoreCase(alias)) prepareTask(file);
 			// if ("projectUserConfig".equalsIgnoreCase(alias)) prepareProjectUserConfig(file);
 			// if ("change".equalsIgnoreCase(alias)) prepareChange(file);
 		} catch (Throwable ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private void prepareTask(File file) throws IOException {
+		boolean modified = false;
+
+		Document doc;
+		try {
+			doc = new SAXBuilder().build(file);
+		} catch (JDOMException ex) {
+			throw new RuntimeException(ex);
+		}
+		Element eImpediment = doc.getRootElement();
+
+		String impedimentId = eImpediment.getChildText("impedimentId");
+		if (Str.isBlank(impedimentId)) return;
+
+		eImpediment.removeChild("impedimentId");
+
+		Element eImpedimentIds = JDom.addElement(eImpediment, "impedimentsIds");
+		JDom.addTextElement(eImpedimentIds, "string", impedimentId);
+
+		save(doc, file);
 	}
 
 	private void prepareSprint(File file) throws IOException {

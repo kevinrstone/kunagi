@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.sprint;
 
-public class CreateIssueFromTaskServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String taskId;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class CreateIssueFromTaskServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  CreateIssueFromTaskServiceCall(String taskId) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    java.lang.String taskId;
+
+    public CreateIssueFromTaskServiceCall(java.lang.String taskId) {
         this.taskId = taskId;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().createIssueFromTask(serviceCaller.getConversationNumber(), taskId, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.createIssueFromTask(conversationNumber, taskId, callback);
     }
 
     @Override
     public String toString() {
-        return "CreateIssueFromTask";
+        return "createIssueFromTask";
     }
 
 }
-

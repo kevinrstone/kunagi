@@ -14,11 +14,10 @@
  */
 package scrum.client.wiki;
 
-import ilarkesto.core.scope.Scope;
-import scrum.client.Dao;
 import scrum.client.ScrumScopeManager;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.common.AScrumGwtEntity;
+import scrum.client.core.RequestEntityByReferenceServiceCall;
 import scrum.client.project.Project;
 import scrum.client.workspace.Navigator;
 
@@ -26,15 +25,11 @@ import com.google.gwt.core.client.GWT;
 
 public class ScrumHtmlContext implements HtmlContext {
 
-	private Dao dao;
-
-	public ScrumHtmlContext() {
-		this.dao = Scope.get().getComponent(Dao.class);
-	}
+	public ScrumHtmlContext() {}
 
 	@Override
 	public boolean isEntityReferenceAvailable(String reference) {
-		return dao.getEntityByReference(reference) != null;
+		return AScrumGwtEntity.getEntityByReference(reference) != null;
 	}
 
 	@Override
@@ -51,9 +46,9 @@ public class ScrumHtmlContext implements HtmlContext {
 
 	@Override
 	public String getEntityLabelByReference(String reference) {
-		AScrumGwtEntity entity = dao.getEntityByReference(reference);
+		AScrumGwtEntity entity = AScrumGwtEntity.getEntityByReference(reference);
 		if (entity == null) {
-			dao.requestEntityByReference(reference);
+			new RequestEntityByReferenceServiceCall(reference).execute();
 			return null;
 		}
 		if (entity instanceof ForumSupport) return ((ForumSupport) entity).getLabel();

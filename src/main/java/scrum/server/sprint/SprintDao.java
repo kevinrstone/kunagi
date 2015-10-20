@@ -16,9 +16,9 @@ package scrum.server.sprint;
 
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.scope.In;
 import ilarkesto.core.time.Date;
-import ilarkesto.fp.Predicate;
 
 import java.util.Arrays;
 
@@ -63,7 +63,7 @@ public class SprintDao extends GSprintDao {
 		sprint.setBegin(begin);
 		sprint.setEnd(end);
 		if (end.isPast()) sprint.setVelocity(20f);
-		saveEntity(sprint);
+		persist(sprint);
 
 		project.setCurrentSprint(sprint);
 
@@ -94,6 +94,6 @@ public class SprintDao extends GSprintDao {
 
 		sprint.close();
 
-		saveEntity(sprint);
+		persist(sprint);
 	}
 }

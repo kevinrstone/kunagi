@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.core;
 
-public class RequestEntityServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String entityId;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class RequestEntityServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  RequestEntityServiceCall(String entityId) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    java.lang.String entityId;
+
+    public RequestEntityServiceCall(java.lang.String entityId) {
         this.entityId = entityId;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().requestEntity(serviceCaller.getConversationNumber(), entityId, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.requestEntity(conversationNumber, entityId, callback);
     }
 
     @Override
     public String toString() {
-        return "RequestEntity";
+        return "requestEntity";
     }
 
 }
-

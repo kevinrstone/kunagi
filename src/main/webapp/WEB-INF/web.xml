@@ -24,8 +24,7 @@
   <servlet>
     <servlet-name>start</servlet-name>
     <servlet-class>scrum.server.common.StartServlet</servlet-class>
-    <load-on-startup>1
-    </load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>start</servlet-name>
@@ -85,17 +84,6 @@
   <servlet-mapping>
     <servlet-name>scrum</servlet-name>
     <url-pattern>/scrum.ScrumGwtApplication/scrum</url-pattern>
-  </servlet-mapping>
-
-  <!-- css -->
-  <servlet>
-    <servlet-name>css</servlet-name>
-    <servlet-class>scrum.server.css.CssServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>css</servlet-name>
-    <url-pattern>/scrum.ScrumGwtApplication/screen.css</url-pattern>
   </servlet-mapping>
 
   <!-- file download -->
@@ -211,5 +199,21 @@
   <session-config>
     <session-timeout>10</session-timeout>
   </session-config>
+
+  <!-- shutdown hook -->
+  <listener>
+    <listener-class>ilarkesto.webapp.WebappListener</listener-class>
+  </listener>
+
+  <!-- GWT cache control -->
+  <filter>
+    <filter-name>gwtCacheControlFilter</filter-name>
+    <filter-class>ilarkesto.gwt.server.GwtCacheControlFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>gwtCacheControlFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
 </web-app>

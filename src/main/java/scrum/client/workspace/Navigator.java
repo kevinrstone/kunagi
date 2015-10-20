@@ -14,27 +14,29 @@
  */
 package scrum.client.workspace;
 
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtEntity;
+import ilarkesto.gwt.client.Gwt;
+
 import scrum.client.ScrumGwt;
 import scrum.client.ScrumScopeManager;
 import scrum.client.admin.User;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.communication.TouchLastActivityServiceCall;
-import scrum.client.core.ApplicationStartedEvent;
-import scrum.client.core.ApplicationStartedHandler;
 import scrum.client.project.Project;
-import scrum.client.project.ProjectDataReceivedEvent;
 import scrum.client.project.SelectProjectServiceCall;
 import scrum.client.search.SearchInputWidget;
 import scrum.client.search.SearchResultsWidget;
 import scrum.client.workspace.history.HistoryToken;
-import scrum.client.workspace.history.HistoryTokenObserver;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Navigator extends GNavigator implements BlockExpandedHandler, ApplicationStartedHandler,
-		HistoryTokenObserver {
+public class Navigator extends GNavigator {
+
+	private static final char SEPARATOR = Gwt.HISTORY_TOKEN_SEPARATOR;
 
 	public static enum Mode {
 		USER, PROJECT
@@ -49,9 +51,23 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		historyToken = new HistoryToken(this);
 	}
 
-	@Override
-	public void onProjectChanged() {
-		String projectId = historyToken.getProjectId();
+	public void evalHistoryToken(String token) {
+		historyToken.evalHistoryToken(token);
+	}
+
+	public static String createToken(String projectId, String page, String entityId) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("project=").append(projectId);
+
+		if (!Str.isBlank(page)) sb.append(SEPARATOR).append("page=").append(page);
+
+		if (!Str.isBlank(entityId)) sb.append(SEPARATOR).append("entity=").append(entityId);
+
+		String token = sb.toString();
+		return token;
+	}
+
+	public void onProjectChanged(String projectId) {
 		if (projectId == null) {
 			showUserMode(historyToken.getPage());
 		} else {
@@ -64,55 +80,73 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		}
 	}
 
-	@Override
 	public void onPageOrEntityChanged() {
 		showPageAndEntity();
 	}
 
-	@Override
-	public void onApplicationStarted(ApplicationStartedEvent event) {
-		historyToken.evalHistoryToken();
+	public void start() {
+		evalHistoryToken(History.getToken());
 		if (!historyToken.isProjectIdSet()) {
-			gotoUsersStart();
-		}
-	}
-
-	private void gotoUsersStart() {
-		User user = auth.getUser();
-		Project project = user.getCurrentProject();
-		if (project == null || user.isAdmin()) {
-			gotoProjectSelector();
-		} else {
-			gotoProject(project.getId());
+			User user = auth.getUser();
+			Project project = user.getCurrentProject();
+			if (project == null || user.isAdmin()) {
+				gotoProjectSelector();
+			} else {
+				gotoProject(project.getId());
+			}
 		}
 	}
 
 	public void gotoProjectSelector() {
-		historyToken.update(null);
+		History.newItem("projectSelector", true);
 	}
 
 	public void gotoProject(String projectId) {
-		historyToken.update(projectId);
+		History.newItem(createToken(projectId, HistoryToken.START_PAGE, null), true);
 	}
 
 	public void gotoCurrentProjectSearch() {
-		historyToken.updatePage(Page.getPageName(SearchResultsWidget.class));
+		showPageAndEntity(Page.getPageName(SearchResultsWidget.class), null);
 	}
 
 	private void showProject(String projectId, String page, String entityId) {
 		Project project = Scope.get().getComponent(Project.class);
 		if (project != null && !projectId.equals(project.getId())) {
-			project = null;
+			// currently other project selected
+
+			ScrumScopeManager.destroyProjectScope();
+			showProject(projectId, page, entityId);
+			// History.newItem(createToken(projectId, page, entityId), true);
+			return;
 		}
 
 		if (project == null) {
-			project = dao.getProject(projectId);
+			project = Project.getById(projectId);
 			if (project == null) throw new RuntimeException("Project does not exist: " + projectId);
 			acitvateProjectMode(project, page, entityId);
 			return;
 		}
 
 		showPageAndEntity(page, entityId);
+	}
+
+	private void acitvateProjectMode(final Project project, final String page, final String entityId) {
+		assert project != null;
+
+		if (currentMode == Mode.PROJECT) ScrumScopeManager.destroyProjectScope();
+
+		log.info("Activating PROJECT mode");
+		Scope.get().getComponent(Ui.class).lock("Loading " + project.getLabel() + "...");
+		new SelectProjectServiceCall(project.getId()).execute(new Runnable() {
+
+			@Override
+			public void run() {
+				ScrumScopeManager.createProjectScope(project);
+				currentMode = Mode.PROJECT;
+				Scope.get().getComponent(ProjectWorkspaceWidgets.class).projectDataReceived();
+				showPageAndEntity(page, entityId);
+			}
+		});
 	}
 
 	private void showPageAndEntity() {
@@ -132,7 +166,7 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 				workspace.showEntityByReference(entityId);
 			} else {
 				if ("Forum".equals(historyToken.getPage())) {
-					ForumSupport entity = (ForumSupport) dao.getEntity(entityId);
+					ForumSupport entity = (ForumSupport) AEntity.getById(entityId);
 					workspace.showForum(entity);
 				} else {
 					workspace.showEntityById(entityId);
@@ -140,16 +174,9 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 			}
 		}
 
-		if (search != null && !Page.getPageName(SearchResultsWidget.class).equals(historyToken.getPage())) {
-			search.clear();
-		}
-	}
-
-	@Override
-	public void onBlockExpanded(BlockExpandedEvent event) {
-		// Object object = event.getObject();
-		// if (object instanceof AGwtEntity) {
-		// setToken((AGwtEntity) object);
+		// if (search != null && !Page.getPageName(SearchResultsWidget.class).equals(historyToken.getPage()))
+		// {
+		// search.clear();
 		// }
 	}
 
@@ -159,27 +186,9 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		}
 
 		log.info("Activating USER mode");
-		Scope.get().getComponent(UsersWorkspaceWidgets.class).activate(page);
+		UsersWorkspaceWidgets usersWorkspaceWidgets = Scope.get().getComponent(UsersWorkspaceWidgets.class);
+		usersWorkspaceWidgets.activate(page);
 		currentMode = Mode.USER;
-	}
-
-	private void acitvateProjectMode(final Project project, final String page, final String entityId) {
-		assert project != null;
-
-		if (currentMode == Mode.PROJECT) ScrumScopeManager.destroyProjectScope();
-
-		log.info("Activating PROJECT mode");
-		Scope.get().getComponent(Ui.class).lock("Loading " + project.getLabel() + "...");
-		new SelectProjectServiceCall(project.getId()).execute(new Runnable() {
-
-			@Override
-			public void run() {
-				ScrumScopeManager.createProjectScope(project);
-				currentMode = Mode.PROJECT;
-				new ProjectDataReceivedEvent().fireInCurrentScope();
-				showPageAndEntity(page, entityId);
-			}
-		});
 	}
 
 	public static String getPageHref(String page) {
@@ -189,7 +198,7 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 	public static String getPageHistoryToken(String page) {
 		StringBuilder sb = new StringBuilder();
 		Project project = Scope.get().getComponent(Project.class);
-		if (project != null) sb.append("project=").append(project.getId()).append("|");
+		if (project != null) sb.append("project=").append(project.getId()).append(SEPARATOR);
 		sb.append("page=").append(page);
 		return sb.toString();
 	}
@@ -222,7 +231,7 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		StringBuilder sb = new StringBuilder();
 
 		Project project = Scope.get().getComponent(Project.class);
-		if (project != null) sb.append("project=").append(project.getId()).append("|");
+		if (project != null) sb.append("project=").append(project.getId()).append(SEPARATOR);
 
 		Navigator navigator = Scope.get().getComponent(Navigator.class);
 		if (page == null) {
@@ -230,7 +239,7 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 			if (workspace != null) page = workspace.getPageForEntity(entityId);
 			if (page == null && navigator != null) page = navigator.historyToken.getPage();
 		}
-		if (page != null) sb.append("page=").append(page).append("|");
+		if (page != null) sb.append("page=").append(page).append(SEPARATOR);
 
 		sb.append("entity=").append(entityId);
 		return sb.toString();
@@ -240,7 +249,7 @@ public class Navigator extends GNavigator implements BlockExpandedHandler, Appli
 		return historyToken.isToggle();
 	}
 
-	public void updateHistory(String page, AGwtEntity entity) {
+	public void updateHistoryTokenWithoutChangingUi(String page, AGwtEntity entity) {
 		historyToken.updatePageAndEntity(page, entity, false);
 	}
 

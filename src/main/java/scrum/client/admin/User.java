@@ -14,6 +14,7 @@
  */
 package scrum.client.admin;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
@@ -21,7 +22,6 @@ import ilarkesto.gwt.client.editor.AFieldModel;
 import ilarkesto.gwt.client.editor.ATextEditorModel;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.ScrumScopeManager;
@@ -32,12 +32,16 @@ public class User extends GUser implements LabelSupport, Comparable<User> {
 
 	public static final String INITIAL_NAME = "newuser";
 
-	public User() {
-		setName(getNextNewUserName());
+	public static User post(String name) {
+		Args.assertNotBlank(name, "name");
+		User user = new User();
+		user.setName(name);
+		user.persist();
+		return user;
 	}
 
-	public User(Map data) {
-		super(data);
+	public static User post() {
+		return post(getNextNewUserName());
 	}
 
 	@Override
@@ -51,11 +55,11 @@ public class User extends GUser implements LabelSupport, Comparable<User> {
 		return getName() + " (" + fullName + ")";
 	}
 
-	private String getNextNewUserName() {
+	private static String getNextNewUserName() {
 		int index = 1;
 		while (true) {
 			String name = "newuser" + index;
-			if (getDao().getUserByName(name) == null) return name;
+			if (User.getByName(name) == null) return name;
 			index++;
 		}
 	}
@@ -70,7 +74,7 @@ public class User extends GUser implements LabelSupport, Comparable<User> {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getName();
 	}
 

@@ -28,7 +28,7 @@ public class MoveRequirementToOtherProjectAction extends GMoveRequirementToOther
 
 	@Override
 	public boolean isExecutable() {
-		if (getDao().getProjects().size() < 2) return false;
+		if (Project.listAll().size() < 2) return false;
 		return true;
 	}
 

@@ -1,28 +1,26 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.tasks;
 
-import ilarkesto.core.base.Str;
-import ilarkesto.gwt.client.ADropdownViewEditWidget;
 import ilarkesto.gwt.client.AFieldValueWidget;
 import ilarkesto.gwt.client.AIntegerViewEditWidget;
+import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import scrum.client.ScrumGwt;
 import scrum.client.collaboration.CommentsWidget;
@@ -110,29 +108,23 @@ public class TaskWidget extends AScrumWidget {
 			}
 		}, 3);
 
-		tb.addFieldRow("Impediment", new ADropdownViewEditWidget() {
+		tb.addFieldRow("Impediments", new AMultiSelectionViewEditWidget<Impediment>() {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewerItem(task.getImpediment());
+				setViewerItemsAsHtml(task.getImpediments());
 			}
 
 			@Override
 			protected void onEditorUpdate() {
-				Map<String, String> options = new HashMap<String, String>();
-				options.put("", "");
-				for (Impediment impediment : task.getProject().getOpenImpediments()) {
-					options.put(impediment.getId(), impediment.getReferenceAndLabel());
-				}
-				setOptions(options);
-				Impediment impediment = task.getImpediment();
-				setSelectedOption(impediment == null ? "" : impediment.getId());
+				List<Impediment> impediments = task.getProject().getOpenImpediments();
+				setEditorItems(impediments);
+				setEditorSelectedItems(task.getImpediments());
 			}
 
 			@Override
 			protected void onEditorSubmit() {
-				String id = getSelectedOption();
-				task.setImpediment(Str.isBlank(id) ? null : getDao().getImpediment(id));
+				task.setImpediments(getEditorSelectedItems());
 			}
 
 			@Override
@@ -142,9 +134,9 @@ public class TaskWidget extends AScrumWidget {
 
 			@Override
 			public String getTooltip() {
-				return "Impediment, which is blocking this task.";
+				return "Impediments, which impede this task.";
 			}
+		});
 
-		}, 3);
 	}
 }

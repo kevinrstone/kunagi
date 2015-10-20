@@ -14,7 +14,7 @@
  */
 package scrum.server.admin;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import scrum.server.project.Project;
 
 public class ProjectUserConfigDao extends GProjectUserConfigDao {
@@ -32,7 +32,7 @@ public class ProjectUserConfigDao extends GProjectUserConfigDao {
 			projectUserConfig.setProject(project);
 			projectUserConfig.setUser(user);
 			projectUserConfig.setColor(user.getColor());
-			saveEntity(projectUserConfig);
+			persist(projectUserConfig);
 		}
 
 		return projectUserConfig;

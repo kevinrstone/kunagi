@@ -1,25 +1,27 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.sprint;
 
+import ilarkesto.core.base.Args;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.scope.Scope;
-import ilarkesto.gwt.client.EntityDoesNotExistException;
 import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.editor.AFieldModel;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.Auth;
@@ -28,6 +30,7 @@ import scrum.client.collaboration.ForumSupport;
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.client.common.ShowEntityAction;
+import scrum.client.impediments.Impediment;
 import scrum.client.project.Project;
 import scrum.client.project.Requirement;
 import scrum.client.tasks.WhiteboardWidget;
@@ -39,18 +42,28 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 	public static final int INIT_EFFORT = 1;
 	public static final String REFERENCE_PREFIX = "tsk";
 
+	public static Task post(Requirement requirement) {
+		Args.assertNotNull(requirement, "requirement");
+
+		Task task = new Task();
+		task.setRequirement(requirement);
+		task.setRemainingWork(INIT_EFFORT);
+
+		task.persist();
+		return task;
+	}
+
+	public String getBlockingImpedimentLabelsAsText() {
+		StringBuilder sb = new StringBuilder();
+		for (Impediment impediment : getBlockingImpediments()) {
+			if (sb.length() > 0) sb.append(", ");
+			sb.append(impediment.getReference() + " " + impediment.getLabel());
+		}
+		return sb.toString();
+	}
+
 	public Sprint getSprint() {
 		return getRequirement().getSprint();
-	}
-
-	public Task(Requirement requirement) {
-		setRequirement(requirement);
-		// setLabel("New Task");
-		setRemainingWork(INIT_EFFORT);
-	}
-
-	public Task(Map data) {
-		super(data);
 	}
 
 	public boolean isInCurrentSprint() {
@@ -58,19 +71,19 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 	}
 
 	@Override
-	public void updateLocalModificationTime() {
-		super.updateLocalModificationTime();
+	protected void onAfterUpdateLastModified() {
+		super.onAfterUpdateLastModified();
+
 		try {
 			Requirement requirement = getRequirement();
-			if (requirement != null) requirement.updateLocalModificationTime();
+			if (requirement != null) requirement.updateLastModified();
 		} catch (EntityDoesNotExistException ex) {
 			return;
 		}
 	}
 
 	public boolean isBlocked() {
-		if (!isImpedimentSet()) return false;
-		return getImpediment().isOpen();
+		return !getBlockingImpediments().isEmpty();
 	}
 
 	public void claim() {
@@ -151,7 +164,7 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference();
 	}
 
@@ -241,6 +254,26 @@ public class Task extends GTask implements ReferenceSupport, LabelSupport, Forum
 			}
 		};
 		return workTextModel;
+	}
+
+	@Override
+	protected LabelModel createLabelModel() {
+		return new LabelModel() {
+
+			@Override
+			public boolean isSwitchToEditModeIfNull() {
+				return true;
+			}
+		};
+
+	}
+
+	public Set<Impediment> getBlockingImpediments() {
+		HashSet<Impediment> ret = new HashSet<Impediment>();
+		for (Impediment impediment : getImpediments()) {
+			if (!impediment.isClosed()) ret.add(impediment);
+		}
+		return ret;
 	}
 
 }

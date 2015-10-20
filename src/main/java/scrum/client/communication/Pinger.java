@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,22 +16,15 @@ package scrum.client.communication;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Tm;
+import ilarkesto.gwt.client.AServiceCall;
 
 import java.util.LinkedList;
 
-import scrum.client.DataTransferObject;
-import scrum.client.core.ApplicationStartedEvent;
-import scrum.client.core.ApplicationStartedHandler;
 import scrum.client.project.Requirement;
-import scrum.client.workspace.BlockCollapsedEvent;
-import scrum.client.workspace.BlockCollapsedHandler;
-import scrum.client.workspace.BlockExpandedEvent;
-import scrum.client.workspace.BlockExpandedHandler;
 
 import com.google.gwt.user.client.Timer;
 
-public class Pinger extends GPinger implements ServerDataReceivedHandler, BlockExpandedHandler, BlockCollapsedHandler,
-		ApplicationStartedHandler {
+public class Pinger extends GPinger {
 
 	private static Log log = Log.get(Pinger.class);
 
@@ -45,13 +38,12 @@ public class Pinger extends GPinger implements ServerDataReceivedHandler, BlockE
 
 	private boolean disabled;
 
-	@Override
-	public void onApplicationStarted(ApplicationStartedEvent event) {
+	public void start() {
 		timer = new Timer() {
 
 			@Override
 			public void run() {
-				if (!disabled && !serviceCaller.containsServiceCall(PingServiceCall.class)) {
+				if (!disabled && !AServiceCall.containsServiceCall(PingServiceCall.class)) {
 					final long start = Tm.getCurrentTimeMillis();
 					new PingServiceCall().execute(new Runnable() {
 
@@ -84,23 +76,16 @@ public class Pinger extends GPinger implements ServerDataReceivedHandler, BlockE
 		timer = null;
 	}
 
-	@Override
-	public void onServerDataReceived(ServerDataReceivedEvent event) {
-		DataTransferObject data = event.getData();
-		if (data.containsEntities()) {
-			lastDataReceiveTime = Tm.getCurrentTimeMillis();
-			reschedule();
-		}
+	public void dataReceived() {
+		lastDataReceiveTime = Tm.getCurrentTimeMillis();
+		reschedule();
 	}
 
-	@Override
-	public void onBlockCollapsed(BlockCollapsedEvent event) {
+	public final void onBlockCollapsed(Object object) {
 		deactivatePowerPolling();
 	}
 
-	@Override
-	public void onBlockExpanded(BlockExpandedEvent event) {
-		Object object = event.getObject();
+	public void onBlockExpanded(Object object) {
 		if (object instanceof Requirement) {
 			Requirement requirement = (Requirement) object;
 			if (requirement.isWorkEstimationVotingActive()) activatePowerPolling();

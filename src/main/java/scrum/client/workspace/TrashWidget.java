@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.workspace;
 
 import ilarkesto.core.scope.Scope;
+
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.StyleSheet;
 import scrum.client.dnd.TrashSupport;
@@ -38,7 +39,7 @@ public class TrashWidget extends AScrumWidget {
 
 		trash = new HorizontalPanel();
 		trash.setStyleName("TrashWidget");
-		trash.add(Img.bundle.trash32().createImage());
+		trash.add(Img.trash32());
 		// trash.add(new Label("Trash"));
 
 		dndManager.getDragController().registerDropController(trashDropController);
@@ -52,7 +53,7 @@ public class TrashWidget extends AScrumWidget {
 	private boolean isTrashable(Widget draggable) {
 		boolean trashable;
 		if (draggable instanceof TrashSupport) {
-			trashable = ((TrashSupport) draggable).getTrashAction().isExecutable();
+			trashable = ((TrashSupport) draggable).getTrashAction().getExecutionVeto() == null;
 		} else {
 			trashable = false;
 		}

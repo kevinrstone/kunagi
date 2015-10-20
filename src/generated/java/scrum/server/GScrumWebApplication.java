@@ -14,6 +14,7 @@
 package scrum.server;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 
 public abstract class GScrumWebApplication
@@ -647,6 +648,31 @@ public abstract class GScrumWebApplication
 
     public final void resetTaskDao() {
         taskDao = null;
+    }
+
+    // --- userDao ---
+
+    private scrum.server.admin.UserDao userDao;
+
+    public final scrum.server.admin.UserDao getUserDao() {
+        if (userDao == null) {
+            userDao = createUserDao();
+            initializeUserDao(userDao);
+        }
+        return userDao;
+    }
+
+    protected scrum.server.admin.UserDao createUserDao() {
+        return userDao = ilarkesto.base.Reflect.newInstance(scrum.server.admin.UserDao.class);
+    }
+
+    protected void initializeUserDao(scrum.server.admin.UserDao bean) {
+        autowire(bean);
+        ilarkesto.base.Reflect.invokeInitializeIfThere(bean);
+    }
+
+    public final void resetUserDao() {
+        userDao = null;
     }
 
     // --- wikipageDao ---

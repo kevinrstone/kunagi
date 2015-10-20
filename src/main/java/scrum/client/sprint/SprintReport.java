@@ -3,7 +3,6 @@ package scrum.client.sprint;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import scrum.client.project.Requirement;
@@ -11,10 +10,6 @@ import scrum.client.project.Requirement;
 public class SprintReport extends GSprintReport {
 
 	private transient RequirementsOrderComparator requirementsOrderComparator;
-
-	public SprintReport(Map data) {
-		super(data);
-	}
 
 	public Set<Requirement> getAllRequirements() {
 		Set<Requirement> requirements = new HashSet<Requirement>();

@@ -3,52 +3,46 @@
 <div class="section">
     <h2>Voluntary payment</h2>
 
-    <p>We develop Kunagi in our spare time. Because it's fun and because we use Kunagi ourselfs. We would like
-    to spent more time on this project. With your voluntary payment you can buy us more time for working on Kunagi.
-    - <em>Artjom Kochtchi &amp; Witoslaw Koczewski</em></p>  
+    <p>
+    With a voluntary payment you can buy us some time for working on Kunagi.
+    What would you like us to spend the time with?
+    </p>  
+
+    <form id="wishform" style="padding-left: 50px; line-height: 200%;">
+        <input type="radio" name="wish" value="ui" id="wish-ui"><label for="wish-ui"> Modernize user interface </label><br>
+        <input type="radio" name="wish" value="performance" id="wish-performance"><label for="wish-performance"> Improve performance </label><br>
+        <input type="radio" name="wish" value="documentation" id="wish-documentation"><label for="wish-documentation"> Wirte documentation </label><br>
+        <input type="radio" name="wish" value="custom" id="wish-custom"><label for="wish-custom"> Other: </label> <input type="text" id="customwish"> <br>
+        <input type="radio" name="wish" checked value="features" id="wish-backlog"><label for="wish-backlog"> Continue implementing features </label><br>
+    </form>
 
     <br>
-    <center>
-    <table border="0" cellpadding="0" cellspacing="5px">
-    
-        <tr>
-            <td>
-    <div class="starter" style="width: 200px;">
-        <a href="download-file.html">Paymill</a>
+    <div id="amountslider"></div>
+
+    <br>
+    <div style="float: left; margin-right: 10px;">
+        Amount: 
+        <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; font-size:125%; width: 70px;" disabled="true">
     </div>
-            </td>
-            <td>
-    <div class="starter" style="width: 200px;">
-        <a href="download-file.html">PayPal</a>
+    <div style="float: left; margin-right: 10px;">
+        <div class="starter">
+            <a href="javascript:kunagihp.paypal();">Pay with PayPal</a>
+        </div>
     </div>
-            </td>
-        </tr>
-    
-        <tr>
-            <td>
-    <div class="starter" style="width: 200px;">
-        <a href="download-file.html">Wire transfer</a>
+    <div style="float: left; margin-right: 10px;">
+        <div class="starter" style="width: 200px;">
+            <a href="javascript:kunagihp.requestinvoice();">Request an invoice</a>
+        </div>
     </div>
-            </td>
-            <td>
-    <div class="starter" style="width: 200px;">
-        <a href="download-file.html">Order invoice</a>
-    </div>
-            </td>
-        </tr>
-    
-    </table>
-    </center>
+    <div style="clear: both;"></div>
 </div>
 
+
+<br>
 <div class="separator"></div>
 <div class="section">
-    <h2>Get Kunagi</h2>
-    <center>
-    <div class="starter" style="width: 50%;">
-        <a href="download-file.html">Download Kunagi $project.currentRelease</a>
-    </div>
-    </center>
+    <a href="download-file.html">Not now, take me to the download</a>
 </div>
+
 
 #footer()

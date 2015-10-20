@@ -1,29 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.core;
 
-public class SleepServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private long millis;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class SleepServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  SleepServiceCall(long millis) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    long millis;
+
+    public SleepServiceCall(long millis) {
         this.millis = millis;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().sleep(serviceCaller.getConversationNumber(), millis, new DefaultCallback(this, returnHandler));
-    }
-
     @Override
-    public boolean isDispensable() {
-        return true;
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.sleep(conversationNumber, millis, callback);
     }
 
     @Override
     public String toString() {
-        return "Sleep";
+        return "sleep";
     }
 
 }
-

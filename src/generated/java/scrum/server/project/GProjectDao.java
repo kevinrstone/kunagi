@@ -14,11 +14,12 @@
 package scrum.server.project;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GProjectDao
             extends ilarkesto.persistence.ADao<Project> {
@@ -124,6 +125,10 @@ public abstract class GProjectDao
         projectsByAutoCreateTasksFromQualitiesCache.clear();
         projectsByReleasingInfoCache.clear();
         releasingInfosCache = null;
+        projectsByExternalTrackerUrlTemplateCache.clear();
+        externalTrackerUrlTemplatesCache = null;
+        projectsByExternalTrackerLabelCache.clear();
+        externalTrackerLabelsCache = null;
     }
 
     @Override
@@ -135,8 +140,8 @@ public abstract class GProjectDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Project) {
             clearCaches();
         }
@@ -1833,6 +1838,86 @@ public abstract class GProjectDao
 
     }
 
+    // -----------------------------------------------------------
+    // - externalTrackerUrlTemplate
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<Project>> projectsByExternalTrackerUrlTemplateCache = new Cache<java.lang.String,Set<Project>>(
+            new Cache.Factory<java.lang.String,Set<Project>>() {
+                public Set<Project> create(java.lang.String externalTrackerUrlTemplate) {
+                    return getEntities(new IsExternalTrackerUrlTemplate(externalTrackerUrlTemplate));
+                }
+            });
+
+    public final Set<Project> getProjectsByExternalTrackerUrlTemplate(java.lang.String externalTrackerUrlTemplate) {
+        return new HashSet<Project>(projectsByExternalTrackerUrlTemplateCache.get(externalTrackerUrlTemplate));
+    }
+    private Set<java.lang.String> externalTrackerUrlTemplatesCache;
+
+    public final Set<java.lang.String> getExternalTrackerUrlTemplates() {
+        if (externalTrackerUrlTemplatesCache == null) {
+            externalTrackerUrlTemplatesCache = new HashSet<java.lang.String>();
+            for (Project e : getEntities()) {
+                if (e.isExternalTrackerUrlTemplateSet()) externalTrackerUrlTemplatesCache.add(e.getExternalTrackerUrlTemplate());
+            }
+        }
+        return externalTrackerUrlTemplatesCache;
+    }
+
+    private static class IsExternalTrackerUrlTemplate implements Predicate<Project> {
+
+        private java.lang.String value;
+
+        public IsExternalTrackerUrlTemplate(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(Project e) {
+            return e.isExternalTrackerUrlTemplate(value);
+        }
+
+    }
+
+    // -----------------------------------------------------------
+    // - externalTrackerLabel
+    // -----------------------------------------------------------
+
+    private final Cache<java.lang.String,Set<Project>> projectsByExternalTrackerLabelCache = new Cache<java.lang.String,Set<Project>>(
+            new Cache.Factory<java.lang.String,Set<Project>>() {
+                public Set<Project> create(java.lang.String externalTrackerLabel) {
+                    return getEntities(new IsExternalTrackerLabel(externalTrackerLabel));
+                }
+            });
+
+    public final Set<Project> getProjectsByExternalTrackerLabel(java.lang.String externalTrackerLabel) {
+        return new HashSet<Project>(projectsByExternalTrackerLabelCache.get(externalTrackerLabel));
+    }
+    private Set<java.lang.String> externalTrackerLabelsCache;
+
+    public final Set<java.lang.String> getExternalTrackerLabels() {
+        if (externalTrackerLabelsCache == null) {
+            externalTrackerLabelsCache = new HashSet<java.lang.String>();
+            for (Project e : getEntities()) {
+                if (e.isExternalTrackerLabelSet()) externalTrackerLabelsCache.add(e.getExternalTrackerLabel());
+            }
+        }
+        return externalTrackerLabelsCache;
+    }
+
+    private static class IsExternalTrackerLabel implements Predicate<Project> {
+
+        private java.lang.String value;
+
+        public IsExternalTrackerLabel(java.lang.String value) {
+            this.value = value;
+        }
+
+        public boolean test(Project e) {
+            return e.isExternalTrackerLabel(value);
+        }
+
+    }
+
     // --- valueObject classes ---
     @Override
     protected Set<Class> getValueObjectClasses() {
@@ -1847,6 +1932,12 @@ public abstract class GProjectDao
     }
 
     // --- dependencies ---
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     scrum.server.sprint.SprintDao sprintDao;
 

@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.project;
 
+import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AFieldValueWidget;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
@@ -31,6 +32,7 @@ import scrum.client.collaboration.EmoticonSelectorWidget;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.ThemesWidget;
 import scrum.client.estimation.PlanningPokerWidget;
+import scrum.client.issues.Issue;
 import scrum.client.journal.ChangeHistoryWidget;
 
 import com.google.gwt.user.client.ui.Label;
@@ -70,6 +72,12 @@ public class RequirementWidget extends AScrumWidget {
 
 		if (showLabel) {
 			left.addFieldRow("Label", requirement.getLabelModel());
+		}
+
+		Project project = requirement.getProject();
+		if (!Str.isBlank(project.getExternalTrackerUrlTemplate())) {
+			left.addFieldRow(project.getExternalTrackerLabelOrDefault() + " ID",
+				requirement.getExternalTrackerIdModel());
 		}
 
 		left.addFieldRow("Description", requirement.getDescriptionModel());
@@ -153,6 +161,11 @@ public class RequirementWidget extends AScrumWidget {
 		right.addFieldRow("My emoticon", new EmoticonSelectorWidget(requirement));
 		if (showComments) {
 			right.addRow(new CommentsWidget(requirement), 2);
+			Issue issue = requirement.getIssue();
+			if (issue != null) {
+				right.addRow(new Label("Comments from " + issue.getReferenceAndLabel()), 2);
+				right.addRow(new CommentsWidget(issue), 2);
+			}
 		}
 
 		return showComments || planningPoker || acceptReject ? TableBuilder.row(20, left.createTable(),

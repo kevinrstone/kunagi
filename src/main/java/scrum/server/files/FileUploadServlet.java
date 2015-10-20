@@ -1,34 +1,28 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.server.files;
 
-import gwtupload.server.UploadAction;
-import gwtupload.server.exceptions.UploadActionException;
 import ilarkesto.base.PermissionDeniedException;
-import ilarkesto.core.logging.Log;
+import ilarkesto.core.base.Str;
+import ilarkesto.gwt.server.AUploadServlet;
 import ilarkesto.io.IO;
-import ilarkesto.webapp.Servlet;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -37,30 +31,13 @@ import scrum.server.ScrumWebApplication;
 import scrum.server.WebSession;
 import scrum.server.project.Project;
 
-public class FileUploadServlet extends UploadAction {
-
-	private static final Log log = Log.get(FileUploadServlet.class);
+public class FileUploadServlet extends AUploadServlet {
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
-			ServletException {
-		request.setCharacterEncoding(IO.UTF_8);
-		super.doPost(request, response);
-	}
-
-	@Override
-	public String executeAction(HttpServletRequest req, List<FileItem> sessionFiles) throws UploadActionException {
-		log.debug("File received", "\n" + Servlet.toString(req, "    "));
-		sessionFiles = new ArrayList<FileItem>(sessionFiles);
-		String projectId = null;
-		for (FileItem item : new ArrayList<FileItem>(sessionFiles)) {
-			String fieldName = item.getFieldName();
-			if (item.isFormField()) {
-				sessionFiles.remove(item);
-				if (fieldName.equals("projectId")) projectId = item.getString();
-			}
-		}
+	protected String handleFiles(HttpServletRequest req, List<FileItem> sessionFiles) throws IOException {
+		String projectId = req.getParameter("projectId");
 		if (projectId == null) throw new RuntimeException("projectId == null");
+
 		if (sessionFiles.size() != 1) throw new IllegalStateException("sessionFiles.size() == " + sessionFiles.size());
 
 		ScrumWebApplication webApp = ScrumWebApplication.get();
@@ -70,28 +47,20 @@ public class FileUploadServlet extends UploadAction {
 		if (!project.isVisibleFor(session.getUser())) throw new PermissionDeniedException();
 
 		FileItem item = sessionFiles.get(0);
-		try {
-			String filename = getFilename(item.getName());
-			java.io.File f = new java.io.File(project.getFileRepositoryPath() + "/" + filename);
-			int count = 0;
-			while (f.exists()) {
-				count++;
-				f = new java.io.File(project.getFileRepositoryPath() + "/" + insertSuffix(filename, count));
-			}
-			IO.copyDataToFile(item.getInputStream(), f);
-
-			File file = webApp.getFileDao().postFile(f, project);
-			webApp.getTransactionService().commit();
-			for (GwtConversation conversation : webApp.getConversationsByProject(project, null)) {
-				conversation.sendToClient(file);
-			}
-			return file.getReference();
-		} catch (Exception e) {
-			log.error(e);
-			throw new UploadActionException(e.getMessage());
-		} finally {
-			removeSessionFileItems(req);
+		String filename = getFilename(item.getName());
+		java.io.File f = new java.io.File(project.getFileRepositoryPath() + "/" + filename);
+		int count = 0;
+		while (f.exists()) {
+			count++;
+			f = new java.io.File(project.getFileRepositoryPath() + "/" + insertSuffix(filename, count));
 		}
+		IO.copyDataToFile(item.getInputStream(), f);
+
+		File file = webApp.getFileDao().postFile(f, project);
+		for (GwtConversation conversation : webApp.getConversationsByProject(project, null)) {
+			conversation.sendToClient(file);
+		}
+		return file.getReference();
 	}
 
 	private String insertSuffix(String name, int count) {
@@ -102,15 +71,8 @@ public class FileUploadServlet extends UploadAction {
 
 	private String getFilename(String name) {
 		if (name == null) return "unnamed.bin";
-		try {
-			String a = new String(name.getBytes(IO.ISO_LATIN_1), IO.ISO_LATIN_1);
-			String b = new String(name.getBytes(IO.UTF_8), IO.ISO_LATIN_1);
-			String c = new String(name.getBytes(IO.ISO_LATIN_1), IO.UTF_8);
-			log.warn(name, a, b, c);
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(ex);
-		}
 		name = name.replace('\\', '/');
+		name = Str.toFileCompatibleString(name);
 		int idx = name.lastIndexOf('/');
 		if (idx >= 0) return name.substring(idx + 1);
 		return name;
@@ -124,8 +86,4 @@ public class FileUploadServlet extends UploadAction {
 		super.checkRequest(request);
 	}
 
-	@Override
-	public void init() throws ServletException {
-		super.init();
-	}
 }

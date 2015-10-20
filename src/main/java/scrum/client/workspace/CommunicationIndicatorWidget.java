@@ -16,13 +16,12 @@ package scrum.client.workspace;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.Tm;
+import ilarkesto.gwt.client.AServiceCall;
 
 import java.util.List;
 
 import scrum.client.common.AScrumWidget;
 import scrum.client.communication.Pinger;
-import scrum.client.core.AServiceCall;
-import scrum.client.core.ServiceCaller;
 import scrum.client.test.ScrumStatusWidget;
 
 import com.google.gwt.dom.client.Style;
@@ -33,9 +32,8 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CommunicationIndicatorWidget extends AScrumWidget {
+public class CommunicationIndicatorWidget extends AScrumWidget implements Runnable {
 
-	private ServiceCaller serviceCaller;
 	private Pinger pinger;
 
 	private FocusPanel focusPanel;
@@ -46,8 +44,7 @@ public class CommunicationIndicatorWidget extends AScrumWidget {
 
 	@Override
 	protected Widget onInitialization() {
-		serviceCaller = Scope.get().getComponent(ServiceCaller.class);
-		serviceCaller.setStatusWidget(this);
+		AServiceCall.listener = this;
 		pinger = Scope.get().getComponent(Pinger.class);
 
 		status = new Label();
@@ -77,8 +74,13 @@ public class CommunicationIndicatorWidget extends AScrumWidget {
 	}
 
 	@Override
+	public void run() {
+		update();
+	}
+
+	@Override
 	protected void onUpdate() {
-		List<AServiceCall> calls = serviceCaller.getActiveServiceCalls();
+		List<AServiceCall> calls = AServiceCall.getActiveServiceCalls();
 		if (calls.isEmpty()) {
 			if (isOn()) switchOff();
 		} else {

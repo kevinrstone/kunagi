@@ -14,17 +14,19 @@
 package scrum.server.release;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
-import ilarkesto.auth.AUser;
-import ilarkesto.persistence.EntityDoesNotExistException;
-import ilarkesto.base.Str;
+import ilarkesto.auth.AuthUser;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GRelease
-            extends AEntity
-            implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, ilarkesto.search.Searchable, java.lang.Comparable<Release> {
+            extends ilarkesto.persistence.AEntity
+            implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, java.lang.Comparable<Release>, ilarkesto.core.search.Searchable {
+
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Release.class);
 
     // --- AEntity ---
 
@@ -35,25 +37,59 @@ public abstract class GRelease
     protected void repairDeadDatob(ADatob datob) {
     }
 
+    public abstract static class AReleaseQuery extends ilarkesto.core.persistance.AEntityQuery<Release> {
     @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("projectId", this.projectId);
-        properties.put("parentReleaseId", this.parentReleaseId);
-        properties.put("sprintsIds", this.sprintsIds);
-        properties.put("number", this.number);
-        properties.put("label", this.label);
-        properties.put("note", this.note);
-        properties.put("releaseDate", this.releaseDate == null ? null : this.releaseDate.toString());
-        properties.put("released", this.released);
-        properties.put("releaseNotes", this.releaseNotes);
-        properties.put("scmTag", this.scmTag);
-        properties.put("scriptRunning", this.scriptRunning);
-        properties.put("scriptOutput", this.scriptOutput);
+        public Class<Release> getType() {
+            return Release.class;
+        }
     }
 
+    public static Set<Release> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Release.class).list();
+    }
+
+    public static Release getById(String id) {
+        return (Release) AEntity.getById(id);
+    }
+
+    @Override
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getProject()); } catch(EntityDoesNotExistException ex) {}
+        try { Utl.addIfNotNull(ret, getParentRelease()); } catch(EntityDoesNotExistException ex) {}
+        if (sprintsIds!=null) for (String id : sprintsIds) {
+            try { ret.add(AEntity.getById(id)); } catch(EntityDoesNotExistException ex) {}
+        }
+    // --- back references ---
+        ret.addAll(getReleases());
+        ret.addAll(getAffectedIssues());
+        ret.addAll(getFixIssues());
+        ret.addAll(getBlogEntrys());
+        return ret;
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+        properties.put("parentReleaseId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentReleaseId));
+        properties.put("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
+        properties.put("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+        properties.put("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+        properties.put("note", ilarkesto.core.persistance.Persistence.propertyAsString(this.note));
+        properties.put("releaseDate", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseDate));
+        properties.put("releaseTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseTime));
+        properties.put("released", ilarkesto.core.persistance.Persistence.propertyAsString(this.released));
+        properties.put("releaseNotes", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseNotes));
+        properties.put("scmTag", ilarkesto.core.persistance.Persistence.propertyAsString(this.scmTag));
+        properties.put("scriptRunning", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptRunning));
+        properties.put("scriptOutput", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptOutput));
+    }
+
+    @Override
     public int compareTo(Release other) {
-        return toString().toLowerCase().compareTo(other.toString().toLowerCase());
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
     }
 
     public final java.util.Set<scrum.server.release.Release> getReleases() {
@@ -74,20 +110,16 @@ public abstract class GRelease
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GRelease.class);
 
-    public static final String TYPE = "release";
+    public static final String TYPE = "Release";
 
 
     // -----------------------------------------------------------
     // - Searchable
     // -----------------------------------------------------------
 
-    public boolean matchesKey(String key) {
-        if (super.matchesKey(key)) return true;
-        if (matchesKey(getLabel(), key)) return true;
-        if (matchesKey(getNote(), key)) return true;
-        if (matchesKey(getReleaseNotes(), key)) return true;
-        if (matchesKey(getScmTag(), key)) return true;
-        return false;
+    @Override
+    public boolean matches(ilarkesto.core.search.SearchText search) {
+         return search.matches(getLabel(), getNote(), getReleaseNotes(), getScmTag());
     }
 
     // -----------------------------------------------------------
@@ -95,28 +127,34 @@ public abstract class GRelease
     // -----------------------------------------------------------
 
     private String projectId;
-    private transient scrum.server.project.Project projectCache;
-
-    private void updateProjectCache() {
-        projectCache = this.projectId == null ? null : (scrum.server.project.Project)projectDao.getById(this.projectId);
-    }
 
     public final String getProjectId() {
         return this.projectId;
     }
 
     public final scrum.server.project.Project getProject() {
-        if (projectCache == null) updateProjectCache();
-        return projectCache;
+        try {
+            return this.projectId == null ? null : (scrum.server.project.Project) AEntity.getById(this.projectId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Release.project");
+        }
     }
 
     public final void setProject(scrum.server.project.Project project) {
         project = prepareProject(project);
         if (isProject(project)) return;
-        this.projectId = project == null ? null : project.getId();
-        projectCache = project;
-        updateLastModified();
-        fireModified("project="+project);
+        setProjectId(project == null ? null : project.getId());
+    }
+
+    public final void setProjectId(String id) {
+        if (Utl.equals(projectId, id)) return;
+        this.projectId = id;
+            updateLastModified();
+            fireModified("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+    }
+
+    private final void updateProjectId(String id) {
+        setProjectId(id);
     }
 
     protected scrum.server.project.Project prepareProject(scrum.server.project.Project project) {
@@ -124,6 +162,7 @@ public abstract class GRelease
     }
 
     protected void repairDeadProjectReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.projectId == null || entityId.equals(this.projectId)) {
             repairMissingMaster();
         }
@@ -147,28 +186,34 @@ public abstract class GRelease
     // -----------------------------------------------------------
 
     private String parentReleaseId;
-    private transient scrum.server.release.Release parentReleaseCache;
-
-    private void updateParentReleaseCache() {
-        parentReleaseCache = this.parentReleaseId == null ? null : (scrum.server.release.Release)releaseDao.getById(this.parentReleaseId);
-    }
 
     public final String getParentReleaseId() {
         return this.parentReleaseId;
     }
 
     public final scrum.server.release.Release getParentRelease() {
-        if (parentReleaseCache == null) updateParentReleaseCache();
-        return parentReleaseCache;
+        try {
+            return this.parentReleaseId == null ? null : (scrum.server.release.Release) AEntity.getById(this.parentReleaseId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Release.parentRelease");
+        }
     }
 
     public final void setParentRelease(scrum.server.release.Release parentRelease) {
         parentRelease = prepareParentRelease(parentRelease);
         if (isParentRelease(parentRelease)) return;
-        this.parentReleaseId = parentRelease == null ? null : parentRelease.getId();
-        parentReleaseCache = parentRelease;
-        updateLastModified();
-        fireModified("parentRelease="+parentRelease);
+        setParentReleaseId(parentRelease == null ? null : parentRelease.getId());
+    }
+
+    public final void setParentReleaseId(String id) {
+        if (Utl.equals(parentReleaseId, id)) return;
+        this.parentReleaseId = id;
+            updateLastModified();
+            fireModified("parentReleaseId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentReleaseId));
+    }
+
+    private final void updateParentReleaseId(String id) {
+        setParentReleaseId(id);
     }
 
     protected scrum.server.release.Release prepareParentRelease(scrum.server.release.Release parentRelease) {
@@ -176,6 +221,7 @@ public abstract class GRelease
     }
 
     protected void repairDeadParentReleaseReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.parentReleaseId == null || entityId.equals(this.parentReleaseId)) {
             setParentRelease(null);
         }
@@ -200,18 +246,34 @@ public abstract class GRelease
 
     private java.util.Set<String> sprintsIds = new java.util.HashSet<String>();
 
+    public final Collection<String> getSprintsIds() {
+        return java.util.Collections .unmodifiableCollection(this.sprintsIds);
+    }
+
     public final java.util.Set<scrum.server.sprint.Sprint> getSprints() {
-        return (java.util.Set) sprintDao.getByIdsAsSet(this.sprintsIds);
+        try {
+            return (java.util.Set) AEntity.getByIdsAsSet(this.sprintsIds);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Release.sprints");
+        }
     }
 
     public final void setSprints(Collection<scrum.server.sprint.Sprint> sprints) {
         sprints = prepareSprints(sprints);
         if (sprints == null) sprints = Collections.emptyList();
         java.util.Set<String> ids = getIdsAsSet(sprints);
-        if (this.sprintsIds.equals(ids)) return;
-        this.sprintsIds = ids;
-        updateLastModified();
-        fireModified("sprints="+Str.format(sprints));
+        setSprintsIds(ids);
+    }
+
+    public final void setSprintsIds(java.util.Set<String> ids) {
+        if (Utl.equals(sprintsIds, ids)) return;
+        sprintsIds = ids;
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
+    }
+
+    private final void updateSprintsIds(java.util.Set<String> ids) {
+        setSprintsIds(ids);
     }
 
     protected Collection<scrum.server.sprint.Sprint> prepareSprints(Collection<scrum.server.sprint.Sprint> sprints) {
@@ -219,69 +281,88 @@ public abstract class GRelease
     }
 
     protected void repairDeadSprintReference(String entityId) {
-        if (this.sprintsIds.remove(entityId)) fireModified("sprints-=" + entityId);
+        if (!isPersisted()) return;
+        if (this.sprintsIds == null ) return;
+        if (this.sprintsIds.remove(entityId)) {
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
+        }
     }
 
     public final boolean containsSprint(scrum.server.sprint.Sprint sprint) {
         if (sprint == null) return false;
+        if (this.sprintsIds == null) return false;
         return this.sprintsIds.contains(sprint.getId());
     }
 
     public final int getSprintsCount() {
+        if (this.sprintsIds == null) return 0;
         return this.sprintsIds.size();
     }
 
     public final boolean isSprintsEmpty() {
+        if (this.sprintsIds == null) return true;
         return this.sprintsIds.isEmpty();
     }
 
     public final boolean addSprint(scrum.server.sprint.Sprint sprint) {
         if (sprint == null) throw new IllegalArgumentException("sprint == null");
+        if (this.sprintsIds == null) this.sprintsIds = new java.util.HashSet<String>();
         boolean added = this.sprintsIds.add(sprint.getId());
-        if (added) updateLastModified();
-        if (added) fireModified("sprints+=" + sprint);
+        if (added) {
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
+        }
         return added;
     }
 
     public final boolean addSprints(Collection<scrum.server.sprint.Sprint> sprints) {
         if (sprints == null) throw new IllegalArgumentException("sprints == null");
+        if (this.sprintsIds == null) this.sprintsIds = new java.util.HashSet<String>();
         boolean added = false;
         for (scrum.server.sprint.Sprint sprint : sprints) {
             added = added | this.sprintsIds.add(sprint.getId());
+        }
+        if (added) {
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
         }
         return added;
     }
 
     public final boolean removeSprint(scrum.server.sprint.Sprint sprint) {
-        if (sprint == null) throw new IllegalArgumentException("sprint == null");
+        if (sprint == null) return false;
         if (this.sprintsIds == null) return false;
         boolean removed = this.sprintsIds.remove(sprint.getId());
-        if (removed) updateLastModified();
-        if (removed) fireModified("sprints-=" + sprint);
+        if (removed) {
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
+        }
         return removed;
     }
 
     public final boolean removeSprints(Collection<scrum.server.sprint.Sprint> sprints) {
         if (sprints == null) return false;
         if (sprints.isEmpty()) return false;
+        if (this.sprintsIds == null) return false;
         boolean removed = false;
         for (scrum.server.sprint.Sprint _element: sprints) {
-            removed = removed | removeSprint(_element);
+            removed = removed | this.sprintsIds.remove(_element);
+        }
+        if (removed) {
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
         }
         return removed;
     }
 
     public final boolean clearSprints() {
+        if (this.sprintsIds == null) return false;
         if (this.sprintsIds.isEmpty()) return false;
         this.sprintsIds.clear();
-        updateLastModified();
-        fireModified("sprints cleared");
+            updateLastModified();
+            fireModified("sprintsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.sprintsIds));
         return true;
-    }
-
-    protected final void updateSprints(Object value) {
-        Collection<String> ids = (Collection<String>) value;
-        setSprints((java.util.Set) sprintDao.getByIdsAsSet(ids));
     }
 
     // -----------------------------------------------------------
@@ -298,8 +379,15 @@ public abstract class GRelease
         number = prepareNumber(number);
         if (isNumber(number)) return;
         this.number = number;
-        updateLastModified();
-        fireModified("number="+number);
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    private final void updateNumber(int number) {
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
     }
 
     protected int prepareNumber(int number) {
@@ -327,9 +415,18 @@ public abstract class GRelease
     public final void setLabel(java.lang.String label) {
         label = prepareLabel(label);
         if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
         this.label = label;
-        updateLastModified();
-        fireModified("label="+label);
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    private final void updateLabel(java.lang.String label) {
+        if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
     }
 
     protected java.lang.String prepareLabel(java.lang.String label) {
@@ -364,8 +461,15 @@ public abstract class GRelease
         note = prepareNote(note);
         if (isNote(note)) return;
         this.note = note;
-        updateLastModified();
-        fireModified("note="+note);
+            updateLastModified();
+            fireModified("note", ilarkesto.core.persistance.Persistence.propertyAsString(this.note));
+    }
+
+    private final void updateNote(java.lang.String note) {
+        if (isNote(note)) return;
+        this.note = note;
+            updateLastModified();
+            fireModified("note", ilarkesto.core.persistance.Persistence.propertyAsString(this.note));
     }
 
     protected java.lang.String prepareNote(java.lang.String note) {
@@ -400,8 +504,15 @@ public abstract class GRelease
         releaseDate = prepareReleaseDate(releaseDate);
         if (isReleaseDate(releaseDate)) return;
         this.releaseDate = releaseDate;
-        updateLastModified();
-        fireModified("releaseDate="+releaseDate);
+            updateLastModified();
+            fireModified("releaseDate", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseDate));
+    }
+
+    private final void updateReleaseDate(ilarkesto.core.time.Date releaseDate) {
+        if (isReleaseDate(releaseDate)) return;
+        this.releaseDate = releaseDate;
+            updateLastModified();
+            fireModified("releaseDate", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseDate));
     }
 
     protected ilarkesto.core.time.Date prepareReleaseDate(ilarkesto.core.time.Date releaseDate) {
@@ -423,6 +534,49 @@ public abstract class GRelease
     }
 
     // -----------------------------------------------------------
+    // - releaseTime
+    // -----------------------------------------------------------
+
+    private ilarkesto.core.time.Time releaseTime;
+
+    public final ilarkesto.core.time.Time getReleaseTime() {
+        return releaseTime;
+    }
+
+    public final void setReleaseTime(ilarkesto.core.time.Time releaseTime) {
+        releaseTime = prepareReleaseTime(releaseTime);
+        if (isReleaseTime(releaseTime)) return;
+        this.releaseTime = releaseTime;
+            updateLastModified();
+            fireModified("releaseTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseTime));
+    }
+
+    private final void updateReleaseTime(ilarkesto.core.time.Time releaseTime) {
+        if (isReleaseTime(releaseTime)) return;
+        this.releaseTime = releaseTime;
+            updateLastModified();
+            fireModified("releaseTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseTime));
+    }
+
+    protected ilarkesto.core.time.Time prepareReleaseTime(ilarkesto.core.time.Time releaseTime) {
+        return releaseTime;
+    }
+
+    public final boolean isReleaseTimeSet() {
+        return this.releaseTime != null;
+    }
+
+    public final boolean isReleaseTime(ilarkesto.core.time.Time releaseTime) {
+        if (this.releaseTime == null && releaseTime == null) return true;
+        return this.releaseTime != null && this.releaseTime.equals(releaseTime);
+    }
+
+    protected final void updateReleaseTime(Object value) {
+        value = value == null ? null : new ilarkesto.core.time.Time((String)value);
+        setReleaseTime((ilarkesto.core.time.Time)value);
+    }
+
+    // -----------------------------------------------------------
     // - released
     // -----------------------------------------------------------
 
@@ -436,8 +590,15 @@ public abstract class GRelease
         released = prepareReleased(released);
         if (isReleased(released)) return;
         this.released = released;
-        updateLastModified();
-        fireModified("released="+released);
+            updateLastModified();
+            fireModified("released", ilarkesto.core.persistance.Persistence.propertyAsString(this.released));
+    }
+
+    private final void updateReleased(boolean released) {
+        if (isReleased(released)) return;
+        this.released = released;
+            updateLastModified();
+            fireModified("released", ilarkesto.core.persistance.Persistence.propertyAsString(this.released));
     }
 
     protected boolean prepareReleased(boolean released) {
@@ -466,8 +627,15 @@ public abstract class GRelease
         releaseNotes = prepareReleaseNotes(releaseNotes);
         if (isReleaseNotes(releaseNotes)) return;
         this.releaseNotes = releaseNotes;
-        updateLastModified();
-        fireModified("releaseNotes="+releaseNotes);
+            updateLastModified();
+            fireModified("releaseNotes", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseNotes));
+    }
+
+    private final void updateReleaseNotes(java.lang.String releaseNotes) {
+        if (isReleaseNotes(releaseNotes)) return;
+        this.releaseNotes = releaseNotes;
+            updateLastModified();
+            fireModified("releaseNotes", ilarkesto.core.persistance.Persistence.propertyAsString(this.releaseNotes));
     }
 
     protected java.lang.String prepareReleaseNotes(java.lang.String releaseNotes) {
@@ -502,8 +670,15 @@ public abstract class GRelease
         scmTag = prepareScmTag(scmTag);
         if (isScmTag(scmTag)) return;
         this.scmTag = scmTag;
-        updateLastModified();
-        fireModified("scmTag="+scmTag);
+            updateLastModified();
+            fireModified("scmTag", ilarkesto.core.persistance.Persistence.propertyAsString(this.scmTag));
+    }
+
+    private final void updateScmTag(java.lang.String scmTag) {
+        if (isScmTag(scmTag)) return;
+        this.scmTag = scmTag;
+            updateLastModified();
+            fireModified("scmTag", ilarkesto.core.persistance.Persistence.propertyAsString(this.scmTag));
     }
 
     protected java.lang.String prepareScmTag(java.lang.String scmTag) {
@@ -538,8 +713,15 @@ public abstract class GRelease
         scriptRunning = prepareScriptRunning(scriptRunning);
         if (isScriptRunning(scriptRunning)) return;
         this.scriptRunning = scriptRunning;
-        updateLastModified();
-        fireModified("scriptRunning="+scriptRunning);
+            updateLastModified();
+            fireModified("scriptRunning", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptRunning));
+    }
+
+    private final void updateScriptRunning(boolean scriptRunning) {
+        if (isScriptRunning(scriptRunning)) return;
+        this.scriptRunning = scriptRunning;
+            updateLastModified();
+            fireModified("scriptRunning", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptRunning));
     }
 
     protected boolean prepareScriptRunning(boolean scriptRunning) {
@@ -568,8 +750,15 @@ public abstract class GRelease
         scriptOutput = prepareScriptOutput(scriptOutput);
         if (isScriptOutput(scriptOutput)) return;
         this.scriptOutput = scriptOutput;
-        updateLastModified();
-        fireModified("scriptOutput="+scriptOutput);
+            updateLastModified();
+            fireModified("scriptOutput", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptOutput));
+    }
+
+    private final void updateScriptOutput(java.lang.String scriptOutput) {
+        if (isScriptOutput(scriptOutput)) return;
+        this.scriptOutput = scriptOutput;
+            updateLastModified();
+            fireModified("scriptOutput", ilarkesto.core.persistance.Persistence.propertyAsString(this.scriptOutput));
     }
 
     protected java.lang.String prepareScriptOutput(java.lang.String scriptOutput) {
@@ -590,27 +779,30 @@ public abstract class GRelease
         setScriptOutput((java.lang.String)value);
     }
 
-    public void updateProperties(Map<?, ?> properties) {
-        for (Map.Entry entry : properties.entrySet()) {
-            String property = (String) entry.getKey();
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
             if (property.equals("id")) continue;
-            Object value = entry.getValue();
-            if (property.equals("projectId")) updateProject(value);
-            if (property.equals("parentReleaseId")) updateParentRelease(value);
-            if (property.equals("sprintsIds")) updateSprints(value);
-            if (property.equals("number")) updateNumber(value);
-            if (property.equals("label")) updateLabel(value);
-            if (property.equals("note")) updateNote(value);
-            if (property.equals("releaseDate")) updateReleaseDate(value);
-            if (property.equals("released")) updateReleased(value);
-            if (property.equals("releaseNotes")) updateReleaseNotes(value);
-            if (property.equals("scmTag")) updateScmTag(value);
-            if (property.equals("scriptRunning")) updateScriptRunning(value);
-            if (property.equals("scriptOutput")) updateScriptOutput(value);
+            String value = entry.getValue();
+            if (property.equals("projectId")) updateProjectId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("parentReleaseId")) updateParentReleaseId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("sprintsIds")) updateSprintsIds(ilarkesto.core.persistance.Persistence.parsePropertyReferenceSet(value));
+            if (property.equals("number")) updateNumber(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+            if (property.equals("label")) updateLabel(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("note")) updateNote(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("releaseDate")) updateReleaseDate(ilarkesto.core.persistance.Persistence.parsePropertyDate(value));
+            if (property.equals("releaseTime")) updateReleaseTime(ilarkesto.core.persistance.Persistence.parsePropertyTime(value));
+            if (property.equals("released")) updateReleased(ilarkesto.core.persistance.Persistence.parsePropertyboolean(value));
+            if (property.equals("releaseNotes")) updateReleaseNotes(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("scmTag")) updateScmTag(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("scriptRunning")) updateScriptRunning(ilarkesto.core.persistance.Persistence.parsePropertyboolean(value));
+            if (property.equals("scriptOutput")) updateScriptOutput(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
         }
     }
 
     protected void repairDeadReferences(String entityId) {
+        if (!isPersisted()) return;
         super.repairDeadReferences(entityId);
         repairDeadProjectReference(entityId);
         repairDeadParentReleaseReference(entityId);
@@ -619,22 +811,21 @@ public abstract class GRelease
     }
 
     // --- ensure integrity ---
-
-    public void ensureIntegrity() {
-        super.ensureIntegrity();
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
         if (!isProjectSet()) {
             repairMissingMaster();
-            return;
         }
         try {
             getProject();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead project reference");
             repairDeadProjectReference(this.projectId);
         }
         try {
             getParentRelease();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead parentRelease reference");
             repairDeadParentReleaseReference(this.parentReleaseId);
         }
@@ -642,12 +833,16 @@ public abstract class GRelease
         Set<String> sprints = new HashSet<String>(this.sprintsIds);
         for (String entityId : sprints) {
             try {
-                sprintDao.getById(entityId);
-            } catch (EntityDoesNotExistException ex) {
+                AEntity.getById(entityId);
+            } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
                 LOG.info("Repairing dead sprint reference");
                 repairDeadSprintReference(entityId);
             }
         }
+        Collection<scrum.server.release.Release> release = getReleases();
+        Collection<scrum.server.issues.Issue> affectedIssue = getAffectedIssues();
+        Collection<scrum.server.issues.Issue> fixIssue = getFixIssues();
+        Collection<scrum.server.pr.BlogEntry> blogEntry = getBlogEntrys();
     }
 
 

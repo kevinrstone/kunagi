@@ -48,7 +48,7 @@ public class BlogEntryBlock extends ABlockWidget<BlogEntry> {
 		header.setDragHandle(blogEntry.getReference());
 		Image statusImage = null;
 		if (blogEntry.isPublished()) {
-			statusImage = Img.bundle.blgPublished().createImage();
+			statusImage = Img.blgPublished();
 			statusImage.setTitle("Published.");
 		}
 		statusIcon.setWidget(statusImage);

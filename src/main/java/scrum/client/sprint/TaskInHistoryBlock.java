@@ -46,7 +46,7 @@ public class TaskInHistoryBlock extends ABlockWidget<Task> implements TrashSuppo
 		statusIcon = header.addIconWrapper();
 		Image statusImage = null;
 		if (closed) {
-			statusImage = Img.bundle.tskClosed().createImage();
+			statusImage = Img.tskClosed();
 			statusImage.setTitle("Closed.");
 		}
 		statusIcon.setWidget(statusImage);

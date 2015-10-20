@@ -1,28 +1,30 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.server.admin;
 
+import ilarkesto.auth.Auth;
 import ilarkesto.auth.AuthenticationFailedException;
 import ilarkesto.auth.OpenId;
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.ldap.Ldap;
 import ilarkesto.io.IO;
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 import ilarkesto.webapp.RequestWrapper;
 
 import java.io.IOException;
@@ -84,7 +86,7 @@ public class LoginServlet extends AKunagiServlet {
 		}
 
 		renderLoginPage(req, null, null, historyToken, null, req.get("showPasswordRequest") != null,
-			req.get("showCreateAccount") != null);
+				req.get("showCreateAccount") != null);
 	}
 
 	private void passwordRequest(String login, String historyToken, RequestWrapper<WebSession> req)
@@ -114,7 +116,7 @@ public class LoginServlet extends AKunagiServlet {
 
 		if (!user.isEmailVerified()) {
 			renderLoginPage(req, login, login, historyToken, "User '" + login
-					+ "' has no verified email. Please contact the admin: " + systemConfig.getAdminEmail(), true, false);
+				+ "' has no verified email. Please contact the admin: " + systemConfig.getAdminEmail(), true, false);
 			return;
 		}
 
@@ -153,7 +155,7 @@ public class LoginServlet extends AKunagiServlet {
 
 		if (Str.containsNonLetterOrDigit(username)) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Name '" + username
-					+ "' contains an illegal character. Only letters and digits allowed.", false, true);
+				+ "' contains an illegal character. Only letters and digits allowed.", false, true);
 			return;
 		}
 
@@ -165,22 +167,28 @@ public class LoginServlet extends AKunagiServlet {
 
 		if (userDao.getUserByName(username) != null) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Name '" + username
-					+ "' is already used.", false, true);
+				+ "' is already used.", false, true);
 			log.warn("Registration failed. User name already exists:", username);
 			return;
 		}
 
 		if (email != null && userDao.getUserByEmail(email) != null) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Email '" + email
-					+ "' is already used.", false, true);
+				+ "' is already used.", false, true);
 			log.warn("Registration failed. User email already exists:", email);
 			return;
 		}
 
-		User user = userDao.postUser(email, username, password);
+		User user;
+		try {
+			user = userDao.postUser(email, username, password);
+		} catch (UserInputException ex) {
+			renderLoginPage(req, username, email, historyToken,
+				"Creating account failed. Password rejected: " + ex.getMessage() + ".", false, true);
+			return;
+		}
 		user.setLastLoginDateAndTime(DateAndTime.now());
 		user.triggerEmailVerification();
-		webApplication.getTransactionService().commit();
 		webApplication.triggerRegisterNotification(user, req.getRemoteHost());
 		webApplication.sendToClients(user);
 
@@ -224,7 +232,7 @@ public class LoginServlet extends AKunagiServlet {
 		if (user == null) {
 			if (webApplication.getSystemConfig().isRegistrationDisabled()) {
 				renderLoginPage(req, null, null, historyToken, "There is no user with the OpenID " + openId
-						+ " and creating new users is disabled.", false, false);
+					+ " and creating new users is disabled.", false, false);
 				return;
 			}
 
@@ -232,14 +240,14 @@ public class LoginServlet extends AKunagiServlet {
 				renderLoginPage(req, null, null, historyToken, "Registration failed. OpenID domains are limited to: "
 						+ webApplication.getSystemConfig().getOpenIdDomains(), false, false);
 				log.warn("Registration failed. OpenID domains are limited to:", webApplication.getSystemConfig()
-						.getOpenIdDomains());
+					.getOpenIdDomains());
 				return;
 			}
 
 			if (email != null) {
 				if (userDao.getUserByEmail(email) != null) {
 					renderLoginPage(req, null, null, historyToken, "Creating account failed. Email '" + email
-							+ "' is already used.", false, false);
+						+ "' is already used.", false, false);
 					log.warn("Registration failed. Email already exists:", email);
 					return;
 				}
@@ -253,7 +261,6 @@ public class LoginServlet extends AKunagiServlet {
 			}
 
 			user = userDao.postUserWithOpenId(openId, nickname, fullName, email);
-			webApplication.getTransactionService().commit();
 			webApplication.triggerRegisterNotification(user, req.getRemoteHost());
 		}
 
@@ -333,7 +340,7 @@ public class LoginServlet extends AKunagiServlet {
 			if (authenticated && user == null) {
 				if (webApplication.getSystemConfig().isRegistrationDisabled()) {
 					renderLoginPage(req, null, null, historyToken, "There is no user " + username
-							+ " and creating new users is disabled.", false, false);
+						+ " and creating new users is disabled.", false, false);
 					return;
 				}
 
@@ -348,7 +355,7 @@ public class LoginServlet extends AKunagiServlet {
 				} catch (Exception ex) {
 					log.warn(ex);
 					renderLoginPage(req, username, null, historyToken, "Creating a new user <" + username
-							+ "> with email <" + email + "> failed: " + Utl.getRootCauseMessage(ex), false, false);
+						+ "> with email <" + email + "> failed: " + Utl.getRootCauseMessage(ex), false, false);
 					return;
 				}
 				if (Str.isEmail(email)) user.setEmail(email);
@@ -356,7 +363,7 @@ public class LoginServlet extends AKunagiServlet {
 			}
 		} else {
 			// default password authentication
-			authenticated = user != null && user.matchesPassword(password);
+			authenticated = user != null && Auth.isPasswordMatching(password, user, new KunagiAuthenticationContext());
 		}
 
 		if (!authenticated || user == null) {
@@ -365,7 +372,7 @@ public class LoginServlet extends AKunagiServlet {
 		}
 
 		if (user.isDisabled()) {
-			renderLoginPage(req, username, null, historyToken, "User is disabled.", false, false);
+			renderLoginPage(req, username, null, historyToken, "Login failed.", false, false);
 			return;
 		}
 
@@ -386,7 +393,7 @@ public class LoginServlet extends AKunagiServlet {
 		String charset = IO.UTF_8;
 		req.setContentTypeHtml();
 
-		HtmlRenderer html = new HtmlRenderer(req.getWriter(), charset);
+		HtmlBuilder html = new HtmlBuilder(req.getWriter(), charset);
 		html.startHTMLstandard();
 
 		String title = "Kunagi Login";
@@ -395,10 +402,12 @@ public class LoginServlet extends AKunagiServlet {
 		html.startHEAD(title, "EN");
 		html.META("X-UA-Compatible", "IE=edge");
 		html.LINKfavicon();
-		html.LINKcss("scrum.ScrumGwtApplication/screen.css");
+		html.startSTYLEcss();
+		html.html(getCss());
+		html.endSTYLE();
 		html.endHEAD();
 
-		html.startBODY();
+		html.startBODY().setId("body");
 		html.startDIV("loginPage");
 		html.startDIV("panel");
 		String logoUrl = webApplication.getSystemConfig().getLoginPageLogoUrl();
@@ -411,7 +420,7 @@ public class LoginServlet extends AKunagiServlet {
 		if (createAccount) renderCreateAccount(html, username, email, historyToken);
 		html.DIV("separator", null);
 		html.startDIV("kunagiLink");
-		html.text("Kunagi " + webApplication.getReleaseLabel() + " | ");
+		html.text("Kunagi " + webApplication.getBuildProperties().getReleaseLabel() + " | ");
 		html.A("http://kunagi.org", "kunagi.org");
 		html.endDIV();
 		html.endDIV();
@@ -428,7 +437,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.flush();
 	}
 
-	private void renderLogin(HtmlRenderer html, String username, String historyToken) {
+	private void renderLogin(HtmlBuilder html, String username, String historyToken) {
 		if (!webApplication.getSystemConfig().isOpenIdDisabled()) {
 			html.H2("Login with OpenID");
 			renderOpenIdLoginForm(html, historyToken);
@@ -461,7 +470,7 @@ public class LoginServlet extends AKunagiServlet {
 		}
 	}
 
-	public void renderRetroLoginForm(HtmlRenderer html, String username, String historyToken) {
+	public void renderRetroLoginForm(HtmlBuilder html, String username, String historyToken) {
 		html.startFORM(null, "loginForm", false);
 		html.INPUThidden("historyToken", historyToken);
 		html.startTABLE().setAlignCenter();
@@ -498,7 +507,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.endFORM();
 	}
 
-	public void renderOpenIdLoginForm(HtmlRenderer html, String historyToken) {
+	public void renderOpenIdLoginForm(HtmlBuilder html, String historyToken) {
 		renderOpenIdLink(OpenId.MYOPENID, "MyOpenID", historyToken, html);
 		renderOpenIdLink(OpenId.GOOGLE, "Google", historyToken, html);
 		renderOpenIdLink(OpenId.YAHOO, "Yahoo!", historyToken, html);
@@ -545,7 +554,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.endFORM();
 	}
 
-	private void renderOpenIdLink(String openId, String label, String historyToken, HtmlRenderer html) {
+	private void renderOpenIdLink(String openId, String label, String historyToken, HtmlBuilder html) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("login.html?openid=").append(Str.encodeUrlParameter(openId));
 		sb.append("&login=Login");
@@ -557,7 +566,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.endA();
 	}
 
-	private void renderPasswordRequest(HtmlRenderer html, String username, String historyToken) {
+	private void renderPasswordRequest(HtmlBuilder html, String username, String historyToken) {
 		html.H2("Request new password");
 		html.startFORM(null, "passwordRequestForm", false);
 		html.INPUThidden("historyToken", historyToken);
@@ -586,7 +595,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.A("login.html", "Back to Login");
 	}
 
-	private void renderCreateAccount(HtmlRenderer html, String username, String email, String historyToken) {
+	private void renderCreateAccount(HtmlBuilder html, String username, String email, String historyToken) {
 		html.H2("Create account");
 		html.startDIV("createAccount");
 		html.startFORM(null, "loginForm", false);
@@ -644,7 +653,7 @@ public class LoginServlet extends AKunagiServlet {
 		}
 	}
 
-	private void renderMessage(HtmlRenderer html, String message) {
+	private void renderMessage(HtmlBuilder html, String message) {
 		html.startDIV("message");
 		html.text(message);
 		html.endDIV();

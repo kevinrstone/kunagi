@@ -14,10 +14,11 @@
  */
 package scrum.server.admin;
 
-import ilarkesto.auth.PasswordHasher;
-import ilarkesto.base.CryptOneWay;
+import ilarkesto.auth.Auth;
+import ilarkesto.auth.AuthUser;
 import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
+import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.integration.gravatar.Gravatar;
 import ilarkesto.integration.gravatar.Profile;
@@ -31,14 +32,12 @@ import java.util.UUID;
 import scrum.server.ScrumWebApplication;
 import scrum.server.pr.EmailSender;
 
-public class User extends GUser {
+public class User extends GUser implements AuthUser {
 
 	private static final int HOURS_FOR_EMAIL_VERIFICATION = 48;
 	private static final int DAYS_FOR_INACTIVITY = 7;
 
 	private static Log log = Log.get(User.class);
-
-	private String passwordSalt;
 
 	// --- dependencies ---
 
@@ -82,8 +81,6 @@ public class User extends GUser {
 		return getName();
 	}
 
-	private String password;
-
 	public void triggerEmailVerification() {
 		if (!isEmailSet()) {
 			log.info("User has no email. Skipping email verification:", this);
@@ -109,74 +106,40 @@ public class User extends GUser {
 	}
 
 	public void triggerNewPasswordRequest() {
+		sendPasswordMail("You requested a new password");
+	}
+
+	public void triggerPasswordReset() {
+		sendPasswordMail("An admin created a new password");
+	}
+
+	private void sendPasswordMail(String reason) {
 		if (!isEmailSet()) {
 			log.info("User has no email. Skipping new password request:", this);
 			return;
 		}
 
 		String newPassword = Str.generatePassword(8);
+		try {
+			Auth.setPassword(newPassword, this, new KunagiAuthenticationContext());
+		} catch (UserInputException ex) {
+			throw new RuntimeException(ex);
+		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("You requested a new password for your Kunagi account on ").append(webApplication.createUrl(null))
-				.append("\n");
+		sb.append(reason + " for your Kunagi account on ").append(webApplication.createUrl(null)).append("\n");
 		sb.append("\n");
 		sb.append("Email: ").append(getEmail()).append("\n");
 		sb.append("Password: ").append(newPassword).append("\n");
 		sb.append("\n");
-		sb.append("You sould change this password, since somebody else could read this email.");
+		sb.append("You should change this password, since somebody else could read this email.");
 
-		emailSender.sendEmail((String) null, getEmail(), "Kunagi password", sb.toString());
-
-		setPassword(newPassword);
-		log.info("Password changed for", this);
-	}
-
-	public void triggerPasswordReset() {
-		String urlBase = webApplication.createUrl(null);
-
-		String newPassword = Str.generatePassword(8);
-		setPassword(newPassword);
-		log.info("Password changed for", this);
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("An admin created a new password for your Kunagi account on ").append(urlBase).append("\n");
-		sb.append("\n");
-		sb.append("Email: ").append(getEmail()).append("\n");
-		sb.append("Password: ").append(newPassword).append("\n");
-		sb.append("\n");
-		sb.append("You sould change this password, since somebody else could read this email.");
 		emailSender.sendEmail((String) null, getEmail(), "Kunagi password", sb.toString());
 	}
 
 	@Override
 	public String getRealName() {
 		return getName();
-	}
-
-	@Override
-	public boolean matchesPassword(String password) {
-		if (this.password != null && this.password.startsWith(CryptOneWay.DEFAULT_SALT)) {
-			boolean success = CryptOneWay.cryptWebPassword(password).equals(this.password);
-			if (!success) return false;
-			log.warn("Converting old password hash into new:", this);
-			setPassword(password);
-			return true;
-		}
-		return hashPassword(password).equals(this.password);
-	}
-
-	@Override
-	public void setPassword(String value) {
-		this.password = hashPassword(value);
-		fireModified("password=xxx");
-	}
-
-	private String hashPassword(String password) {
-		if (passwordSalt == null) {
-			passwordSalt = Str.generatePassword(32);
-			fireModified("passwordSalt=" + this.passwordSalt);
-		}
-		return PasswordHasher.hashPassword(password, this.passwordSalt, "SHA-256:");
 	}
 
 	@Override
@@ -189,13 +152,16 @@ public class User extends GUser {
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
-		if (Str.isBlank(this.password)) setPassword(webApplication.getSystemConfig().getDefaultUserPassword());
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
+
+		if (!isPasswordSet()) Auth.resetPasswordToDefault(this, new KunagiAuthenticationContext());
+
 		if (!isPublicNameSet()) setPublicName(getName());
 		if (!isColorSet()) setColor(getDefaultColor());
 		if (!isLoginTokenSet()) createLoginToken();
 		if (isCurrentProjectSet() && !getCurrentProject().containsParticipant(this)) setCurrentProject(null);
+
 	}
 
 	@Override
@@ -209,7 +175,7 @@ public class User extends GUser {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getName();
 	}
 

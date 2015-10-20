@@ -32,7 +32,7 @@ public class ProjectEventDao extends GProjectEventDao {
 		event.setProject(project);
 		event.setLabel(label);
 		event.setSubject(subject);
-		saveEntity(event);
+		persist(event);
 		return event;
 	}
 

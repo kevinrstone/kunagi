@@ -15,7 +15,7 @@
 package scrum.server.admin;
 
 import ilarkesto.di.app.BackupApplicationDataDirTask;
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 import ilarkesto.webapp.RequestWrapper;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class BackupServlet extends AKunagiServlet {
 		// TODO show message
 		webApplication.getTaskManager().start(webApplication.autowire(new BackupApplicationDataDirTask()));
 
-		HtmlRenderer html = createDefaultHtmlWithHeader(req, "Backup running", 3, "admin.html");
+		HtmlBuilder html = createDefaultHtmlWithHeader(req, "Backup running", 3, "admin.html");
 		html.startBODY();
 		html.H1("Backup initiated");
 		html.startP();

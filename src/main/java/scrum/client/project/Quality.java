@@ -14,12 +14,12 @@
  */
 package scrum.client.project;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.HyperlinkWidget;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.Auth;
@@ -35,18 +35,22 @@ public class Quality extends GQuality implements ReferenceSupport, LabelSupport,
 
 	public static final String REFERENCE_PREFIX = "qlt";
 
-	public Quality(Project project) {
-		setProject(project);
+	public static Quality post(Project project) {
+		Args.assertNotNull(project, "project");
+
+		Quality quality = new Quality();
+		quality.setLabel("");
+		quality.setProject(project);
+
+		quality.persist();
+		return quality;
 	}
 
-	public Quality(Issue issue) {
-		setProject(issue.getProject());
-		setLabel(issue.getLabel());
-		setDescription(issue.getDescription());
-	}
-
-	public Quality(Map data) {
-		super(data);
+	public static Quality post(Issue issue) {
+		Quality quality = post(issue.getProject());
+		quality.setLabel(issue.getLabel());
+		quality.setDescription(issue.getDescription());
+		return quality;
 	}
 
 	@Override
@@ -60,7 +64,7 @@ public class Quality extends GQuality implements ReferenceSupport, LabelSupport,
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference() + " " + getLabel();
 	}
 
@@ -87,5 +91,17 @@ public class Quality extends GQuality implements ReferenceSupport, LabelSupport,
 			return Utl.compare(a.getLabel(), b.getLabel());
 		}
 	};
+
+	@Override
+	protected LabelModel createLabelModel() {
+		return new LabelModel() {
+
+			@Override
+			public boolean isSwitchToEditModeIfNull() {
+				return true;
+			}
+		};
+
+	}
 
 }

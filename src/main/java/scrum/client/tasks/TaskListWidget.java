@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -29,6 +29,7 @@ import scrum.client.sprint.CreateTaskAction;
 import scrum.client.sprint.Task;
 
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TaskListWidget extends AScrumWidget {
@@ -39,13 +40,15 @@ public class TaskListWidget extends AScrumWidget {
 	private TaskBlockContainer container;
 	private Requirement requirement;
 	private boolean createTaskButton;
+	private String color;
 
 	public TaskListWidget(Requirement requirement, TaskBlockContainer container, BlockListDropAction<Task> dropAction,
-			boolean createTaskButton) {
+			boolean createTaskButton, String color) {
 		this.requirement = requirement;
 		this.container = container;
 		this.dropAction = dropAction;
 		this.createTaskButton = createTaskButton;
+		this.color = color;
 	}
 
 	public Task getSelectedTask() {
@@ -64,6 +67,9 @@ public class TaskListWidget extends AScrumWidget {
 		}
 
 		FlowPanel panel = new FlowPanel();
+
+		panel.add(new HTML("<div style='background: " + color + "; height: 3px;'></div>"));
+
 		panel.add(list);
 		if (createTaskButton)
 			panel.add(Gwt.createDiv("CreateTaskButtonWrapper",

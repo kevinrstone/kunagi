@@ -17,8 +17,8 @@ package scrum.server.collaboration;
 import ilarkesto.base.AFactoryCache;
 import ilarkesto.base.Cache;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.fp.Predicate;
 import ilarkesto.persistence.AEntity;
 
 import java.util.Set;
@@ -71,7 +71,7 @@ public class CommentDao extends GCommentDao {
 		comment.setDateAndTime(DateAndTime.now());
 		comment.setPublished(publish);
 
-		saveEntity(comment);
+		persist(comment);
 		return comment;
 	}
 

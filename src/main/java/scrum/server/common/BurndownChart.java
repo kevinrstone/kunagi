@@ -40,12 +40,14 @@ import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.ui.RectangleInsets;
 
 import scrum.client.common.WeekdaySelector;
-import scrum.server.css.ScreenCssBuilder;
+import scrum.server.css.KunagiCssBuilder;
 import scrum.server.sprint.Sprint;
 import scrum.server.sprint.SprintDao;
 import scrum.server.sprint.SprintDaySnapshot;
@@ -54,9 +56,9 @@ public class BurndownChart {
 
 	private static final Log LOG = Log.get(BurndownChart.class);
 
-	private static final Color COLOR_PAST_LINE = Utl.parseHtmlColor(ScreenCssBuilder.cBurndownLine);
-	private static final Color COLOR_PROJECTION_LINE = Utl.parseHtmlColor(ScreenCssBuilder.cBurndownProjectionLine);
-	private static final Color COLOR_OPTIMUM_LINE = Utl.parseHtmlColor(ScreenCssBuilder.cBurndownOptimalLine);
+	private static final Color COLOR_PAST_LINE = Utl.parseHtmlColor(KunagiCssBuilder.cBurndownLine);
+	private static final Color COLOR_PROJECTION_LINE = Utl.parseHtmlColor(KunagiCssBuilder.cBurndownProjectionLine);
+	private static final Color COLOR_OPTIMUM_LINE = Utl.parseHtmlColor(KunagiCssBuilder.cBurndownOptimalLine);
 
 	// --- dependencies ---
 
@@ -142,7 +144,24 @@ public class BurndownChart {
 		JFreeChart chart = ChartFactory.createXYLineChart("", "", "", data, PlotOrientation.VERTICAL, false, true,
 			false);
 
-		XYItemRenderer renderer = chart.getXYPlot().getRenderer();
+		chart.setBackgroundPaint(Color.WHITE);
+
+		XYPlot plot = chart.getXYPlot();
+		// plot.setInsets(new RectangleInsets(0, 0, 0, 0));
+		plot.setAxisOffset(RectangleInsets.ZERO_INSETS);
+		// plot.setOutlineVisible(false);
+
+		plot.setBackgroundPaint(Color.white);
+		plot.setRangeGridlinePaint(Color.lightGray);
+		plot.setDomainGridlinePaint(Color.lightGray);
+		// plot.setRangeCrosshairPaint(Color.lightGray);
+		// plot.setRangeMinorGridlinePaint(Color.lightGray);
+		// plot.setDomainCrosshairPaint(Color.blue);
+		// plot.setDomainMinorGridlinePaint(Color.green);
+		// plot.setDomainTickBandPaint(Color.green);
+
+		XYItemRenderer renderer = plot.getRenderer();
+		renderer.setBaseStroke(new BasicStroke(2f));
 
 		renderer.setSeriesPaint(0, COLOR_PAST_LINE);
 		renderer.setSeriesStroke(0, new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
@@ -174,9 +193,9 @@ public class BurndownChart {
 		domainAxis2.setTickLabelsVisible(false);
 		domainAxis2.setRange(range);
 
-		chart.getXYPlot().setDomainAxis(0, domainAxis2);
-		chart.getXYPlot().setDomainAxis(1, domainAxis1);
-		chart.getXYPlot().setDomainAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
+		plot.setDomainAxis(0, domainAxis2);
+		plot.setDomainAxis(1, domainAxis1);
+		plot.setDomainAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
 
 		NumberAxis rangeAxis = new NumberAxis();
 		rangeAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
@@ -185,11 +204,7 @@ public class BurndownChart {
 		rangeAxis.setLowerBound(0);
 		rangeAxis.setUpperBound(upperBoundary);
 
-		chart.getXYPlot().setRangeAxis(rangeAxis);
-
-		chart.getXYPlot().getRenderer().setBaseStroke(new BasicStroke(2f));
-
-		chart.setBackgroundPaint(Color.WHITE);
+		plot.setRangeAxis(rangeAxis);
 
 		return chart;
 	}

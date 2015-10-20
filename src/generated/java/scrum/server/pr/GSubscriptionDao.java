@@ -14,11 +14,12 @@
 package scrum.server.pr;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GSubscriptionDao
             extends ilarkesto.persistence.ADao<Subscription> {
@@ -55,8 +56,8 @@ public abstract class GSubscriptionDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Subscription) {
             clearCaches();
         }

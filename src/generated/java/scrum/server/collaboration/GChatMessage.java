@@ -14,17 +14,19 @@
 package scrum.server.collaboration;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
-import ilarkesto.auth.AUser;
-import ilarkesto.persistence.EntityDoesNotExistException;
-import ilarkesto.base.Str;
+import ilarkesto.auth.AuthUser;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GChatMessage
-            extends AEntity
+            extends ilarkesto.persistence.AEntity
             implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, java.lang.Comparable<ChatMessage> {
+
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(ChatMessage.class);
 
     // --- AEntity ---
 
@@ -35,50 +37,81 @@ public abstract class GChatMessage
     protected void repairDeadDatob(ADatob datob) {
     }
 
+    public abstract static class AChatMessageQuery extends ilarkesto.core.persistance.AEntityQuery<ChatMessage> {
     @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("projectId", this.projectId);
-        properties.put("authorId", this.authorId);
-        properties.put("text", this.text);
-        properties.put("dateAndTime", this.dateAndTime == null ? null : this.dateAndTime.toString());
+        public Class<ChatMessage> getType() {
+            return ChatMessage.class;
+        }
     }
 
+    public static Set<ChatMessage> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(ChatMessage.class).list();
+    }
+
+    public static ChatMessage getById(String id) {
+        return (ChatMessage) AEntity.getById(id);
+    }
+
+    @Override
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getProject()); } catch(EntityDoesNotExistException ex) {}
+        try { Utl.addIfNotNull(ret, getAuthor()); } catch(EntityDoesNotExistException ex) {}
+        return ret;
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+        properties.put("authorId", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorId));
+        properties.put("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+        properties.put("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
+    }
+
+    @Override
     public int compareTo(ChatMessage other) {
-        return toString().toLowerCase().compareTo(other.toString().toLowerCase());
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GChatMessage.class);
 
-    public static final String TYPE = "chatMessage";
+    public static final String TYPE = "ChatMessage";
 
     // -----------------------------------------------------------
     // - project
     // -----------------------------------------------------------
 
     private String projectId;
-    private transient scrum.server.project.Project projectCache;
-
-    private void updateProjectCache() {
-        projectCache = this.projectId == null ? null : (scrum.server.project.Project)projectDao.getById(this.projectId);
-    }
 
     public final String getProjectId() {
         return this.projectId;
     }
 
     public final scrum.server.project.Project getProject() {
-        if (projectCache == null) updateProjectCache();
-        return projectCache;
+        try {
+            return this.projectId == null ? null : (scrum.server.project.Project) AEntity.getById(this.projectId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("ChatMessage.project");
+        }
     }
 
     public final void setProject(scrum.server.project.Project project) {
         project = prepareProject(project);
         if (isProject(project)) return;
-        this.projectId = project == null ? null : project.getId();
-        projectCache = project;
-        updateLastModified();
-        fireModified("project="+project);
+        setProjectId(project == null ? null : project.getId());
+    }
+
+    public final void setProjectId(String id) {
+        if (Utl.equals(projectId, id)) return;
+        this.projectId = id;
+            updateLastModified();
+            fireModified("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+    }
+
+    private final void updateProjectId(String id) {
+        setProjectId(id);
     }
 
     protected scrum.server.project.Project prepareProject(scrum.server.project.Project project) {
@@ -86,6 +119,7 @@ public abstract class GChatMessage
     }
 
     protected void repairDeadProjectReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.projectId == null || entityId.equals(this.projectId)) {
             repairMissingMaster();
         }
@@ -109,28 +143,34 @@ public abstract class GChatMessage
     // -----------------------------------------------------------
 
     private String authorId;
-    private transient scrum.server.admin.User authorCache;
-
-    private void updateAuthorCache() {
-        authorCache = this.authorId == null ? null : (scrum.server.admin.User)userDao.getById(this.authorId);
-    }
 
     public final String getAuthorId() {
         return this.authorId;
     }
 
     public final scrum.server.admin.User getAuthor() {
-        if (authorCache == null) updateAuthorCache();
-        return authorCache;
+        try {
+            return this.authorId == null ? null : (scrum.server.admin.User) AEntity.getById(this.authorId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("ChatMessage.author");
+        }
     }
 
     public final void setAuthor(scrum.server.admin.User author) {
         author = prepareAuthor(author);
         if (isAuthor(author)) return;
-        this.authorId = author == null ? null : author.getId();
-        authorCache = author;
-        updateLastModified();
-        fireModified("author="+author);
+        setAuthorId(author == null ? null : author.getId());
+    }
+
+    public final void setAuthorId(String id) {
+        if (Utl.equals(authorId, id)) return;
+        this.authorId = id;
+            updateLastModified();
+            fireModified("authorId", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorId));
+    }
+
+    private final void updateAuthorId(String id) {
+        setAuthorId(id);
     }
 
     protected scrum.server.admin.User prepareAuthor(scrum.server.admin.User author) {
@@ -138,6 +178,7 @@ public abstract class GChatMessage
     }
 
     protected void repairDeadAuthorReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.authorId == null || entityId.equals(this.authorId)) {
             setAuthor(null);
         }
@@ -169,9 +210,18 @@ public abstract class GChatMessage
     public final void setText(java.lang.String text) {
         text = prepareText(text);
         if (isText(text)) return;
+        if (text == null) throw new IllegalArgumentException("Mandatory field can not be set to null: text");
         this.text = text;
-        updateLastModified();
-        fireModified("text="+text);
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+    }
+
+    private final void updateText(java.lang.String text) {
+        if (isText(text)) return;
+        if (text == null) throw new IllegalArgumentException("Mandatory field can not be set to null: text");
+        this.text = text;
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
     }
 
     protected java.lang.String prepareText(java.lang.String text) {
@@ -206,8 +256,15 @@ public abstract class GChatMessage
         dateAndTime = prepareDateAndTime(dateAndTime);
         if (isDateAndTime(dateAndTime)) return;
         this.dateAndTime = dateAndTime;
-        updateLastModified();
-        fireModified("dateAndTime="+dateAndTime);
+            updateLastModified();
+            fireModified("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
+    }
+
+    private final void updateDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
+        if (isDateAndTime(dateAndTime)) return;
+        this.dateAndTime = dateAndTime;
+            updateLastModified();
+            fireModified("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
     }
 
     protected ilarkesto.core.time.DateAndTime prepareDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
@@ -228,41 +285,42 @@ public abstract class GChatMessage
         setDateAndTime((ilarkesto.core.time.DateAndTime)value);
     }
 
-    public void updateProperties(Map<?, ?> properties) {
-        for (Map.Entry entry : properties.entrySet()) {
-            String property = (String) entry.getKey();
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
             if (property.equals("id")) continue;
-            Object value = entry.getValue();
-            if (property.equals("projectId")) updateProject(value);
-            if (property.equals("authorId")) updateAuthor(value);
-            if (property.equals("text")) updateText(value);
-            if (property.equals("dateAndTime")) updateDateAndTime(value);
+            String value = entry.getValue();
+            if (property.equals("projectId")) updateProjectId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("authorId")) updateAuthorId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("text")) updateText(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("dateAndTime")) updateDateAndTime(ilarkesto.core.persistance.Persistence.parsePropertyDateAndTime(value));
         }
     }
 
     protected void repairDeadReferences(String entityId) {
+        if (!isPersisted()) return;
         super.repairDeadReferences(entityId);
         repairDeadProjectReference(entityId);
         repairDeadAuthorReference(entityId);
     }
 
     // --- ensure integrity ---
-
-    public void ensureIntegrity() {
-        super.ensureIntegrity();
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
         if (!isProjectSet()) {
             repairMissingMaster();
-            return;
         }
         try {
             getProject();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead project reference");
             repairDeadProjectReference(this.projectId);
         }
         try {
             getAuthor();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead author reference");
             repairDeadAuthorReference(this.authorId);
         }
@@ -277,6 +335,12 @@ public abstract class GChatMessage
 
     public static final void setProjectDao(scrum.server.project.ProjectDao projectDao) {
         GChatMessage.projectDao = projectDao;
+    }
+
+    static scrum.server.admin.UserDao userDao;
+
+    public static final void setUserDao(scrum.server.admin.UserDao userDao) {
+        GChatMessage.userDao = userDao;
     }
 
     static scrum.server.collaboration.ChatMessageDao chatMessageDao;

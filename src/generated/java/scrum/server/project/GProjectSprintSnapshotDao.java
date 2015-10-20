@@ -14,11 +14,12 @@
 package scrum.server.project;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GProjectSprintSnapshotDao
             extends ilarkesto.persistence.ADao<ProjectSprintSnapshot> {
@@ -57,8 +58,8 @@ public abstract class GProjectSprintSnapshotDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof ProjectSprintSnapshot) {
             clearCaches();
         }

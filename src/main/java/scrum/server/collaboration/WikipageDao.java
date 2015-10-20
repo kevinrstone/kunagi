@@ -14,7 +14,7 @@
  */
 package scrum.server.collaboration;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import scrum.server.project.Project;
 
 public class WikipageDao extends GWikipageDao {

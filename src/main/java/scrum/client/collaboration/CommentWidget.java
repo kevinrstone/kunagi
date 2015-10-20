@@ -67,7 +67,7 @@ public class CommentWidget extends AScrumWidget {
 					Widget widget = null;
 					if (getCurrentProject().isHomepagePublishingEnabled()) {
 						if (comment.isPublished()) {
-							widget = Img.bundle.publicComment().createImage();
+							widget = Img.publicComment();
 							widget.setTitle("This comment is visible on the homepage.");
 						} else {
 							widget = new ButtonWidget(new PublishCommentAction(comment)).update();

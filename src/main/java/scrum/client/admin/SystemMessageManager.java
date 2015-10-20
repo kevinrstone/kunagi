@@ -17,35 +17,30 @@ package scrum.client.admin;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.editor.ADateAndTimeEditorModel;
 import ilarkesto.gwt.client.editor.ATextEditorModel;
-import scrum.client.DataTransferObject;
-import scrum.client.communication.ServerDataReceivedEvent;
-import scrum.client.communication.ServerDataReceivedHandler;
-import scrum.client.workspace.VisibleDataChangedEvent;
 
-public class SystemMessageManager extends GSystemMessageManager implements ServerDataReceivedHandler {
+import scrum.client.core.EventBus;
+
+public class SystemMessageManager extends GSystemMessageManager {
 
 	private SystemMessage systemMessage = new SystemMessage();
 
-	@Override
-	public void onServerDataReceived(ServerDataReceivedEvent event) {
-		DataTransferObject data = event.getData();
-		if (data.systemMessage != null) {
-			systemMessage = data.systemMessage;
-			log.info("SystemMessage received:", systemMessage);
-			new VisibleDataChangedEvent().fireInCurrentScope();
-		}
+	public void updateMessage(SystemMessage systemMessage) {
+		if (systemMessage == null) return;
+		this.systemMessage = systemMessage;
+		log.info("SystemMessage received:", systemMessage);
+		EventBus.get().visibleDataChanged();
 	}
 
 	public void activateSystemMessage() {
 		systemMessage.setActive(true);
 		new UpdateSystemMessageServiceCall(systemMessage).execute();
-		new VisibleDataChangedEvent().fireInCurrentScope();
+		EventBus.get().visibleDataChanged();
 	}
 
 	public void deactivateSystemMessage() {
 		systemMessage.setActive(false);
 		new UpdateSystemMessageServiceCall(systemMessage).execute();
-		new VisibleDataChangedEvent().fireInCurrentScope();
+		EventBus.get().visibleDataChanged();
 	}
 
 	public SystemMessage getSystemMessage() {

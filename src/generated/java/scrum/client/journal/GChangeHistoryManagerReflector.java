@@ -6,7 +6,6 @@ public class GChangeHistoryManagerReflector implements ilarkesto.core.scope.Comp
 
     public void injectComponents(ChangeHistoryManager component, ilarkesto.core.scope.Scope scope) {
         component.app = (scrum.client.ScrumGwtApplication) scope.getComponent("app");
-        component.dao = (scrum.client.Dao) scope.getComponent("dao");
     }
 
     public void callInitializationMethods(ChangeHistoryManager component) {

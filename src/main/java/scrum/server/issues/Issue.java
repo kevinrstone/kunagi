@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,16 +18,33 @@ import ilarkesto.base.Utl;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.time.DateAndTime;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
+import scrum.client.issues.Issue.Types;
 import scrum.server.admin.User;
 import scrum.server.common.Numbered;
 import scrum.server.release.Release;
 
 public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSupport {
+
+	// --- copies ---
+
+	@Override
+	public List<String> getTypeOptions() {
+		return Types.ALL;
+	}
+
+	@Override
+	public List<Integer> getSeverityOptions() {
+		return Arrays.asList(scrum.client.issues.Issue.SEVERITY_OPTIONS);
+	}
+
+	// --- ---
 
 	public void appendToDescription(String text) {
 		if (Str.isBlank(text)) return;
@@ -150,8 +167,8 @@ public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSu
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		updateNumber();
 		if (!isTypeSet()) setType(scrum.client.issues.Issue.INIT_TYPE);
 		if (!isDateSet()) setDate(DateAndTime.now());
@@ -159,7 +176,7 @@ public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSu
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 

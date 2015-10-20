@@ -14,8 +14,8 @@
  */
 package scrum.server.sprint;
 
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.time.Date;
-import ilarkesto.fp.Predicate;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SprintDaySnapshotDao extends GSprintDaySnapshotDao {
 			snapshot = newEntityInstance();
 			snapshot.setSprint(sprint);
 			snapshot.setDate(date);
-			saveEntity(snapshot);
+			persist(snapshot);
 		}
 
 		return snapshot;

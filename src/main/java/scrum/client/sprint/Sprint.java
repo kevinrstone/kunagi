@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.sprint;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.Date;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.Auth;
@@ -53,13 +53,17 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 	private transient Comparator<Task> tasksOrderComparator;
 	private transient RequirementsOrderComparator requirementsOrderComparator;
 
-	public Sprint(Project project, String label) {
-		setProject(project);
-		setLabel(label);
-	}
+	public transient boolean historyLoaded;
 
-	public Sprint(Map data) {
-		super(data);
+	public static Sprint post(Project project) {
+		Args.assertNotNull(project, "project");
+
+		Sprint sprint = new Sprint();
+		sprint.setProject(project);
+		sprint.setLabel("New Sprint");
+
+		sprint.persist();
+		return sprint;
 	}
 
 	public void updateRequirementsOrder() {
@@ -157,7 +161,7 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 
 	public List<Task> getUnclaimedTasks(boolean sorted) {
 		List<Task> ret = new ArrayList<Task>();
-		List<Requirement> requirements = getRequirements();
+		List<Requirement> requirements = new ArrayList(getRequirements());
 		if (sorted) Collections.sort(requirements, getRequirementsOrderComparator());
 		for (Requirement requirement : requirements) {
 			ret.addAll(requirement.getUnclaimedTasks());
@@ -241,7 +245,7 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 
@@ -442,7 +446,7 @@ public class Sprint extends GSprint implements ForumSupport, ReferenceSupport, L
 				for (StoryInfo story : stories) {
 					sb.append("\n* ").append(story.getReference()).append(" ").append(story.getLabel());
 					sb.append(" ''").append(story.getEstimatedWorkAsString()).append(", ")
-							.append(story.getBurnedWorkAsString()).append("''");
+					.append(story.getBurnedWorkAsString()).append("''");
 					for (TaskInfo task : story.getTasks()) {
 						sb.append("\n  * ").append(task.getReference()).append(" ").append(task.getLabel());
 						sb.append(" ''").append(task.getBurnedWork()).append(" hrs.''");

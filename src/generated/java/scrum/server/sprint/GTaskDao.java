@@ -14,11 +14,12 @@
 package scrum.server.sprint;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GTaskDao
             extends ilarkesto.persistence.ADao<Task> {
@@ -70,8 +71,8 @@ public abstract class GTaskDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Task) {
             clearCaches();
         }
@@ -358,13 +359,13 @@ public abstract class GTaskDao
     }
 
     // -----------------------------------------------------------
-    // - impediment
+    // - impediments
     // -----------------------------------------------------------
 
     private final Cache<scrum.server.impediments.Impediment,Set<Task>> tasksByImpedimentCache = new Cache<scrum.server.impediments.Impediment,Set<Task>>(
             new Cache.Factory<scrum.server.impediments.Impediment,Set<Task>>() {
                 public Set<Task> create(scrum.server.impediments.Impediment impediment) {
-                    return getEntities(new IsImpediment(impediment));
+                    return getEntities(new ContainsImpediment(impediment));
                 }
             });
 
@@ -377,22 +378,22 @@ public abstract class GTaskDao
         if (impedimentsCache == null) {
             impedimentsCache = new HashSet<scrum.server.impediments.Impediment>();
             for (Task e : getEntities()) {
-                if (e.isImpedimentSet()) impedimentsCache.add(e.getImpediment());
+                impedimentsCache.addAll(e.getImpediments());
             }
         }
         return impedimentsCache;
     }
 
-    private static class IsImpediment implements Predicate<Task> {
+    private static class ContainsImpediment implements Predicate<Task> {
 
         private scrum.server.impediments.Impediment value;
 
-        public IsImpediment(scrum.server.impediments.Impediment value) {
+        public ContainsImpediment(scrum.server.impediments.Impediment value) {
             this.value = value;
         }
 
         public boolean test(Task e) {
-            return e.isImpediment(value);
+            return e.containsImpediment(value);
         }
 
     }
@@ -456,6 +457,12 @@ public abstract class GTaskDao
 
     public void setRequirementDao(scrum.server.project.RequirementDao requirementDao) {
         this.requirementDao = requirementDao;
+    }
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
     }
 
     scrum.server.impediments.ImpedimentDao impedimentDao;

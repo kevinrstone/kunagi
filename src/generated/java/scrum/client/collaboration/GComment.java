@@ -1,6 +1,6 @@
 // ----------> GENERATED FILE - DON'T TOUCH! <----------
 
-// generator: ilarkesto.mda.legacy.generator.GwtEntityGenerator
+// generator: scrum.mda.KunagiModelApplication$1
 
 
 
@@ -14,104 +14,644 @@
 package scrum.client.collaboration;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
-import scrum.client.common.*;
-import ilarkesto.gwt.client.*;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GComment
-            extends scrum.client.common.AScrumGwtEntity {
+            extends scrum.client.common.AScrumGwtEntity
+            implements java.lang.Comparable<Comment> {
 
-    protected scrum.client.Dao getDao() {
-        return scrum.client.Dao.get();
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Comment.class);
+
+    private static transient ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Comment> parentBackReferencesCache = new ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Comment>() {
+    @Override
+        protected Set<Comment> loadById(final String id) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return id.equals(entity.getParentId());
+            }
+            @Override
+            public String toString() {
+                return "Comment:byParent";
+            }
+        }.list();
+        }
+    };
+
+    public static Set< Comment> listByParent(final scrum.client.common.AScrumGwtEntity parent) {
+        if (parent == null) return new HashSet<Comment>();
+        return parentBackReferencesCache.getById(parent.getId());
+    }
+
+    private static transient ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Comment> authorBackReferencesCache = new ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Comment>() {
+    @Override
+        protected Set<Comment> loadById(final String id) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return id.equals(entity.getAuthorId());
+            }
+            @Override
+            public String toString() {
+                return "Comment:byAuthor";
+            }
+        }.list();
+        }
+    };
+
+    public static Set< Comment> listByAuthor(final scrum.client.admin.User author) {
+        if (author == null) return new HashSet<Comment>();
+        return authorBackReferencesCache.getById(author.getId());
+    }
+
+    public static Set< Comment> listByPublished(final boolean published) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isPublished(published);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byPublished";
+            }
+        }.list();
+    }
+
+    public static Set< Comment> listByAuthorName(final java.lang.String authorName) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isAuthorName(authorName);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byAuthorName";
+            }
+        }.list();
+    }
+
+    public static Set< Comment> listByAuthorEmail(final java.lang.String authorEmail) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isAuthorEmail(authorEmail);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byAuthorEmail";
+            }
+        }.list();
+    }
+
+    public static Set< Comment> listByAuthorNameVisible(final boolean authorNameVisible) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isAuthorNameVisible(authorNameVisible);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byAuthorNameVisible";
+            }
+        }.list();
+    }
+
+    public static Set< Comment> listByText(final java.lang.String text) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isText(text);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byText";
+            }
+        }.list();
+    }
+
+    public static Set< Comment> listByDateAndTime(final ilarkesto.core.time.DateAndTime dateAndTime) {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isDateAndTime(dateAndTime);
+            }
+            @Override
+            public String toString() {
+                return "Comment:byDateAndTime";
+            }
+        }.list();
+    }
+
+    @Override
+    protected void onAfterPersist() {
+        super.onAfterPersist();
+        parentBackReferencesCache.clear(getParentId());
+        authorBackReferencesCache.clear(getAuthorId());
     }
 
     public abstract boolean isEditable();
 
-    public GComment() {
+    public static Set<Comment> listByIsEditable() {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isEditable();
+            }
+            @Override
+            public String toString() {
+                return "Comment:byIsEditable";
+            }
+        }.list();
     }
 
-    public GComment(Map data) {
-        super(data);
-        updateProperties(data);
+    public final boolean isNotEditable() {
+        return !isEditable();
     }
 
-    public static final String ENTITY_TYPE = "comment";
+    public static Set<Comment> listByIsNotEditable() {
+        return new ACommentQuery() {
+            @Override
+            public boolean test(Comment entity) {
+                return entity.isNotEditable();
+            }
+            @Override
+            public String toString() {
+                return "Comment:byIsNotEditable";
+            }
+        }.list();
+    }
+
+    public abstract static class ACommentQuery extends ilarkesto.core.persistance.AEntityQuery<Comment> {
+    @Override
+        public Class<Comment> getType() {
+            return Comment.class;
+        }
+    }
+
+    public static Set<Comment> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Comment.class).list();
+    }
+
+    public static Comment getById(String id) {
+        return (Comment) AEntity.getById(id);
+    }
 
     @Override
-    public final String getEntityType() {
-        return ENTITY_TYPE;
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getParent()); } catch(EntityDoesNotExistException ex) {}
+        try { Utl.addIfNotNull(ret, getAuthor()); } catch(EntityDoesNotExistException ex) {}
+        return ret;
     }
 
-    // --- parent ---
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("parentId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentId));
+        properties.put("authorId", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorId));
+        properties.put("published", ilarkesto.core.persistance.Persistence.propertyAsString(this.published));
+        properties.put("authorName", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorName));
+        properties.put("authorEmail", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorEmail));
+        properties.put("authorNameVisible", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorNameVisible));
+        properties.put("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+        properties.put("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
+    }
+
+    @Override
+    public int compareTo(Comment other) {
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
+    }
+
+    private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GComment.class);
+
+    public static final String TYPE = "Comment";
+
+
+    // -----------------------------------------------------------
+    // - Searchable
+    // -----------------------------------------------------------
+
+    @Override
+    public boolean matches(ilarkesto.core.search.SearchText search) {
+         return search.matches(getText());
+    }
+
+    // -----------------------------------------------------------
+    // - parent
+    // -----------------------------------------------------------
 
     private String parentId;
 
-    public final ilarkesto.gwt.client.AGwtEntity getParent() {
-        if (parentId == null) return null;
-        return getDao().getEntity(this.parentId);
+    public final String getParentId() {
+        return this.parentId;
+    }
+
+    public final scrum.client.common.AScrumGwtEntity getParent() {
+        try {
+            return this.parentId == null ? null : (scrum.client.common.AScrumGwtEntity) AEntity.getById(this.parentId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Comment.parent");
+        }
+    }
+
+    public final void setParent(scrum.client.common.AScrumGwtEntity parent) {
+        parent = prepareParent(parent);
+        if (isParent(parent)) return;
+        setParentId(parent == null ? null : parent.getId());
+    }
+
+    public final void setParentId(String id) {
+        if (Utl.equals(parentId, id)) return;
+        clearParentBackReferenceCache(id, this.parentId);
+        this.parentId = id;
+            updateLastModified();
+            fireModified("parentId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentId));
+    }
+
+    private void clearParentBackReferenceCache(String oldId, String newId) {
+        parentBackReferencesCache.clear(oldId);
+        parentBackReferencesCache.clear(newId);
+    }
+
+    private final void updateParentId(String id) {
+        setParentId(id);
+    }
+
+    protected scrum.client.common.AScrumGwtEntity prepareParent(scrum.client.common.AScrumGwtEntity parent) {
+        return parent;
+    }
+
+    protected void repairDeadParentReference(String entityId) {
+        if (!isPersisted()) return;
+        if (this.parentId == null || entityId.equals(this.parentId)) {
+            repairMissingMaster();
+        }
     }
 
     public final boolean isParentSet() {
-        return parentId != null;
+        return this.parentId != null;
     }
 
-    public final Comment setParent(ilarkesto.gwt.client.AGwtEntity parent) {
-        String id = parent == null ? null : parent.getId();
-        if (equals(this.parentId, id)) return (Comment) this;
-        this.parentId = id;
-        propertyChanged("parentId", this.parentId);
-        return (Comment)this;
+    public final boolean isParent(scrum.client.common.AScrumGwtEntity parent) {
+        if (this.parentId == null && parent == null) return true;
+        return parent != null && parent.getId().equals(this.parentId);
     }
 
-    public final boolean isParent(ilarkesto.gwt.client.AGwtEntity parent) {
-        String id = parent==null ? null : parent.getId();
-        return equals(this.parentId, id);
-    }
 
-    // --- author ---
+    // -----------------------------------------------------------
+    // - author
+    // -----------------------------------------------------------
 
     private String authorId;
 
+    public final String getAuthorId() {
+        return this.authorId;
+    }
+
     public final scrum.client.admin.User getAuthor() {
-        if (authorId == null) return null;
-        return getDao().getUser(this.authorId);
+        try {
+            return this.authorId == null ? null : (scrum.client.admin.User) AEntity.getById(this.authorId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Comment.author");
+        }
+    }
+
+    public final void setAuthor(scrum.client.admin.User author) {
+        author = prepareAuthor(author);
+        if (isAuthor(author)) return;
+        setAuthorId(author == null ? null : author.getId());
+    }
+
+    public final void setAuthorId(String id) {
+        if (Utl.equals(authorId, id)) return;
+        clearAuthorBackReferenceCache(id, this.authorId);
+        this.authorId = id;
+            updateLastModified();
+            fireModified("authorId", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorId));
+    }
+
+    private void clearAuthorBackReferenceCache(String oldId, String newId) {
+        authorBackReferencesCache.clear(oldId);
+        authorBackReferencesCache.clear(newId);
+    }
+
+    private final void updateAuthorId(String id) {
+        setAuthorId(id);
+    }
+
+    protected scrum.client.admin.User prepareAuthor(scrum.client.admin.User author) {
+        return author;
+    }
+
+    protected void repairDeadAuthorReference(String entityId) {
+        if (!isPersisted()) return;
+        if (this.authorId == null || entityId.equals(this.authorId)) {
+            setAuthor(null);
+        }
     }
 
     public final boolean isAuthorSet() {
-        return authorId != null;
-    }
-
-    public final Comment setAuthor(scrum.client.admin.User author) {
-        String id = author == null ? null : author.getId();
-        if (equals(this.authorId, id)) return (Comment) this;
-        this.authorId = id;
-        propertyChanged("authorId", this.authorId);
-        return (Comment)this;
+        return this.authorId != null;
     }
 
     public final boolean isAuthor(scrum.client.admin.User author) {
-        String id = author==null ? null : author.getId();
-        return equals(this.authorId, id);
+        if (this.authorId == null && author == null) return true;
+        return author != null && author.getId().equals(this.authorId);
     }
 
-    // --- published ---
 
-    private boolean published ;
+    // -----------------------------------------------------------
+    // - published
+    // -----------------------------------------------------------
+
+    private boolean published;
 
     public final boolean isPublished() {
-        return this.published ;
+        return published;
     }
 
-    public final Comment setPublished(boolean published) {
-        if (isPublished(published)) return (Comment)this;
-        this.published = published ;
-        propertyChanged("published", this.published);
-        return (Comment)this;
+    public final void setPublished(boolean published) {
+        published = preparePublished(published);
+        if (isPublished(published)) return;
+        this.published = published;
+            updateLastModified();
+            fireModified("published", ilarkesto.core.persistance.Persistence.propertyAsString(this.published));
+    }
+
+    private final void updatePublished(boolean published) {
+        if (isPublished(published)) return;
+        this.published = published;
+            updateLastModified();
+            fireModified("published", ilarkesto.core.persistance.Persistence.propertyAsString(this.published));
+    }
+
+    protected boolean preparePublished(boolean published) {
+        return published;
     }
 
     public final boolean isPublished(boolean published) {
-        return equals(this.published, published);
+        return this.published == published;
     }
+
+    protected final void updatePublished(Object value) {
+        setPublished((Boolean)value);
+    }
+
+    // -----------------------------------------------------------
+    // - authorName
+    // -----------------------------------------------------------
+
+    private java.lang.String authorName;
+
+    public final java.lang.String getAuthorName() {
+        return authorName;
+    }
+
+    public final void setAuthorName(java.lang.String authorName) {
+        authorName = prepareAuthorName(authorName);
+        if (isAuthorName(authorName)) return;
+        this.authorName = authorName;
+            updateLastModified();
+            fireModified("authorName", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorName));
+    }
+
+    private final void updateAuthorName(java.lang.String authorName) {
+        if (isAuthorName(authorName)) return;
+        this.authorName = authorName;
+            updateLastModified();
+            fireModified("authorName", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorName));
+    }
+
+    protected java.lang.String prepareAuthorName(java.lang.String authorName) {
+        // authorName = Str.removeUnreadableChars(authorName);
+        return authorName;
+    }
+
+    public final boolean isAuthorNameSet() {
+        return this.authorName != null;
+    }
+
+    public final boolean isAuthorName(java.lang.String authorName) {
+        if (this.authorName == null && authorName == null) return true;
+        return this.authorName != null && this.authorName.equals(authorName);
+    }
+
+    protected final void updateAuthorName(Object value) {
+        setAuthorName((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - authorEmail
+    // -----------------------------------------------------------
+
+    private java.lang.String authorEmail;
+
+    public final java.lang.String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public final void setAuthorEmail(java.lang.String authorEmail) {
+        authorEmail = prepareAuthorEmail(authorEmail);
+        if (isAuthorEmail(authorEmail)) return;
+        this.authorEmail = authorEmail;
+            updateLastModified();
+            fireModified("authorEmail", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorEmail));
+    }
+
+    private final void updateAuthorEmail(java.lang.String authorEmail) {
+        if (isAuthorEmail(authorEmail)) return;
+        this.authorEmail = authorEmail;
+            updateLastModified();
+            fireModified("authorEmail", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorEmail));
+    }
+
+    protected java.lang.String prepareAuthorEmail(java.lang.String authorEmail) {
+        // authorEmail = Str.removeUnreadableChars(authorEmail);
+        return authorEmail;
+    }
+
+    public final boolean isAuthorEmailSet() {
+        return this.authorEmail != null;
+    }
+
+    public final boolean isAuthorEmail(java.lang.String authorEmail) {
+        if (this.authorEmail == null && authorEmail == null) return true;
+        return this.authorEmail != null && this.authorEmail.equals(authorEmail);
+    }
+
+    protected final void updateAuthorEmail(Object value) {
+        setAuthorEmail((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - authorNameVisible
+    // -----------------------------------------------------------
+
+    private boolean authorNameVisible;
+
+    public final boolean isAuthorNameVisible() {
+        return authorNameVisible;
+    }
+
+    public final void setAuthorNameVisible(boolean authorNameVisible) {
+        authorNameVisible = prepareAuthorNameVisible(authorNameVisible);
+        if (isAuthorNameVisible(authorNameVisible)) return;
+        this.authorNameVisible = authorNameVisible;
+            updateLastModified();
+            fireModified("authorNameVisible", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorNameVisible));
+    }
+
+    private final void updateAuthorNameVisible(boolean authorNameVisible) {
+        if (isAuthorNameVisible(authorNameVisible)) return;
+        this.authorNameVisible = authorNameVisible;
+            updateLastModified();
+            fireModified("authorNameVisible", ilarkesto.core.persistance.Persistence.propertyAsString(this.authorNameVisible));
+    }
+
+    protected boolean prepareAuthorNameVisible(boolean authorNameVisible) {
+        return authorNameVisible;
+    }
+
+    public final boolean isAuthorNameVisible(boolean authorNameVisible) {
+        return this.authorNameVisible == authorNameVisible;
+    }
+
+    protected final void updateAuthorNameVisible(Object value) {
+        setAuthorNameVisible((Boolean)value);
+    }
+
+    // -----------------------------------------------------------
+    // - text
+    // -----------------------------------------------------------
+
+    private java.lang.String text;
+
+    public final java.lang.String getText() {
+        return text;
+    }
+
+    public final void setText(java.lang.String text) {
+        text = prepareText(text);
+        if (isText(text)) return;
+        if (text == null) throw new IllegalArgumentException("Mandatory field can not be set to null: text");
+        this.text = text;
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+    }
+
+    private final void updateText(java.lang.String text) {
+        if (isText(text)) return;
+        if (text == null) throw new IllegalArgumentException("Mandatory field can not be set to null: text");
+        this.text = text;
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+    }
+
+    protected java.lang.String prepareText(java.lang.String text) {
+        // text = Str.removeUnreadableChars(text);
+        return text;
+    }
+
+    public final boolean isTextSet() {
+        return this.text != null;
+    }
+
+    public final boolean isText(java.lang.String text) {
+        if (this.text == null && text == null) return true;
+        return this.text != null && this.text.equals(text);
+    }
+
+    protected final void updateText(Object value) {
+        setText((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - dateAndTime
+    // -----------------------------------------------------------
+
+    private ilarkesto.core.time.DateAndTime dateAndTime;
+
+    public final ilarkesto.core.time.DateAndTime getDateAndTime() {
+        return dateAndTime;
+    }
+
+    public final void setDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
+        dateAndTime = prepareDateAndTime(dateAndTime);
+        if (isDateAndTime(dateAndTime)) return;
+        this.dateAndTime = dateAndTime;
+            updateLastModified();
+            fireModified("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
+    }
+
+    private final void updateDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
+        if (isDateAndTime(dateAndTime)) return;
+        this.dateAndTime = dateAndTime;
+            updateLastModified();
+            fireModified("dateAndTime", ilarkesto.core.persistance.Persistence.propertyAsString(this.dateAndTime));
+    }
+
+    protected ilarkesto.core.time.DateAndTime prepareDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
+        return dateAndTime;
+    }
+
+    public final boolean isDateAndTimeSet() {
+        return this.dateAndTime != null;
+    }
+
+    public final boolean isDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
+        if (this.dateAndTime == null && dateAndTime == null) return true;
+        return this.dateAndTime != null && this.dateAndTime.equals(dateAndTime);
+    }
+
+    protected final void updateDateAndTime(Object value) {
+        value = value == null ? null : new ilarkesto.core.time.DateAndTime((String)value);
+        setDateAndTime((ilarkesto.core.time.DateAndTime)value);
+    }
+
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
+            if (property.equals("id")) continue;
+            String value = entry.getValue();
+            if (property.equals("parentId")) updateParentId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("authorId")) updateAuthorId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("published")) updatePublished(ilarkesto.core.persistance.Persistence.parsePropertyboolean(value));
+            if (property.equals("authorName")) updateAuthorName(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("authorEmail")) updateAuthorEmail(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("authorNameVisible")) updateAuthorNameVisible(ilarkesto.core.persistance.Persistence.parsePropertyboolean(value));
+            if (property.equals("text")) updateText(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("dateAndTime")) updateDateAndTime(ilarkesto.core.persistance.Persistence.parsePropertyDateAndTime(value));
+        }
+    }
+
+    // --- ensure integrity ---
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
+        if (!isParentSet()) {
+            repairMissingMaster();
+        }
+        try {
+            getParent();
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            LOG.info("Repairing dead parent reference");
+            repairDeadParentReference(this.parentId);
+        }
+        try {
+            getAuthor();
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            LOG.info("Repairing dead author reference");
+            repairDeadAuthorReference(this.authorId);
+        }
+    }
+
+    // --- PLUGIN: GwtEntityPropertyEditorClassGeneratorPlugin ---
 
     private transient PublishedModel publishedModel;
 
@@ -140,30 +680,15 @@ public abstract class GComment
         }
 
         @Override
+        public boolean isMandatory() { return true; }
+
+        @Override
         protected void onChangeValue(java.lang.Boolean oldValue, java.lang.Boolean newValue) {
             super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- authorName ---
-
-    private java.lang.String authorName ;
-
-    public final java.lang.String getAuthorName() {
-        return this.authorName ;
-    }
-
-    public final Comment setAuthorName(java.lang.String authorName) {
-        if (isAuthorName(authorName)) return (Comment)this;
-        this.authorName = authorName ;
-        propertyChanged("authorName", this.authorName);
-        return (Comment)this;
-    }
-
-    public final boolean isAuthorName(java.lang.String authorName) {
-        return equals(this.authorName, authorName);
     }
 
     private transient AuthorNameModel authorNameModel;
@@ -200,25 +725,6 @@ public abstract class GComment
 
     }
 
-    // --- authorEmail ---
-
-    private java.lang.String authorEmail ;
-
-    public final java.lang.String getAuthorEmail() {
-        return this.authorEmail ;
-    }
-
-    public final Comment setAuthorEmail(java.lang.String authorEmail) {
-        if (isAuthorEmail(authorEmail)) return (Comment)this;
-        this.authorEmail = authorEmail ;
-        propertyChanged("authorEmail", this.authorEmail);
-        return (Comment)this;
-    }
-
-    public final boolean isAuthorEmail(java.lang.String authorEmail) {
-        return equals(this.authorEmail, authorEmail);
-    }
-
     private transient AuthorEmailModel authorEmailModel;
 
     public AuthorEmailModel getAuthorEmailModel() {
@@ -253,25 +759,6 @@ public abstract class GComment
 
     }
 
-    // --- authorNameVisible ---
-
-    private boolean authorNameVisible ;
-
-    public final boolean isAuthorNameVisible() {
-        return this.authorNameVisible ;
-    }
-
-    public final Comment setAuthorNameVisible(boolean authorNameVisible) {
-        if (isAuthorNameVisible(authorNameVisible)) return (Comment)this;
-        this.authorNameVisible = authorNameVisible ;
-        propertyChanged("authorNameVisible", this.authorNameVisible);
-        return (Comment)this;
-    }
-
-    public final boolean isAuthorNameVisible(boolean authorNameVisible) {
-        return equals(this.authorNameVisible, authorNameVisible);
-    }
-
     private transient AuthorNameVisibleModel authorNameVisibleModel;
 
     public AuthorNameVisibleModel getAuthorNameVisibleModel() {
@@ -299,31 +786,15 @@ public abstract class GComment
         }
 
         @Override
+        public boolean isMandatory() { return true; }
+
+        @Override
         protected void onChangeValue(java.lang.Boolean oldValue, java.lang.Boolean newValue) {
             super.onChangeValue(oldValue, newValue);
+            if (oldValue == null) return;
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- text ---
-
-    private java.lang.String text ;
-
-    public final java.lang.String getText() {
-        return this.text ;
-    }
-
-    public final Comment setText(java.lang.String text) {
-        if (isText(text)) return (Comment)this;
-        if (ilarkesto.core.base.Str.isBlank(text)) throw new RuntimeException("Field is mandatory.");
-        this.text = text ;
-        propertyChanged("text", this.text);
-        return (Comment)this;
-    }
-
-    public final boolean isText(java.lang.String text) {
-        return equals(this.text, text);
     }
 
     private transient TextModel textModel;
@@ -370,25 +841,6 @@ public abstract class GComment
 
     }
 
-    // --- dateAndTime ---
-
-    private ilarkesto.core.time.DateAndTime dateAndTime ;
-
-    public final ilarkesto.core.time.DateAndTime getDateAndTime() {
-        return this.dateAndTime ;
-    }
-
-    public final Comment setDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
-        if (isDateAndTime(dateAndTime)) return (Comment)this;
-        this.dateAndTime = dateAndTime ;
-        propertyChanged("dateAndTime", this.dateAndTime);
-        return (Comment)this;
-    }
-
-    public final boolean isDateAndTime(ilarkesto.core.time.DateAndTime dateAndTime) {
-        return equals(this.dateAndTime, dateAndTime);
-    }
-
     private transient DateAndTimeModel dateAndTimeModel;
 
     public DateAndTimeModel getDateAndTimeModel() {
@@ -421,41 +873,6 @@ public abstract class GComment
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- update properties by map ---
-
-    public void updateProperties(Map props) {
-        parentId = (String) props.get("parentId");
-        authorId = (String) props.get("authorId");
-        published  = (Boolean) props.get("published");
-        authorName  = (java.lang.String) props.get("authorName");
-        authorEmail  = (java.lang.String) props.get("authorEmail");
-        authorNameVisible  = (Boolean) props.get("authorNameVisible");
-        text  = (java.lang.String) props.get("text");
-        String dateAndTimeAsString = (String) props.get("dateAndTime");
-        dateAndTime  =  dateAndTimeAsString == null ? null : new ilarkesto.core.time.DateAndTime(dateAndTimeAsString);
-        updateLocalModificationTime();
-    }
-
-    @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("parentId", this.parentId);
-        properties.put("authorId", this.authorId);
-        properties.put("published", this.published);
-        properties.put("authorName", this.authorName);
-        properties.put("authorEmail", this.authorEmail);
-        properties.put("authorNameVisible", this.authorNameVisible);
-        properties.put("text", this.text);
-        properties.put("dateAndTime", this.dateAndTime == null ? null : this.dateAndTime.toString());
-    }
-
-    @Override
-    public boolean matchesKey(String key) {
-        if (super.matchesKey(key)) return true;
-        if (matchesKey(getText(), key)) return true;
-        return false;
     }
 
 }

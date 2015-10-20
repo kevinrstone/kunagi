@@ -16,23 +16,38 @@ package scrum.client;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtApplication;
-import ilarkesto.gwt.client.AGwtDao;
+import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.ErrorWrapper;
+import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import scrum.client.admin.Auth;
 import scrum.client.admin.LogoutServiceCall;
+import scrum.client.admin.SystemMessageManager;
+import scrum.client.base.UpdateEntitiesServiceCall;
 import scrum.client.calendar.SimpleEvent;
+import scrum.client.collaboration.Chat;
+import scrum.client.collaboration.ChatMessage;
+import scrum.client.collaboration.Comment;
 import scrum.client.collaboration.Subject;
 import scrum.client.communication.Pinger;
+import scrum.client.communication.ServerErrorManager;
 import scrum.client.communication.StartConversationServiceCall;
-import scrum.client.core.ApplicationStartedEvent;
+import scrum.client.core.EventBus;
+import scrum.client.core.RichtextAutosaver;
 import scrum.client.files.File;
 import scrum.client.impediments.Impediment;
 import scrum.client.issues.Issue;
+import scrum.client.journal.Change;
 import scrum.client.pr.BlogEntry;
 import scrum.client.project.Quality;
 import scrum.client.project.Requirement;
@@ -40,6 +55,7 @@ import scrum.client.release.Release;
 import scrum.client.risks.Risk;
 import scrum.client.sprint.Sprint;
 import scrum.client.sprint.Task;
+import scrum.client.workspace.Navigator;
 import scrum.client.workspace.Ui;
 import scrum.client.workspace.WorkspaceWidget;
 
@@ -47,7 +63,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
-public class ScrumGwtApplication extends GScrumGwtApplication {
+public class ScrumGwtApplication extends AGwtApplication<DataTransferObject> {
 
 	public static final String LOGIN_TOKEN_COOKIE = "kunagiLoginToken";
 
@@ -61,9 +77,7 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 	public ApplicationInfo applicationInfo;
 
 	@Override
-	public void onModuleLoad() {
-		System.out.println("ScrumGwtApplication.onModuleLoad()");
-
+	protected void init() {
 		ScrumScopeManager.initialize();
 
 		// if (true) {
@@ -83,10 +97,67 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 
 			@Override
 			public void run() {
-				new ApplicationStartedEvent().fireInCurrentScope();
+				Scope.get().getComponent(Pinger.class).start();
+				Scope.get().getComponent(RichtextAutosaver.class).start();
+				Scope.get().getComponent(Navigator.class).start();
 			}
 		});
 
+	}
+
+	@Override
+	protected void onHistoryTokenChanged(String token) {
+		Scope.get().getComponent(Navigator.class).evalHistoryToken(token);
+	}
+
+	@Override
+	public String getTokenForEntityActivity(Entity entity) {
+		return Navigator.getEntityHistoryToken((AGwtEntity) entity);
+	}
+
+	@Override
+	protected void onServerDataReceived(DataTransferObject data) {
+		super.onServerDataReceived(data);
+
+		if (data.applicationInfo != null) {
+			applicationInfo = data.applicationInfo;
+			log.debug("applicationInfo:", data.applicationInfo);
+			// Scope.get().putComponent(data.applicationInfo);
+		} else {
+			assert applicationInfo != null;
+		}
+
+		if (data.containsEntities() || data.containsDeletedEntities()) {
+			EventBus.get().visibleDataChanged();
+		}
+
+		String userId = data.getUserId();
+		if (userId != null) {
+			log.info("User id received:", userId);
+			Scope.get().getComponent(Auth.class).setUser(userId);
+		}
+		Scope.get().getComponent(Pinger.class).dataReceived();
+		Scope.get().getComponent(ServerErrorManager.class).handleErrors(data.getErrors());
+		Scope.get().getComponent(SystemMessageManager.class).updateMessage(data.systemMessage);
+	}
+
+	@Override
+	protected void onEntitiesReceived(Set<AEntity> entities) {
+		super.onEntitiesReceived(entities);
+		for (AEntity entity : entities) {
+			if (entity instanceof ChatMessage) {
+				Scope.get().getComponent(Chat.class).addChatMessage((ChatMessage) entity);
+			}
+			if (entity instanceof File) {
+				EventBus.get().fileReceived((File) entity);
+			}
+			if (entity instanceof Comment) {
+				((Comment) entity).getParent().updateLastModified();
+			}
+			if (entity instanceof Change) {
+				((Change) entity).getParent().updateLastModified();
+			}
+		}
 	}
 
 	public ApplicationInfo getApplicationInfo() {
@@ -101,7 +172,6 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 		Scope.get().getComponent(Ui.class).lock("Logging out...");
 		Scope.get().getComponent(Auth.class).logout();
 		Scope.get().getComponent(Pinger.class).shutdown();
-		Scope.get().getComponent(Dao.class).clearAllEntities();
 
 		new LogoutServiceCall().execute(new Runnable() {
 
@@ -131,10 +201,11 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 		abort(sb.toString());
 	}
 
-	private void abort(String message) {
-		Scope.get().getComponent(Ui.class).getWorkspace().abort(message);
+	@Override
+	protected void onAborted(String message) {
+		super.onAborted(message);
 		Scope.get().getComponent(Pinger.class).shutdown();
-		Scope.get().getComponent(Dao.class).clearAllEntities();
+		Scope.get().getComponent(Ui.class).getWorkspace().abort(message);
 	}
 
 	@Override
@@ -147,8 +218,15 @@ public class ScrumGwtApplication extends GScrumGwtApplication {
 	}
 
 	@Override
-	protected AGwtDao getDao() {
-		return Dao.get();
+	protected AGwtEntityFactory createEntityFactory() {
+		return new GwtEntityFactory();
+	}
+
+	@Override
+	public void sendChangesToServer(Collection<AEntity> modified, Collection<String> deleted,
+			Map<String, Map<String, String>> modifiedProperties, Runnable callback) {
+		new UpdateEntitiesServiceCall(modifiedProperties == null ? null : new ArrayList<Map<String, String>>(
+				modifiedProperties.values()), deleted).execute(callback);
 	}
 
 	public static ScrumGwtApplication get() {

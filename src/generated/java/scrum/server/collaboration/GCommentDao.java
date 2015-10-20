@@ -14,11 +14,12 @@
 package scrum.server.collaboration;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GCommentDao
             extends ilarkesto.persistence.ADao<Comment> {
@@ -66,8 +67,8 @@ public abstract class GCommentDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof Comment) {
             clearCaches();
         }
@@ -385,5 +386,11 @@ public abstract class GCommentDao
     }
 
     // --- dependencies ---
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
+    }
 
 }

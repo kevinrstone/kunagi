@@ -6,7 +6,6 @@ public class GAuthReflector implements ilarkesto.core.scope.ComponentReflector<A
 
     public void injectComponents(Auth component, ilarkesto.core.scope.Scope scope) {
         component.app = (scrum.client.ScrumGwtApplication) scope.getComponent("app");
-        component.dao = (scrum.client.Dao) scope.getComponent("dao");
         component.pinger = (scrum.client.communication.Pinger) scope.getComponent("pinger");
         component.ui = (scrum.client.workspace.Ui) scope.getComponent("ui");
     }

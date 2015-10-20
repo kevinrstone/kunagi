@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -18,11 +18,11 @@ import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.editor.TextEditorWidget;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import scrum.client.Dao;
 import scrum.client.ScrumGwt;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
@@ -81,7 +81,7 @@ public class ProjectBlock extends ABlockWidget<Project> {
 
 			@Override
 			protected void onEditorUpdate() {
-				List<User> users = Dao.get().getUsersByDisabled(false);
+				List<User> users = new ArrayList<User>(User.listByDisabled(false));
 				Set<User> participants = project.getParticipants();
 				for (User participant : participants) {
 					if (!users.contains(participant)) users.add(participant);

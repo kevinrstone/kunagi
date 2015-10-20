@@ -50,7 +50,7 @@ public class ImpedimentBlock extends ABlockWidget<Impediment> implements TrashSu
 		header.setDragHandle(impediment.getReference());
 		Image statusImage = null;
 		if (impediment.isOpen()) {
-			statusImage = Img.bundle.impOpen().createImage();
+			statusImage = Img.impOpen();
 			statusImage.setTitle("Still impeding.");
 		}
 		statusIcon.setWidget(statusImage);

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -19,8 +19,9 @@ import ilarkesto.core.scope.NonConcurrentScopeManager;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.scope.ScopeManager;
 import ilarkesto.gwt.client.AGwtApplication;
-import ilarkesto.gwt.client.ObjectMappedFlowPanel;
+
 import scrum.client.admin.Auth;
+import scrum.client.admin.SystemConfig;
 import scrum.client.admin.SystemMessageManager;
 import scrum.client.admin.User;
 import scrum.client.calendar.Calendar;
@@ -30,7 +31,6 @@ import scrum.client.collaboration.Wiki;
 import scrum.client.communication.Pinger;
 import scrum.client.communication.ServerErrorManager;
 import scrum.client.core.RichtextAutosaver;
-import scrum.client.core.ServiceCaller;
 import scrum.client.files.Uploader;
 import scrum.client.i18n.Localizer;
 import scrum.client.issues.IssueManager;
@@ -55,7 +55,6 @@ public class ScrumScopeManager {
 	static synchronized void initialize() {
 		assert scopeManager == null;
 
-		Dao dao = Dao.get();
 		ScrumGwtApplication app = (ScrumGwtApplication) AGwtApplication.get();
 
 		scopeManager = NonConcurrentScopeManager.createCascadingScopeInstance("app", new ScrumComponentsReflector());
@@ -63,8 +62,6 @@ public class ScrumScopeManager {
 		Scope scope = appScope;
 
 		scope.putComponent("app", app);
-		scope.putComponent(dao);
-		scope.putComponent(new ServiceCaller());
 		scope.putComponent(new Pinger());
 		scope.putComponent(new Ui());
 		scope.putComponent(new SystemMessageManager());
@@ -83,7 +80,7 @@ public class ScrumScopeManager {
 		Scope scope = scopeManager.setScope(userScope);
 
 		scope.putComponent(user);
-		scope.putComponent(appScope.getComponent(Dao.class).getSystemConfig());
+		scope.putComponent(SystemConfig.get());
 		scope.putComponent(new UsersWorkspaceWidgets());
 		scope.putComponent(new Localizer());
 
@@ -114,11 +111,10 @@ public class ScrumScopeManager {
 
 	public static void destroyProjectScope() {
 		Scope.get().getComponent(Ui.class).lock("Closing project...");
+		Scope.get().removeComponent("project");
 		new CloseProjectServiceCall().execute();
-		appScope.getComponent(Dao.class).clearProjectEntities();
-		ObjectMappedFlowPanel.objectHeights.clear();
+		// ScrumGwtApplication.get().abort("Project closed");
 		projectScope = null;
-		scopeManager.setScope(userScope);
 	}
 
 	public static boolean isProjectScope() {

@@ -14,10 +14,12 @@
  */
 package scrum.server.collaboration;
 
+import ilarkesto.core.persistance.Transient;
 import ilarkesto.core.time.TimePeriod;
+
 import scrum.server.admin.User;
 
-public class ChatMessage extends GChatMessage {
+public class ChatMessage extends GChatMessage implements Transient {
 
 	private static final TimePeriod TTL = TimePeriod.hours(3);
 
@@ -28,14 +30,6 @@ public class ChatMessage extends GChatMessage {
 
 	public boolean isEditableBy(User user) {
 		return false;
-	}
-
-	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
-		// TODO
-		// if (!isDateAndTimeSet() || getDateAndTime().getPeriodToNow().abs().isGreaterThen(TTL))
-		// getDao().deleteEntity(this);
 	}
 
 }

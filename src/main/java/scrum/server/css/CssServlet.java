@@ -16,7 +16,7 @@ package scrum.server.css;
 
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.DynamicClassLoader;
-import ilarkesto.ui.web.CssRenderer;
+import ilarkesto.ui.web.CssBuilder;
 import ilarkesto.webapp.RequestWrapper;
 
 import java.io.IOException;
@@ -30,24 +30,24 @@ public class CssServlet extends AKunagiServlet {
 	private static final Log LOG = Log.get(CssServlet.class);
 	private static final long serialVersionUID = 1;
 
-	private transient final ScreenCssBuilder screenCssBuilder = new ScreenCssBuilder();
+	private transient final KunagiCssBuilder screenCssBuilder = new KunagiCssBuilder();
 
 	@Override
 	protected void onRequest(RequestWrapper<WebSession> req) throws IOException {
 		req.setContentTypeCss();
-		CssRenderer css = new CssRenderer(req.getWriter());
-		CssBuilder builder = getCssBuilder();
+		CssBuilder css = new CssBuilder(req.getWriter());
+		ICssBuilder builder = getCssBuilder();
 		builder.buildCss(css);
 		css.flush();
 		// LOG.debug(builder);
 	}
 
-	private CssBuilder getCssBuilder() {
+	private ICssBuilder getCssBuilder() {
 		if (ScrumWebApplication.get().isDevelopmentMode()) {
-			ClassLoader loader = new DynamicClassLoader(getClass().getClassLoader(), ScreenCssBuilder.class.getName());
-			Class<? extends CssBuilder> type;
+			ClassLoader loader = new DynamicClassLoader(getClass().getClassLoader(), KunagiCssBuilder.class.getName());
+			Class<? extends ICssBuilder> type;
 			try {
-				type = (Class<? extends CssBuilder>) loader.loadClass(ScreenCssBuilder.class.getName());
+				type = (Class<? extends ICssBuilder>) loader.loadClass(KunagiCssBuilder.class.getName());
 				return type.newInstance();
 			} catch (Throwable ex) {
 				LOG.fatal(ex);

@@ -1,32 +1,34 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.journal;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.diff.HtmlDiffMarker;
 import ilarkesto.core.diff.TokenDiff;
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.AGwtEntity;
-import ilarkesto.gwt.client.EntityDoesNotExistException;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.User;
+import scrum.client.common.AScrumGwtEntity;
 import scrum.client.core.RequestEntityServiceCall;
 import scrum.client.impediments.Impediment;
 import scrum.client.issues.Issue;
@@ -42,15 +44,17 @@ public class Change extends GChange {
 	public static final String REQ_REJECTED_IN_SPRINT = "@rejectedInSprint";
 	public static final String NOTIFICATION_EMAILS_SENT = "@notificationEmailsSent";
 
-	public Change(Map data) {
-		super(data);
-	}
+	public static Change post(AScrumGwtEntity parent, String key) {
+		Args.assertNotNull(parent, "parent", key, "key");
 
-	public Change(AGwtEntity parent, String key) {
-		setParent(parent);
-		setKey(key);
-		setDateAndTime(DateAndTime.now());
-		setUser(Scope.get().getComponent(User.class));
+		Change change = new Change();
+		change.setParent(parent);
+		change.setKey(key);
+		change.setDateAndTime(DateAndTime.now());
+		change.setUser(Scope.get().getComponent(User.class));
+
+		change.persist();
+		return change;
 	}
 
 	public String getLabel() {
@@ -92,7 +96,7 @@ public class Change extends GChange {
 			if (key.equals("sprintId"))
 				return newValue == null ? "kicked story from " + getEntityReferenceAndLabel(oldValue)
 						: "pulled story to " + getEntityReferenceAndLabel(newValue);
-			if (key.equals("issueId")) return "created from " + getEntityReferenceAndLabel(newValue);
+				if (key.equals("issueId")) return "created from " + getEntityReferenceAndLabel(newValue);
 		} else if (parent instanceof Task) {
 			if (key.equals("issueId")) return "created " + getEntityReferenceAndLabel(newValue);
 		}
@@ -105,7 +109,7 @@ public class Change extends GChange {
 	private String getEntityReferenceAndLabel(String id) {
 		if (id == null) return null;
 		try {
-			return ScrumGwt.getReferenceAndLabel(getDao().getEntity(id));
+			return ScrumGwt.getReferenceAndLabel(AEntity.getById(id));
 		} catch (EntityDoesNotExistException ex) {
 			new RequestEntityServiceCall(id).execute();
 			return id;
@@ -147,7 +151,7 @@ public class Change extends GChange {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		String parent;
 		try {
 			parent = getParent().toString();

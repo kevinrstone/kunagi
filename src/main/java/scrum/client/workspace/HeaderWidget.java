@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.workspace;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.DropdownMenuButtonWidget;
 import ilarkesto.gwt.client.Gwt;
@@ -21,7 +22,6 @@ import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.undo.UndoButtonWidget;
 
-import java.util.Collections;
 import java.util.List;
 
 import scrum.client.ApplicationInfo;
@@ -30,13 +30,13 @@ import scrum.client.admin.LogoutAction;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.TooltipBuilder;
-import scrum.client.img.Img;
 import scrum.client.project.ChangeProjectAction;
 import scrum.client.project.Project;
 import scrum.client.search.SearchInputWidget;
 import scrum.client.undo.Undo;
 
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -113,8 +113,7 @@ public class HeaderWidget extends AScrumWidget {
 
 			});
 			switchProjectButton.addSeparator();
-			List<Project> projects = getDao().getProjects();
-			Collections.sort(projects, Project.LAST_OPENED_COMPARATOR);
+			List<Project> projects = Utl.sort(Project.listAll(), Project.LAST_OPENED_COMPARATOR);
 			for (Project p : projects) {
 				if (p == getCurrentProject()) continue;
 				switchProjectButton.addAction("QuickLinks", new ChangeProjectAction(p));
@@ -164,7 +163,8 @@ public class HeaderWidget extends AScrumWidget {
 	}
 
 	private Widget createLogo() {
-		SimplePanel div = Gwt.createDiv("HeaderWidget-logo", Img.bundle.logo25().createImage());
+		// SimplePanel div = Gwt.createDiv("HeaderWidget-logo", Img.bundle.logo25().createImage());
+		SimplePanel div = Gwt.createDiv("HeaderWidget-logo", new Image("img/logo25.png"));
 		ApplicationInfo applicationInfo = getApp().getApplicationInfo();
 		if (applicationInfo != null) div.setTitle(applicationInfo.getVersionDescription());
 		return div;
@@ -174,8 +174,8 @@ public class HeaderWidget extends AScrumWidget {
 		String info = "You are using Kunagi release " + ai.getRelease() + " while release " + ai.getCurrentRelease()
 				+ " is available.";
 		return new HTML(
-				"<a href=\"http://kunagi.org/download.html\" target=\"_blank\"><img src=\"newReleaseAvailable.png\" alt=\"Upgrade\" width=\"16px\" height=\"16px\" title=\""
-						+ info + "\" style=\"margin-top: 2px;\"></a>");
+			"<a href=\"http://kunagi.org/download.html\" target=\"_blank\"><img src=\"newReleaseAvailable.png\" alt=\"Upgrade\" width=\"16px\" height=\"16px\" title=\""
+					+ info + "\" style=\"margin-top: 2px;\"></a>");
 	}
 
 }

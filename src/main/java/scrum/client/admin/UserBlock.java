@@ -50,10 +50,10 @@ public class UserBlock extends ABlockWidget<User> {
 		header.setDragHandle("usr");
 		Image icon = null;
 		if (user.isDisabled()) {
-			icon = Img.bundle.usrDisabled().createImage();
+			icon = Img.usrDisabled();
 			icon.setTitle("User is disabled.");
 		} else if (!user.isEmailVerified()) {
-			icon = Img.bundle.usrEmailUnverified().createImage();
+			icon = Img.usrEmailUnverified();
 			icon.setTitle("Users email is not verified.");
 		}
 		iconWrapper.setWidget(icon);

@@ -17,10 +17,8 @@ package scrum.server.pr;
 import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
-import ilarkesto.io.IO;
 import ilarkesto.persistence.AEntity;
 import ilarkesto.persistence.DaoService;
-import ilarkesto.persistence.TransactionService;
 import ilarkesto.webapp.RequestWrapper;
 import ilarkesto.webapp.Servlet;
 
@@ -40,12 +38,9 @@ public class UnsubscribeServlet extends AKunagiServlet {
 
 	private transient SubscriptionService subscriptionService;
 	private transient DaoService daoService;
-	private transient TransactionService transactionService;
 
 	@Override
 	protected void onRequest(RequestWrapper<WebSession> req) throws IOException {
-		req.setRequestEncoding(IO.UTF_8);
-
 		String subjectId = req.get("subject");
 		String email = Str.cutRight(req.get("email"), 64);
 		if (Str.isBlank(email)) email = null;
@@ -94,7 +89,6 @@ public class UnsubscribeServlet extends AKunagiServlet {
 	private AEntity unsubscribe(String email, String subjectId, String key) throws InvalidKeyException {
 		AEntity subject = subjectId == null ? null : daoService.getById(subjectId);
 		subscriptionService.unsubscribe(email, subject, key);
-		transactionService.commit();
 		return subject;
 	}
 
@@ -103,7 +97,6 @@ public class UnsubscribeServlet extends AKunagiServlet {
 		super.onInit(config);
 		subscriptionService = webApplication.getSubscriptionService();
 		daoService = webApplication.getDaoService();
-		transactionService = webApplication.getTransactionService();
 	}
 
 }

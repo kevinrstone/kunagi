@@ -14,11 +14,12 @@
 package scrum.server.estimation;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GRequirementEstimationVoteDao
             extends ilarkesto.persistence.ADao<RequirementEstimationVote> {
@@ -58,8 +59,8 @@ public abstract class GRequirementEstimationVoteDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof RequirementEstimationVote) {
             clearCaches();
         }
@@ -204,6 +205,12 @@ public abstract class GRequirementEstimationVoteDao
 
     public void setRequirementDao(scrum.server.project.RequirementDao requirementDao) {
         this.requirementDao = requirementDao;
+    }
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
     }
 
 }

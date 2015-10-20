@@ -10,8 +10,6 @@ public abstract class GProjectWorkspaceWidgets {
 
     protected scrum.client.ScrumGwtApplication app;
 
-    protected scrum.client.Dao dao;
-
     protected scrum.client.workspace.Navigator navigator;
 
     protected scrum.client.project.Project project;

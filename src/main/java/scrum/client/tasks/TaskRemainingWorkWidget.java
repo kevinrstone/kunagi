@@ -17,6 +17,7 @@ package scrum.client.tasks;
 import ilarkesto.gwt.client.AIntegerViewEditWidget;
 import ilarkesto.gwt.client.AWidget;
 import ilarkesto.gwt.client.ToolbarWidget;
+
 import scrum.client.common.AScrumAction;
 import scrum.client.sprint.CloseTaskAction;
 import scrum.client.sprint.ReopenTaskAction;
@@ -62,12 +63,12 @@ public class TaskRemainingWorkWidget extends AWidget {
 		toolbar.clear();
 		if (task.isClosed()) {
 			AScrumAction action = new ReopenTaskAction(task);
-			if (action.isExecutable()) {
+			if (action.getExecutionVeto() == null) {
 				toolbar.addButton(action);
 			}
 		} else {
 			AScrumAction action = new CloseTaskAction(task);
-			if (action.isExecutable()) {
+			if (action.getExecutionVeto() == null) {
 				toolbar.addButton(action);
 			}
 		}

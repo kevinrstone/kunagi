@@ -60,7 +60,7 @@ public class EmailSender {
 
 		if (Str.isBlank(subject)) subject = "Kunagi";
 
-		MimeMessage message = Eml.createTextMessage(session, subject, text, from, to);
+		MimeMessage message = Eml.createPlainMessage(session, subject, text, from, to);
 		webApplication.getTaskManager().start(new SendEmailTask(session, message));
 	}
 

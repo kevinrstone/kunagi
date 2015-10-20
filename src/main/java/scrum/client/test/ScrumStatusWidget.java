@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -17,24 +17,23 @@ package scrum.client.test;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.gwt.client.AGwtApplication;
+import ilarkesto.gwt.client.AServiceCall;
 import ilarkesto.gwt.client.ButtonWidget;
-import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.animation.AnimatingFlowPanel;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import scrum.client.Dao;
 import scrum.client.ScrumGwt;
 import scrum.client.ScrumGwtApplication;
+import scrum.client.base.ExceptionServiceCall;
 import scrum.client.collaboration.Comment;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.TooltipBuilder;
 import scrum.client.communication.Pinger;
-import scrum.client.core.DeleteEntityServiceCall;
-import scrum.client.core.ServiceCaller;
 import scrum.client.issues.Issue;
 import scrum.client.project.Requirement;
 import scrum.client.sprint.Task;
@@ -47,17 +46,12 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ScrumStatusWidget extends AScrumWidget {
 
-	private Dao dao;
-	private ServiceCaller serviceCaller;
-
 	private SimplePanel entityCountWrapper;
 	private SimplePanel stateInformationWrapper;
 
 	@Override
 	protected Widget onInitialization() {
-		dao = Scope.get().getComponent(Dao.class);
 		ScrumGwtApplication app = (ScrumGwtApplication) Scope.get().getComponent("app");
-		serviceCaller = Scope.get().getComponent(ServiceCaller.class);
 
 		entityCountWrapper = new SimplePanel();
 		stateInformationWrapper = new SimplePanel();
@@ -98,9 +92,9 @@ public class ScrumStatusWidget extends AScrumWidget {
 		TableBuilder tb = new TableBuilder();
 		tb.setWidth(null);
 		tb.setCellSpacing(5);
-		for (Map.Entry<String, Integer> entry : dao.getEntityCounts().entrySet()) {
-			tb.addRow(Gwt.createFieldLabel(entry.getKey()), new Label(String.valueOf(entry.getValue())));
-		}
+		// for (Map.Entry<String, Integer> entry : dao.getEntityCounts().entrySet()) {
+		// tb.addRow(Gwt.createFieldLabel(entry.getKey()), new Label(String.valueOf(entry.getValue())));
+		// }
 		entityCountWrapper.setWidget(tb.createTable());
 		stateInformationWrapper.setWidget(createStateInformation());
 		super.onUpdate();
@@ -109,10 +103,8 @@ public class ScrumStatusWidget extends AScrumWidget {
 	private Widget createStateInformation() {
 		TableBuilder tb = ScrumGwt.createFieldTable();
 		tb.addFieldRow("activeServiceCallCount",
-			new Label(String.valueOf(Str.concat(serviceCaller.getActiveServiceCalls(), ", "))));
-		tb.addFieldRow("conversationNumber", new Label(String.valueOf(serviceCaller.getConversationNumber())));
-		tb.addFieldRow("entityIdBase", new Label(dao.getEntityIdBase()));
-		tb.addFieldRow("entityIdCounter", new Label(String.valueOf(dao.getEntityIdCounter())));
+			new Label(String.valueOf(Str.concat(AServiceCall.getActiveServiceCalls(), ", "))));
+		tb.addFieldRow("conversationNumber", new Label(String.valueOf(AGwtApplication.get().getConversationNumber())));
 		return tb.createTable();
 	}
 
@@ -187,7 +179,7 @@ public class ScrumStatusWidget extends AScrumWidget {
 
 		@Override
 		protected void onExecute() {
-			new DeleteEntityServiceCall("bad-entity-id").execute();
+			new ExceptionServiceCall().execute();
 		}
 	}
 
@@ -225,10 +217,9 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		protected void onExecute() {
 			DateAndTime time = DateAndTime.now();
-			Requirement req = getCurrentProject().getCurrentSprint().getRequirements().get(0);
+			Requirement req = getCurrentProject().getCurrentSprint().getRequirements().iterator().next();
 			for (int i = 0; i < COUNT; i++) {
-				Comment comment = new Comment(req, getCurrentUser(), time + " " + longText());
-				dao.createComment(comment);
+				Comment.post(req, getCurrentUser(), time + " " + longText());
 			}
 		}
 
@@ -249,7 +240,8 @@ public class ScrumStatusWidget extends AScrumWidget {
 		@Override
 		protected void onExecute() {
 			DateAndTime time = DateAndTime.now();
-			List<Requirement> requirements = getCurrentProject().getCurrentSprint().getRequirements();
+			List<Requirement> requirements = new ArrayList<Requirement>(getCurrentProject().getCurrentSprint()
+					.getRequirements());
 			if (requirements.isEmpty()) return;
 			int reqIdx = 0;
 			for (int i = 0; i < COUNT; i++) {
@@ -258,7 +250,7 @@ public class ScrumStatusWidget extends AScrumWidget {
 				}
 				Requirement req = requirements.get(reqIdx);
 				reqIdx++;
-				Task task = new Task(req);
+				Task task = Task.post(req);
 				task.setLabel("Generated Task " + time + " - #" + i);
 				task.setDescription(longText());
 				task.setBurnedWork(i);
@@ -269,7 +261,6 @@ public class ScrumStatusWidget extends AScrumWidget {
 					if (i % 5 == 0) task.setOwner(getCurrentUser());
 					task.setRemainingWork(i);
 				}
-				dao.createTask(task);
 			}
 		}
 
@@ -291,10 +282,9 @@ public class ScrumStatusWidget extends AScrumWidget {
 		protected void onExecute() {
 			DateAndTime time = DateAndTime.now();
 			for (int i = 0; i < COUNT; i++) {
-				Issue issue = new Issue(getCurrentProject());
+				Issue issue = Issue.post(getCurrentProject());
 				issue.setLabel("Generated Issue " + time + " - #" + i);
 				issue.setDescription(longText());
-				dao.createIssue(issue);
 			}
 		}
 
@@ -316,11 +306,10 @@ public class ScrumStatusWidget extends AScrumWidget {
 		protected void onExecute() {
 			DateAndTime time = DateAndTime.now();
 			for (int i = 0; i < COUNT; i++) {
-				final Requirement req = new Requirement(getCurrentProject());
+				final Requirement req = Requirement.post(getCurrentProject());
 				req.setLabel("Generated Story " + time + " - #" + i);
 				req.setDescription(longText());
 				req.setTestDescription(longText());
-				dao.createRequirement(req);
 			}
 		}
 

@@ -15,11 +15,11 @@
 package scrum.client.release;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
 import ilarkesto.gwt.client.TableBuilder;
 
-import java.util.Collections;
 import java.util.List;
 
 import scrum.client.ScrumGwt;
@@ -61,8 +61,7 @@ public class ReleaseWidget extends AScrumWidget {
 
 				@Override
 				protected void onEditorUpdate() {
-					List<Sprint> sprints = release.getProject().getSprints();
-					Collections.sort(sprints, Sprint.END_DATE_COMPARATOR);
+					List<Sprint> sprints = Utl.sort(release.getProject().getSprints(), Sprint.END_DATE_COMPARATOR);
 					setEditorItems(sprints);
 					setEditorSelectedItems(release.getSprints());
 				}
@@ -158,5 +157,4 @@ public class ReleaseWidget extends AScrumWidget {
 
 		return TableBuilder.row(20, tb.createTable(), ScrumGwt.createEmoticonsAndComments(release));
 	}
-
 }

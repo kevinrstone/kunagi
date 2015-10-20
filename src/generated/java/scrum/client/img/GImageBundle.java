@@ -16,106 +16,138 @@ package scrum.client.img;
 import java.util.*;
 import com.google.gwt.user.client.ui.ImageBundle;
 
-public interface GImageBundle
-            extends com.google.gwt.user.client.ui.ImageBundle {
+public abstract class GImageBundle {
 
-    @Resource(value="blgPublished.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype blgPublished();
+    public static com.google.gwt.user.client.ui.Image blgPublished() {
+        return new com.google.gwt.user.client.ui.Image("img/blgPublished.png");
+    }
 
-    @Resource(value="bugfixRelease.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype bugfixRelease();
+    public static com.google.gwt.user.client.ui.Image bugfixRelease() {
+        return new com.google.gwt.user.client.ui.Image("img/bugfixRelease.png");
+    }
 
-    @Resource(value="enumlist.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype enumlist();
+    public static com.google.gwt.user.client.ui.Image enumlist() {
+        return new com.google.gwt.user.client.ui.Image("img/enumlist.png");
+    }
 
-    @Resource(value="formatTextBold.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype formatTextBold();
+    public static com.google.gwt.user.client.ui.Image formatTextBold() {
+        return new com.google.gwt.user.client.ui.Image("img/formatTextBold.png");
+    }
 
-    @Resource(value="formatTextCode.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype formatTextCode();
+    public static com.google.gwt.user.client.ui.Image formatTextCode() {
+        return new com.google.gwt.user.client.ui.Image("img/formatTextCode.png");
+    }
 
-    @Resource(value="formatTextItalic.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype formatTextItalic();
+    public static com.google.gwt.user.client.ui.Image formatTextItalic() {
+        return new com.google.gwt.user.client.ui.Image("img/formatTextItalic.png");
+    }
 
-    @Resource(value="h1.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype h1();
+    public static com.google.gwt.user.client.ui.Image h1() {
+        return new com.google.gwt.user.client.ui.Image("img/h1.png");
+    }
 
-    @Resource(value="h2.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype h2();
+    public static com.google.gwt.user.client.ui.Image h2() {
+        return new com.google.gwt.user.client.ui.Image("img/h2.png");
+    }
 
-    @Resource(value="home.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype home();
+    public static com.google.gwt.user.client.ui.Image home() {
+        return new com.google.gwt.user.client.ui.Image("img/home.png");
+    }
 
-    @Resource(value="hyperlink.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype hyperlink();
+    public static com.google.gwt.user.client.ui.Image hyperlink() {
+        return new com.google.gwt.user.client.ui.Image("img/hyperlink.png");
+    }
 
-    @Resource(value="image.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype image();
+    public static com.google.gwt.user.client.ui.Image image() {
+        return new com.google.gwt.user.client.ui.Image("img/image.png");
+    }
 
-    @Resource(value="impOpen.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype impOpen();
+    public static com.google.gwt.user.client.ui.Image impOpen() {
+        return new com.google.gwt.user.client.ui.Image("img/impOpen.png");
+    }
 
-    @Resource(value="issClaimed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype issClaimed();
+    public static com.google.gwt.user.client.ui.Image issClaimed() {
+        return new com.google.gwt.user.client.ui.Image("img/issClaimed.png");
+    }
 
-    @Resource(value="issFixed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype issFixed();
+    public static com.google.gwt.user.client.ui.Image issFixed() {
+        return new com.google.gwt.user.client.ui.Image("img/issFixed.png");
+    }
 
-    @Resource(value="itemlist.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype itemlist();
+    public static com.google.gwt.user.client.ui.Image itemlist() {
+        return new com.google.gwt.user.client.ui.Image("img/itemlist.png");
+    }
 
-    @Resource(value="logo25.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype logo25();
+    public static com.google.gwt.user.client.ui.Image logo25() {
+        return new com.google.gwt.user.client.ui.Image("img/logo25.png");
+    }
 
-    @Resource(value="majorRelease.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype majorRelease();
+    public static com.google.gwt.user.client.ui.Image majorRelease() {
+        return new com.google.gwt.user.client.ui.Image("img/majorRelease.png");
+    }
 
-    @Resource(value="publicComment.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype publicComment();
+    public static com.google.gwt.user.client.ui.Image publicComment() {
+        return new com.google.gwt.user.client.ui.Image("img/publicComment.png");
+    }
 
-    @Resource(value="reqClosed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqClosed();
+    public static com.google.gwt.user.client.ui.Image reqClosed() {
+        return new com.google.gwt.user.client.ui.Image("img/reqClosed.png");
+    }
 
-    @Resource(value="reqDirty.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqDirty();
+    public static com.google.gwt.user.client.ui.Image reqDirty() {
+        return new com.google.gwt.user.client.ui.Image("img/reqDirty.png");
+    }
 
-    @Resource(value="reqInSprint.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqInSprint();
+    public static com.google.gwt.user.client.ui.Image reqInSprint() {
+        return new com.google.gwt.user.client.ui.Image("img/reqInSprint.png");
+    }
 
-    @Resource(value="reqPoker.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqPoker();
+    public static com.google.gwt.user.client.ui.Image reqPoker() {
+        return new com.google.gwt.user.client.ui.Image("img/reqPoker.png");
+    }
 
-    @Resource(value="reqRejected.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqRejected();
+    public static com.google.gwt.user.client.ui.Image reqRejected() {
+        return new com.google.gwt.user.client.ui.Image("img/reqRejected.png");
+    }
 
-    @Resource(value="reqTasksClosed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype reqTasksClosed();
+    public static com.google.gwt.user.client.ui.Image reqTasksClosed() {
+        return new com.google.gwt.user.client.ui.Image("img/reqTasksClosed.png");
+    }
 
-    @Resource(value="table.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype table();
+    public static com.google.gwt.user.client.ui.Image table() {
+        return new com.google.gwt.user.client.ui.Image("img/table.png");
+    }
 
-    @Resource(value="toc.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype toc();
+    public static com.google.gwt.user.client.ui.Image toc() {
+        return new com.google.gwt.user.client.ui.Image("img/toc.png");
+    }
 
-    @Resource(value="trash32.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype trash32();
+    public static com.google.gwt.user.client.ui.Image trash32() {
+        return new com.google.gwt.user.client.ui.Image("img/trash32.png");
+    }
 
-    @Resource(value="tskBlocked.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype tskBlocked();
+    public static com.google.gwt.user.client.ui.Image tskBlocked() {
+        return new com.google.gwt.user.client.ui.Image("img/tskBlocked.png");
+    }
 
-    @Resource(value="tskClaimed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype tskClaimed();
+    public static com.google.gwt.user.client.ui.Image tskClaimed() {
+        return new com.google.gwt.user.client.ui.Image("img/tskClaimed.png");
+    }
 
-    @Resource(value="tskClosed.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype tskClosed();
+    public static com.google.gwt.user.client.ui.Image tskClosed() {
+        return new com.google.gwt.user.client.ui.Image("img/tskClosed.png");
+    }
 
-    @Resource(value="upload.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype upload();
+    public static com.google.gwt.user.client.ui.Image upload() {
+        return new com.google.gwt.user.client.ui.Image("img/upload.png");
+    }
 
-    @Resource(value="usrDisabled.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype usrDisabled();
+    public static com.google.gwt.user.client.ui.Image usrDisabled() {
+        return new com.google.gwt.user.client.ui.Image("img/usrDisabled.png");
+    }
 
-    @Resource(value="usrEmailUnverified.png")
-    com.google.gwt.user.client.ui.AbstractImagePrototype usrEmailUnverified();
+    public static com.google.gwt.user.client.ui.Image usrEmailUnverified() {
+        return new com.google.gwt.user.client.ui.Image("img/usrEmailUnverified.png");
+    }
 
 }

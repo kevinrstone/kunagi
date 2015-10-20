@@ -49,13 +49,13 @@ public class ProjectEvent extends GProjectEvent implements Comparable<ProjectEve
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
-
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
+		if (getDateAndTime().getPeriodToNow().toDays() > 42 && getProject().getProjectEvents().size() > 42) delete();
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getLabel();
 	}
 

@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -88,17 +88,20 @@ public class RequirementInSprintBlock extends ABlockWidget<Requirement> {
 		header.setDragHandle(requirement.getReference());
 		Image statusImage = null;
 		if (requirement.isRejected()) {
-			statusImage = Img.bundle.reqRejected().createImage();
+			statusImage = Img.reqRejected();
 			statusImage.setTitle("Rejected.");
 		} else if (requirement.isClosed()) {
-			statusImage = Img.bundle.reqClosed().createImage();
+			statusImage = Img.reqClosed();
 			statusImage.setTitle("Accepted.");
-		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
-			statusImage = Img.bundle.reqTasksClosed().createImage();
+// from kevinrstone HEAD
+//		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
+//			statusImage = Img.bundle.reqTasksClosed().createImage();
+		} else if (requirement.isTasksClosed()) {
+			statusImage = Img.reqTasksClosed();
 			statusImage.setTitle("All tasks done.");
 		} else if (requirement.isBlocked()) {
-			statusImage = Img.bundle.tskBlocked().createImage();
-			statusImage.setTitle("Blocked by " + requirement.getImpediment().getReferenceAndLabel() + ".");
+			statusImage = Img.tskBlocked();
+			statusImage.setTitle("Blocked by " + requirement.getBlockingImpedimentLabelsAsText() + ".");
 		}
 		statusIcon.setWidget(statusImage);
 	}

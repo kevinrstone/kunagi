@@ -16,7 +16,7 @@ package scrum.server.admin;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.core.time.Tm;
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 import ilarkesto.webapp.RequestWrapper;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class ShutdownServlet extends AKunagiServlet {
 			webApplication.shutdown(delayInMillis);
 		}
 
-		HtmlRenderer html = createDefaultHtmlWithHeader(req, "Shutdown initiated", 3, "admin.html");
+		HtmlBuilder html = createDefaultHtmlWithHeader(req, "Shutdown initiated", 3, "admin.html");
 		html.startBODY();
 		html.H1("Shutdown initiated");
 		html.endBODY();

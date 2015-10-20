@@ -1,6 +1,6 @@
 package scrum.server.sprint;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 import java.util.Set;
 
@@ -12,7 +12,7 @@ public class SprintReportDao extends GSprintReportDao {
 		SprintReport report = newEntityInstance();
 		report.setSprint(sprint);
 
-		saveEntity(report);
+		persist(report);
 		return report;
 	}
 

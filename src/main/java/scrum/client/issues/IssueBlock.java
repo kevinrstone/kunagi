@@ -73,10 +73,10 @@ public class IssueBlock extends ABlockWidget<Issue> implements TrashSupport {
 		if (issue.isUnclosedBug()) {
 			Image statusImage = null;
 			if (issue.isFixed()) {
-				statusImage = Img.bundle.issFixed().createImage();
+				statusImage = Img.issFixed();
 				statusImage.setTitle("Closed.");
 			} else if (issue.isOwnerSet()) {
-				statusImage = Img.bundle.issClaimed().createImage();
+				statusImage = Img.issClaimed();
 				statusImage.setTitle("Claimed by " + issue.getOwner().getName());
 			}
 			if (statusIcon != null) statusIcon.setWidget(statusImage);

@@ -14,13 +14,13 @@
  */
 package scrum.client.pr;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.editor.AFieldModel;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.collaboration.ForumSupport;
@@ -34,12 +34,14 @@ public class BlogEntry extends GBlogEntry implements ReferenceSupport, ForumSupp
 
 	public static final String REFERENCE_PREFIX = "blg";
 
-	public BlogEntry(Map data) {
-		super(data);
-	}
+	public static BlogEntry post(Project project) {
+		Args.assertNotNull(project, "project");
 
-	public BlogEntry(Project project) {
-		setProject(project);
+		BlogEntry entry = new BlogEntry();
+		entry.setProject(project);
+
+		entry.persist();
+		return entry;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class BlogEntry extends GBlogEntry implements ReferenceSupport, ForumSupp
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference() + " " + getTitle();
 	}
 

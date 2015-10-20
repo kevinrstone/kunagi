@@ -14,15 +14,18 @@
  */
 package scrum.client.release;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.time.Date;
+import ilarkesto.core.time.DateAndTime;
+import ilarkesto.core.time.Time;
 import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.editor.AFieldModel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import scrum.client.ScrumGwt;
 import scrum.client.collaboration.ForumSupport;
@@ -39,12 +42,23 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 	public static final String REFERENCE_PREFIX = "rel";
 
-	public Release(Project project) {
-		setProject(project);
+	public static Release post(Project project, Date date) {
+		Args.assertNotNull(project, "project", date, "date");
+
+		Release release = new Release();
+		release.setProject(project);
+		release.setReleaseDate(date);
+
+		release.persist();
+		return release;
 	}
 
-	public Release(Map data) {
-		super(data);
+	public DateAndTime getReleaseDateAndTime() {
+		Date date = getReleaseDate();
+		if (date == null) return null;
+		Time time = getReleaseTime();
+		if (time == null) time = new Time(12, 0);
+		return new DateAndTime(getReleaseDate(), time);
 	}
 
 	public boolean isMajor() {
@@ -55,13 +69,13 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 		return isParentReleaseSet();
 	}
 
-	public List<Release> getBugfixReleases() {
-		return getDao().getReleasesByParentRelease(this);
+	public Set<Release> getBugfixReleases() {
+		return Release.listByParentRelease(this);
 	}
 
 	public List<Issue> getAffectedByIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : getDao().getIssues()) {
+		for (Issue issue : Issue.listAll()) {
 			if (issue.getAffectedReleases().contains(this)) ret.add(issue);
 		}
 		return ret;
@@ -69,7 +83,7 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 	public List<Issue> getFixedIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : getDao().getIssues()) {
+		for (Issue issue : Issue.listAll()) {
 			if (issue.isClosed() && issue.containsFixRelease(this)) ret.add(issue);
 		}
 		return ret;
@@ -77,7 +91,7 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 	public List<Issue> getPlannedIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : getDao().getIssues()) {
+		for (Issue issue : Issue.listAll()) {
 			if (!issue.isClosed() && issue.getFixReleases().contains(this)) ret.add(issue);
 		}
 		return ret;
@@ -147,7 +161,7 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference() + " " + getLabel() + "-> " + isReleased();
 	}
 
@@ -155,8 +169,8 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 		@Override
 		public int compare(Release ra, Release rb) {
-			Date a = ra.getReleaseDate();
-			Date b = rb.getReleaseDate();
+			DateAndTime a = ra.getReleaseDateAndTime();
+			DateAndTime b = rb.getReleaseDateAndTime();
 			if (a == null && b == null) return Utl.compare(ra.getLabel(), rb.getLabel());
 			if (a == null) return 1;
 			if (b == null) return -1;

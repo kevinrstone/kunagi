@@ -12,8 +12,6 @@ public abstract class GNavigator {
 
     protected scrum.client.admin.Auth auth;
 
-    protected scrum.client.Dao dao;
-
     @Override
     public String toString() {
         return "Navigator";

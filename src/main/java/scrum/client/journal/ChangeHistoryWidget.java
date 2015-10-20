@@ -14,9 +14,9 @@
  */
 package scrum.client.journal;
 
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.scope.Scope;
 
-import java.util.Collections;
 import java.util.List;
 
 import scrum.client.common.AScrumGwtEntity;
@@ -68,12 +68,11 @@ public class ChangeHistoryWidget extends AScrumWidget {
 		}
 
 		panel.clear();
-		List<Change> changes = changeHistoryManager.getChanges(parent);
+		List<Change> changes = Utl.sort(changeHistoryManager.getChanges(parent), Change.DATE_AND_TIME_COMPARATOR);
 
 		if (changes.isEmpty()) {
 			panel.add(new Label("No change history available."));
 		} else {
-			Collections.sort(changes, Change.DATE_AND_TIME_COMPARATOR);
 			for (Change change : changes) {
 				panel.add(new ChangeWidget(change));
 			}
@@ -81,5 +80,4 @@ public class ChangeHistoryWidget extends AScrumWidget {
 
 		super.onUpdate();
 	}
-
 }

@@ -48,7 +48,7 @@ public class DeleteIssueAction extends GDeleteIssueAction {
 
 	@Override
 	protected void onExecute() {
-		getCurrentProject().deleteIssue(issue);
+		issue.delete();
 		addUndo(new Undo());
 	}
 
@@ -61,7 +61,7 @@ public class DeleteIssueAction extends GDeleteIssueAction {
 
 		@Override
 		protected void onUndo() {
-			getDao().createIssue(issue);
+			issue.persist();
 		}
 
 	}

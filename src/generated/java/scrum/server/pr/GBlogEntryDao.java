@@ -14,11 +14,12 @@
 package scrum.server.pr;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
 import ilarkesto.persistence.EntityEvent;
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 public abstract class GBlogEntryDao
             extends ilarkesto.persistence.ADao<BlogEntry> {
@@ -67,8 +68,8 @@ public abstract class GBlogEntryDao
     }
 
     @Override
-    public void entitySaved(EntityEvent event) {
-        super.entitySaved(event);
+    public void entityModified(EntityEvent event) {
+        super.entityModified(event);
         if (event.getEntity() instanceof BlogEntry) {
             clearCaches();
         }
@@ -402,6 +403,12 @@ public abstract class GBlogEntryDao
 
     public void setProjectDao(scrum.server.project.ProjectDao projectDao) {
         this.projectDao = projectDao;
+    }
+
+    scrum.server.admin.UserDao userDao;
+
+    public void setUserDao(scrum.server.admin.UserDao userDao) {
+        this.userDao = userDao;
     }
 
     scrum.server.release.ReleaseDao releaseDao;

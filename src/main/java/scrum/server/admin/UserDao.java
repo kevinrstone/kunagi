@@ -14,36 +14,38 @@
  */
 package scrum.server.admin;
 
+import ilarkesto.auth.Auth;
 import ilarkesto.auth.OpenId;
 import ilarkesto.base.Str;
+import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.gravatar.Gravatar;
 import ilarkesto.integration.gravatar.Profile;
-import scrum.server.ScrumWebApplication;
 
 public class UserDao extends GUserDao {
 
 	private static Log log = Log.get(UserDao.class);
 
-	@Override
-	public User postUser(String name, String password) {
-		return postUser(null, name, password);
+	public User postUser(String email, String name, String password) throws UserInputException {
+		User user = postUser(email, name);
+		Auth.setPassword(password, user, new KunagiAuthenticationContext());
+		return user;
 	}
 
-	public User postUser(String email, String name, String password) {
+	public User postUser(String email, String name) {
 		User user = newEntityInstance();
 		user.setEmail(email);
 		user.setName(name);
-		user.setPassword(password);
+		Auth.resetPasswordToDefault(user, new KunagiAuthenticationContext());
 		user.tryUpdateByGravatar();
-		saveEntity(user);
+		persist(user);
 		log.info("User created:", user);
 		return user;
 	}
 
-	public User postUserWithDefaultPassword(String name) {
-		return postUser(name, getDefaultPassword());
+	public User postUser(String name) {
+		return postUser(null, name);
 	}
 
 	public User postUserWithOpenId(String openId, String nickname, String fullname, String email) {
@@ -83,9 +85,13 @@ public class UserDao extends GUserDao {
 			user.setEmail(email);
 			user.setEmailVerified(true);
 		}
-		user.setPassword(Str.generatePassword());
+		try {
+			Auth.setPassword(Str.generatePassword(), user, new KunagiAuthenticationContext());
+		} catch (UserInputException ex) {
+			throw new RuntimeException(ex);
+		}
 		user.tryUpdateByGravatar();
-		saveEntity(user);
+		persist(user);
 		log.info("User created:", user);
 		return user;
 	}
@@ -93,20 +99,15 @@ public class UserDao extends GUserDao {
 	@Override
 	public User newEntityInstance() {
 		User user = super.newEntityInstance();
-		user.setPassword(getDefaultPassword());
 		user.setRegistrationDateAndTime(DateAndTime.now());
 		return user;
-	}
-
-	private String getDefaultPassword() {
-		return ScrumWebApplication.get().getSystemConfig().getDefaultUserPassword();
 	}
 
 	// --- test data ---
 
 	public User getTestUser(String name) {
 		User user = getUserByName(name);
-		if (user == null) user = postUserWithDefaultPassword(name);
+		if (user == null) user = postUser(name);
 		return user;
 	}
 

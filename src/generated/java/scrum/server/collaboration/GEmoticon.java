@@ -14,17 +14,19 @@
 package scrum.server.collaboration;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
-import ilarkesto.auth.AUser;
-import ilarkesto.persistence.EntityDoesNotExistException;
-import ilarkesto.base.Str;
+import ilarkesto.auth.AuthUser;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GEmoticon
-            extends AEntity
+            extends ilarkesto.persistence.AEntity
             implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, java.lang.Comparable<Emoticon> {
+
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Emoticon.class);
 
     // --- AEntity ---
 
@@ -35,49 +37,80 @@ public abstract class GEmoticon
     protected void repairDeadDatob(ADatob datob) {
     }
 
+    public abstract static class AEmoticonQuery extends ilarkesto.core.persistance.AEntityQuery<Emoticon> {
     @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("parentId", this.parentId);
-        properties.put("ownerId", this.ownerId);
-        properties.put("emotion", this.emotion);
+        public Class<Emoticon> getType() {
+            return Emoticon.class;
+        }
     }
 
+    public static Set<Emoticon> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Emoticon.class).list();
+    }
+
+    public static Emoticon getById(String id) {
+        return (Emoticon) AEntity.getById(id);
+    }
+
+    @Override
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getParent()); } catch(EntityDoesNotExistException ex) {}
+        try { Utl.addIfNotNull(ret, getOwner()); } catch(EntityDoesNotExistException ex) {}
+        return ret;
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("parentId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentId));
+        properties.put("ownerId", ilarkesto.core.persistance.Persistence.propertyAsString(this.ownerId));
+        properties.put("emotion", ilarkesto.core.persistance.Persistence.propertyAsString(this.emotion));
+    }
+
+    @Override
     public int compareTo(Emoticon other) {
-        return toString().toLowerCase().compareTo(other.toString().toLowerCase());
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GEmoticon.class);
 
-    public static final String TYPE = "emoticon";
+    public static final String TYPE = "Emoticon";
 
     // -----------------------------------------------------------
     // - parent
     // -----------------------------------------------------------
 
     private String parentId;
-    private transient ilarkesto.persistence.AEntity parentCache;
-
-    private void updateParentCache() {
-        parentCache = this.parentId == null ? null : (ilarkesto.persistence.AEntity)getDaoService().getById(this.parentId);
-    }
 
     public final String getParentId() {
         return this.parentId;
     }
 
     public final ilarkesto.persistence.AEntity getParent() {
-        if (parentCache == null) updateParentCache();
-        return parentCache;
+        try {
+            return this.parentId == null ? null : (ilarkesto.persistence.AEntity) AEntity.getById(this.parentId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Emoticon.parent");
+        }
     }
 
     public final void setParent(ilarkesto.persistence.AEntity parent) {
         parent = prepareParent(parent);
         if (isParent(parent)) return;
-        this.parentId = parent == null ? null : parent.getId();
-        parentCache = parent;
-        updateLastModified();
-        fireModified("parent="+parent);
+        setParentId(parent == null ? null : parent.getId());
+    }
+
+    public final void setParentId(String id) {
+        if (Utl.equals(parentId, id)) return;
+        this.parentId = id;
+            updateLastModified();
+            fireModified("parentId", ilarkesto.core.persistance.Persistence.propertyAsString(this.parentId));
+    }
+
+    private final void updateParentId(String id) {
+        setParentId(id);
     }
 
     protected ilarkesto.persistence.AEntity prepareParent(ilarkesto.persistence.AEntity parent) {
@@ -85,6 +118,7 @@ public abstract class GEmoticon
     }
 
     protected void repairDeadParentReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.parentId == null || entityId.equals(this.parentId)) {
             repairMissingMaster();
         }
@@ -108,28 +142,34 @@ public abstract class GEmoticon
     // -----------------------------------------------------------
 
     private String ownerId;
-    private transient scrum.server.admin.User ownerCache;
-
-    private void updateOwnerCache() {
-        ownerCache = this.ownerId == null ? null : (scrum.server.admin.User)userDao.getById(this.ownerId);
-    }
 
     public final String getOwnerId() {
         return this.ownerId;
     }
 
     public final scrum.server.admin.User getOwner() {
-        if (ownerCache == null) updateOwnerCache();
-        return ownerCache;
+        try {
+            return this.ownerId == null ? null : (scrum.server.admin.User) AEntity.getById(this.ownerId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Emoticon.owner");
+        }
     }
 
     public final void setOwner(scrum.server.admin.User owner) {
         owner = prepareOwner(owner);
         if (isOwner(owner)) return;
-        this.ownerId = owner == null ? null : owner.getId();
-        ownerCache = owner;
-        updateLastModified();
-        fireModified("owner="+owner);
+        setOwnerId(owner == null ? null : owner.getId());
+    }
+
+    public final void setOwnerId(String id) {
+        if (Utl.equals(ownerId, id)) return;
+        this.ownerId = id;
+            updateLastModified();
+            fireModified("ownerId", ilarkesto.core.persistance.Persistence.propertyAsString(this.ownerId));
+    }
+
+    private final void updateOwnerId(String id) {
+        setOwnerId(id);
     }
 
     protected scrum.server.admin.User prepareOwner(scrum.server.admin.User owner) {
@@ -137,6 +177,7 @@ public abstract class GEmoticon
     }
 
     protected void repairDeadOwnerReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.ownerId == null || entityId.equals(this.ownerId)) {
             repairMissingMaster();
         }
@@ -169,8 +210,15 @@ public abstract class GEmoticon
         emotion = prepareEmotion(emotion);
         if (isEmotion(emotion)) return;
         this.emotion = emotion;
-        updateLastModified();
-        fireModified("emotion="+emotion);
+            updateLastModified();
+            fireModified("emotion", ilarkesto.core.persistance.Persistence.propertyAsString(this.emotion));
+    }
+
+    private final void updateEmotion(java.lang.String emotion) {
+        if (isEmotion(emotion)) return;
+        this.emotion = emotion;
+            updateLastModified();
+            fireModified("emotion", ilarkesto.core.persistance.Persistence.propertyAsString(this.emotion));
     }
 
     protected java.lang.String prepareEmotion(java.lang.String emotion) {
@@ -191,47 +239,58 @@ public abstract class GEmoticon
         setEmotion((java.lang.String)value);
     }
 
-    public void updateProperties(Map<?, ?> properties) {
-        for (Map.Entry entry : properties.entrySet()) {
-            String property = (String) entry.getKey();
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
             if (property.equals("id")) continue;
-            Object value = entry.getValue();
-            if (property.equals("parentId")) updateParent(value);
-            if (property.equals("ownerId")) updateOwner(value);
-            if (property.equals("emotion")) updateEmotion(value);
+            String value = entry.getValue();
+            if (property.equals("parentId")) updateParentId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("ownerId")) updateOwnerId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("emotion")) updateEmotion(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
         }
     }
 
     protected void repairDeadReferences(String entityId) {
+        if (!isPersisted()) return;
         super.repairDeadReferences(entityId);
         repairDeadParentReference(entityId);
         repairDeadOwnerReference(entityId);
     }
 
     // --- ensure integrity ---
-
-    public void ensureIntegrity() {
-        super.ensureIntegrity();
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
         if (!isParentSet()) {
             repairMissingMaster();
-            return;
         }
         try {
             getParent();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead parent reference");
             repairDeadParentReference(this.parentId);
         }
         if (!isOwnerSet()) {
             repairMissingMaster();
-            return;
         }
         try {
             getOwner();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead owner reference");
             repairDeadOwnerReference(this.ownerId);
         }
+    }
+
+
+    // -----------------------------------------------------------
+    // - dependencies
+    // -----------------------------------------------------------
+
+    static scrum.server.admin.UserDao userDao;
+
+    public static final void setUserDao(scrum.server.admin.UserDao userDao) {
+        GEmoticon.userDao = userDao;
     }
 
     static scrum.server.collaboration.EmoticonDao emoticonDao;

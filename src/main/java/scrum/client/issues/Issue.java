@@ -14,6 +14,7 @@
  */
 package scrum.client.issues;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
@@ -23,11 +24,11 @@ import ilarkesto.gwt.client.HyperlinkWidget;
 import ilarkesto.gwt.client.LabelProvider;
 import ilarkesto.gwt.client.editor.AFieldModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.User;
@@ -55,14 +56,25 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 
 	public static final Integer[] SEVERITY_OPTIONS = { CRITICAL, SEVERE, NORMAL, MINOR };
 
-	public Issue(Project project) {
-		setType(Types.ISSUE);
-		setProject(project);
-		setDate(DateAndTime.now());
+	public static Issue post(Project project) {
+		Args.assertNotNull(project, "project");
+
+		Issue issue = new Issue();
+		issue.setLabel("");
+		issue.setType(Types.ISSUE);
+		issue.setProject(project);
+		issue.setDate(DateAndTime.now());
+
+		issue.persist();
+		return issue;
 	}
 
-	public Issue(Map data) {
-		super(data);
+	public String getExternalTrackerUrl() {
+		String id = getExternalTrackerId();
+		if (Str.isBlank(id)) return null;
+		String template = getProject().getExternalTrackerUrlTemplate();
+		if (Str.isBlank(template)) return null;
+		return template.replace("${id}", id);
 	}
 
 	@Override
@@ -188,7 +200,7 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	public String getThemesAsString() {
-		List<String> themes = getThemes();
+		List<String> themes = new ArrayList<String>(getThemes());
 		Collections.sort(themes);
 		return Str.concat(themes, ", ");
 	}
@@ -260,7 +272,7 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference() + " (" + getType() + ") " + getLabel();
 	}
 
@@ -371,5 +383,31 @@ public class Issue extends GIssue implements ReferenceSupport, LabelSupport, For
 			}
 		};
 		return themesAsStringModel;
+	}
+
+	@Override
+	protected LabelModel createLabelModel() {
+		return new LabelModel() {
+
+			@Override
+			public boolean isSwitchToEditModeIfNull() {
+				return true;
+			}
+		};
+
+	}
+
+	@Override
+	protected ExternalTrackerIdModel createExternalTrackerIdModel() {
+		return new ExternalTrackerIdModel() {
+
+			@Override
+			public String getDisplayValue() {
+				String url = getExternalTrackerUrl();
+				if (Str.isBlank(url)) return super.getDisplayValue();
+				return "[" + url + " " + getExternalTrackerId() + "]";
+			}
+
+		};
 	}
 }

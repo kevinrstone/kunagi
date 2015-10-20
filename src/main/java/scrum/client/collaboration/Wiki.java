@@ -77,7 +77,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 		public void initialize(final RichtextEditorWidget editor) {
 			final ToolbarWidget toolbar = editor.getEditorToolbar();
 
-			toolbar.insert(createToolbarButton(Img.bundle.toc().createImage(), "Table of contents", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.toc(), "Table of contents", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -86,7 +86,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.upload().createImage(), "Upload file", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.upload(), "Upload file", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -97,7 +97,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.formatTextCode().createImage(), "Code", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.formatTextCode(), "Code", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -106,7 +106,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.image().createImage(), "Image", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.image(), "Image", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -120,7 +120,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.table().createImage(), "Table", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.table(), "Table", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -129,7 +129,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.hyperlink().createImage(), "Hyperlink", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.hyperlink(), "Hyperlink", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -143,26 +143,24 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(
-				createToolbarButton(Img.bundle.enumlist().createImage(), "Numbered list", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.enumlist(), "Numbered list", new ClickHandler() {
 
-					@Override
-					public void onClick(ClickEvent event) {
-						bulletize(editor.getEditor(), '#');
-					}
-				}), 0);
+				@Override
+				public void onClick(ClickEvent event) {
+					bulletize(editor.getEditor(), '#');
+				}
+			}), 0);
 
-			toolbar.insert(
-				createToolbarButton(Img.bundle.itemlist().createImage(), "Bulleted list", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.itemlist(), "Bulleted list", new ClickHandler() {
 
-					@Override
-					public void onClick(ClickEvent event) {
-						bulletize(editor.getEditor(), '*');
-					}
+				@Override
+				public void onClick(ClickEvent event) {
+					bulletize(editor.getEditor(), '*');
+				}
 
-				}), 0);
+			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.h2().createImage(), "Heading 2", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.h2(), "Heading 2", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -171,7 +169,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.h1().createImage(), "Heading 1", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.h1(), "Heading 1", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -180,7 +178,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.bundle.formatTextBold().createImage(), "Bold", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.formatTextBold(), "Bold", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -189,15 +187,14 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(
-				createToolbarButton(Img.bundle.formatTextItalic().createImage(), "Italic", new ClickHandler() {
+			toolbar.insert(createToolbarButton(Img.formatTextItalic(), "Italic", new ClickHandler() {
 
-					@Override
-					public void onClick(ClickEvent event) {
-						CodemirrorEditorWidget textArea = editor.getEditor();
-						textArea.wrapSelection("''", "''");
-					}
-				}), 0);
+				@Override
+				public void onClick(ClickEvent event) {
+					CodemirrorEditorWidget textArea = editor.getEditor();
+					textArea.wrapSelection("''", "''");
+				}
+			}), 0);
 
 		}
 	}

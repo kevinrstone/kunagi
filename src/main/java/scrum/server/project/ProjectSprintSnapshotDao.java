@@ -14,7 +14,7 @@
  */
 package scrum.server.project;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -16,7 +16,7 @@ package scrum.server.admin;
 
 import ilarkesto.core.logging.LogRecord;
 import ilarkesto.logging.DefaultLogRecordHandler;
-import ilarkesto.ui.web.HtmlRenderer;
+import ilarkesto.ui.web.HtmlBuilder;
 import ilarkesto.webapp.RequestWrapper;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class LogsServlet extends AKunagiServlet {
 			return;
 		}
 
-		HtmlRenderer html = createDefaultHtmlWithHeader(req, "Latest logs");
+		HtmlBuilder html = createDefaultHtmlWithHeader(req, "Latest logs");
 
 		html.startBODY().setStyle("font-size: 10px");
 

@@ -15,20 +15,20 @@
 package scrum.server;
 
 import ilarkesto.auth.Auth;
-import ilarkesto.auth.AuthenticationFailedException;
-import ilarkesto.auth.WrongPasswordException;
+import ilarkesto.auth.WrongPasswordInputException;
 import ilarkesto.base.PermissionDeniedException;
 import ilarkesto.base.Reflect;
 import ilarkesto.base.Utl;
 import ilarkesto.core.base.Str;
-import ilarkesto.core.logging.Log;
+import ilarkesto.core.base.UserInputException;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 import ilarkesto.core.scope.In;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
+import ilarkesto.gwt.client.ErrorWrapper;
 import ilarkesto.integration.ldap.Ldap;
 import ilarkesto.persistence.ADao;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.EntityDoesNotExistException;
 import ilarkesto.webapp.AWebApplication;
 
 import java.util.Collection;
@@ -40,6 +40,7 @@ import java.util.Set;
 
 import scrum.client.DataTransferObject;
 import scrum.client.admin.SystemMessage;
+import scrum.server.admin.KunagiAuthenticationContext;
 import scrum.server.admin.ProjectUserConfig;
 import scrum.server.admin.SystemConfig;
 import scrum.server.admin.User;
@@ -50,7 +51,6 @@ import scrum.server.collaboration.CommentDao;
 import scrum.server.collaboration.Subject;
 import scrum.server.collaboration.Wikipage;
 import scrum.server.common.Numbered;
-import scrum.server.common.Transient;
 import scrum.server.files.File;
 import scrum.server.impediments.Impediment;
 import scrum.server.issues.Issue;
@@ -77,7 +77,6 @@ import scrum.server.sprint.TaskDao;
 
 public class ScrumServiceImpl extends GScrumServiceImpl {
 
-	private static final Log log = Log.get(ScrumServiceImpl.class);
 	private static final long serialVersionUID = 1;
 
 	// --- dependencies ---
@@ -90,6 +89,8 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 	private transient CommentDao commentDao;
 	private transient ScrumWebApplication webApplication;
 	private transient ChangeDao changeDao;
+
+	@In
 	private transient SprintDao sprintDao;
 
 	@In
@@ -138,7 +139,13 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 
 	// --- ---
 
-	private void onStartConversation(GwtConversation conversation) {
+	@Override
+	protected long getMaxServiceCallExecutionTime(String methodName) {
+		return 2000;
+	}
+
+	@Override
+	protected void onStartConversation(GwtConversation conversation) {
 		User user = conversation.getSession().getUser();
 		if (user == null) throw new PermissionDeniedException("Login required.");
 		conversation.clearRemoteEntities();
@@ -146,6 +153,11 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		conversation.sendToClient(webApplication.getSystemConfig());
 		conversation.getNextData().setUserId(user.getId());
 		conversation.sendUserScopeDataToClient(user);
+	}
+
+	@Override
+	protected void onException(GwtConversation conversation) {
+		throw new RuntimeException("Test-Exception");
 	}
 
 	@Override
@@ -162,7 +174,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 
 		task.appendToDescription(issue.getReferenceAndLabel() + " created.");
 		if (task.getBurnedWork() == 0) {
-			taskDao.deleteEntity(task);
+			task.delete();
 			for (GwtConversation c : webApplication.getConversationsByProject(conversation.getProject(), null)) {
 				c.getNextData().addDeletedEntity(task.getId());
 			}
@@ -196,7 +208,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			requirement.setDeleted(true);
 			sendToClients(conversation, requirement);
 		} else {
-			requirementDao.deleteEntity(requirement);
+			requirement.delete();
 			for (GwtConversation c : webApplication.getConversationsByProject(project, null)) {
 				c.getNextData().addDeletedEntity(requirement.getId());
 			}
@@ -223,8 +235,15 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		assertProjectSelected(conversation);
 		Sprint sprint = sprintDao.getById(sprintId);
 		SprintReport report = sprint.getSprintReport();
-		conversation.sendToClient(report);
-		conversation.sendToClient(getAssociatedEntities(report));
+		if (report != null) {
+			conversation.sendToClient(report);
+			conversation.sendToClient(getAssociatedEntities(report));
+			conversation.sendToClient(report.getCompletedRequirements());
+			conversation.sendToClient(report.getRejectedRequirements());
+			conversation.sendToClient(report.getSprintSwitchRequirementChanges());
+			conversation.sendToClient(report.getClosedTasks());
+			conversation.sendToClient(report.getOpenTasks());
+		}
 	}
 
 	@Override
@@ -318,31 +337,26 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 	public void onResetPassword(GwtConversation conversation, String userId) {
 		if (!conversation.getSession().getUser().isAdmin()) throw new PermissionDeniedException();
 		User user = userDao.getById(userId);
-		if (webApplication.getSystemConfig().isSmtpServerSet() && user.isEmailSet()) {
+		if (webApplication.getSystemConfig().isSmtpServerSet() && user.isEmailSet() && user.isEmailVerified()) {
 			user.triggerPasswordReset();
 		} else {
-			user.setPassword(webApplication.getSystemConfig().getDefaultUserPassword());
+			Auth.resetPasswordToDefault(user, new KunagiAuthenticationContext());
 		}
 	}
 
 	@Override
 	public void onChangePassword(GwtConversation conversation, String oldPassword, String newPassword) {
 		User user = conversation.getSession().getUser();
-		if (!user.matchesPassword(oldPassword)) throw new WrongPasswordException();
-
-		user.setPassword(newPassword);
-
-		log.info("password changed by", user);
+		try {
+			Auth.changePasswordWithCheck(oldPassword, newPassword, user, new KunagiAuthenticationContext());
+		} catch (UserInputException ex) {
+			conversation.getNextData().addError(ErrorWrapper.createUserInput(ex.getMessage()));
+		}
 	}
 
-	@Override
-	public void onCreateEntity(GwtConversation conversation, String type, Map properties) {
-		String id = (String) properties.get("id");
-		if (id == null) throw new NullPointerException("id == null");
-
-		ADao dao = getDaoService().getDaoByName(type);
-		AEntity entity = dao.newEntityInstance(id);
+	private void onEntityCreatedOnClient(GwtConversation conversation, AEntity entity, Map<String, String> properties) {
 		entity.updateProperties(properties);
+		entity.persist();
 		User currentUser = conversation.getSession().getUser();
 		Project currentProject = conversation.getProject();
 
@@ -402,8 +416,6 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			change.setUser(currentUser);
 		}
 
-		if (!(entity instanceof Transient)) dao.saveEntity(entity);
-
 		sendToClients(conversation, entity);
 
 		if (entity instanceof Requirement) {
@@ -432,11 +444,10 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		}
 	}
 
-	@Override
-	public void onDeleteEntity(GwtConversation conversation, String entityId) {
-		AEntity entity = getDaoService().getEntityById(entityId);
+	private void onEntityDeletedOnClient(GwtConversation conversation, AEntity entity) {
+		String entityId = entity.getId();
+
 		User user = conversation.getSession().getUser();
-		if (!Auth.isDeletable(entity, user)) throw new PermissionDeniedException();
 
 		if (entity instanceof File) {
 			File file = (File) entity;
@@ -456,8 +467,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			}
 		}
 
-		ADao dao = getDaoService().getDao(entity);
-		dao.deleteEntity(entity);
+		entity.delete();
 
 		if (entity instanceof Task) onTaskDeleted(conversation, (Task) entity);
 
@@ -487,11 +497,8 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		}
 	}
 
-	@Override
-	public void onChangeProperties(GwtConversation conversation, String entityId, Map properties) {
-		AEntity entity = getDaoService().getEntityById(entityId);
+	private void onEntityModifiedOnClient(GwtConversation conversation, AEntity entity, Map<String, String> properties) {
 		User currentUser = conversation.getSession().getUser();
-		if (!Auth.isEditable(entity, currentUser)) throw new PermissionDeniedException();
 
 		Sprint previousRequirementSprint = entity instanceof Requirement ? ((Requirement) entity).getSprint() : null;
 
@@ -536,7 +543,15 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 			postChangeIfChanged(conversation, entity, properties, currentUser, "text");
 		}
 
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!! Übernahme der Änderungen in die Entity !!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 		entity.updateProperties(properties);
+
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!! Nach der Übernahme der Änderungen in die Entity !!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		if (entity instanceof Task) onTaskChanged(conversation, (Task) entity, properties);
 		if (entity instanceof Requirement)
@@ -559,6 +574,94 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 
 		conversation.clearRemoteEntitiesByType(Change.class);
 		sendToClients(conversation, entity);
+	}
+
+	@Override
+	protected void onUpdateEntities(GwtConversation conversation, Collection<Map<String, String>> modified,
+			Collection<String> deleted) {
+		log.info("onUpdateEntities()", modified, deleted);
+		// run security checks first
+		User user = conversation.getSession().getUser();
+		if (modified != null) {
+			for (Map<String, String> properties : modified) {
+				String id = properties.get("id");
+				if (id == null)
+					throw new IllegalArgumentException("Missing id property in entity properties map:"
+							+ Str.format(properties));
+				if (AEntity.exists(id)) {
+					AEntity entity = AEntity.getById(id);
+					if (!Auth.isEntityEditable(user, entity, properties)) {
+						log.warn("Permission denied: EDIT", user.getName(), entity.getId(), entity);
+						throw new PermissionDeniedException("Entity " + id + " is not editable by " + user);
+					}
+				} else {
+					String typeName = properties.get("@type");
+					if (typeName == null)
+						throw new IllegalStateException("Missing @type property for new entity: "
+								+ Str.format(properties));
+				}
+			}
+		}
+		if (deleted != null) {
+			for (String id : deleted) {
+				try {
+					AEntity entity = AEntity.getById(id);
+					if (!Auth.isEntityDeletable(user, entity)) {
+						log.warn("Permission denied: DELETE", user.getName(), entity.getId(), entity);
+						throw new PermissionDeniedException("Entity " + id + " is not deletable by " + user);
+					}
+				} catch (EntityDoesNotExistException ex) {
+					// already deleted
+				}
+			}
+		}
+
+		// check if deleting possible
+		// if (deleted != null) {
+		// for (String id : deleted) {
+		// try {
+		// AEntity entity = AEntity.getById(id);
+		// String veto = entity.getDeleteVeto();
+		// if (veto != null) {
+		// conversation.getNextData().addUserInputError("Löschung nicht möglich: " + veto);
+		// return;
+		// }
+		// } catch (EntityDoesNotExistException ex) {
+		// // already deleted
+		// }
+		// }
+		// }
+
+		// make changes
+		if (modified != null) {
+			for (Map<String, String> properties : modified) {
+				String id = properties.get("id");
+				if (AEntity.exists(id)) {
+					AEntity entity = AEntity.getById(id);
+					log.debug("    Entity modified on client:", properties);
+					onEntityModifiedOnClient(conversation, entity, properties);
+				} else {
+					ADao<AEntity> dao = getDaoService().getDaoByName(properties.get("@type"));
+					AEntity entity = dao.newEntityInstance(id);
+					log.debug("    Entity created on client:", properties);
+					onEntityCreatedOnClient(conversation, entity, properties);
+				}
+			}
+		}
+		if (deleted != null) {
+			for (String entityId : deleted) {
+				AEntity entity;
+				try {
+					entity = AEntity.getById(entityId);
+				} catch (EntityDoesNotExistException ex) {
+					// already deleted
+					entity = null;
+				}
+				if (entity != null) {
+					onEntityDeletedOnClient(conversation, entity);
+				}
+			}
+		}
 	}
 
 	private void onProjectChanged(GwtConversation conversation, Project project, Map properties) {
@@ -905,11 +1008,6 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		if (entity instanceof SprintReport) {
 			SprintReport report = (SprintReport) entity;
 			ret.add(report.getSprint());
-			ret.addAll(report.getCompletedRequirements());
-			ret.addAll(report.getRejectedRequirements());
-			ret.addAll(report.getSprintSwitchRequirementChanges());
-			ret.addAll(report.getClosedTasks());
-			ret.addAll(report.getOpenTasks());
 		}
 
 		return ret;
@@ -1032,7 +1130,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		try {
 			Ldap.authenticateUserGetEmail(config.getLdapUrl(), config.getLdapUser(), config.getLdapPassword(),
 				config.getLdapBaseDn(), config.getLdapUserFilterRegex(), "dummyUser", "dummyPassword");
-		} catch (AuthenticationFailedException ex) {}
+		} catch (WrongPasswordInputException ex) {}
 	}
 
 	@Override
@@ -1048,6 +1146,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		Release release = (Release) getDaoService().getEntityById(releaseId);
 		if (!release.isProject(project)) throw new PermissionDeniedException();
 		release.release(project, conversation.getSession().getUser(), webApplication);
+		project.updateHomepage();
 	}
 
 	@Override
@@ -1068,13 +1167,13 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		WebSession session = (WebSession) getSession();
 		GwtConversation conversation = session.getGwtConversation(-1);
 		ilarkesto.di.Context context = ilarkesto.di.Context.get();
-		context.setName("gwt-srv:startSession");
+		context.setName("gwt-srv:startConversation");
 		context.bindCurrentThread();
 		try {
 			onStartConversation(conversation);
 			onServiceMethodExecuted(context);
 		} catch (Throwable t) {
-			handleServiceMethodException(conversation.getNumber(), "startSession", t);
+			handleServiceMethodException(conversation.getNumber(), "startConversation", t, context);
 		}
 		return (scrum.client.DataTransferObject) conversation.popNextData();
 	}
@@ -1140,11 +1239,6 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 	}
 
 	@Override
-	protected Class<? extends AWebApplication> getWebApplicationClass() {
-		return ScrumWebApplication.class;
-	}
-
-	@Override
 	protected AWebApplication getWebApplication() {
 		return webApplication;
 	}
@@ -1192,7 +1286,7 @@ public class ScrumServiceImpl extends GScrumServiceImpl {
 		changeDao.postChange(newRequirement, currentUser, "@moved", null, conversation.getProject().getId());
 
 		webApplication.sendToConversationsByProject(destinationProject, newRequirement);
-		sendToClients(conversation, destinationProject);
+		webApplication.sendToConversationsByProject(destinationProject, destinationProject);
 
 		deleteRequirement(conversation, requirement);
 	}

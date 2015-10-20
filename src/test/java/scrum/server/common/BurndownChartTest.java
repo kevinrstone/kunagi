@@ -14,10 +14,8 @@
  */
 package scrum.server.common;
 
-import ilarkesto.base.Sys;
 import ilarkesto.core.time.Date;
 import ilarkesto.io.IO;
-import ilarkesto.testng.ATest;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,17 +24,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import scrum.client.common.WeekdaySelector;
+import scrum.server.AKunagiTest;
 import scrum.server.sprint.SprintDaySnapshot;
 
-public class BurndownChartTest extends ATest {
+public class BurndownChartTest extends AKunagiTest {
 
-	@BeforeSuite
+	@BeforeTest
 	public void init() {
-		Sys.setHeadless(true);
+		getWebApplication();
 	}
 
 	@Test
@@ -77,7 +76,7 @@ public class BurndownChartTest extends ATest {
 		Date sprintEndDate = shots.get(shots.size() - 1).getDate().addDays(23);
 		Date sprintOriginallyEndDate = sprintEndDate.addDays(-3);
 
-		File file = new File(OUTPUT_DIR + "/sprintBurndownChart.png");
+		File file = getTestOutputFile("sprintBurndownChart.png");
 		log.info(file.getAbsolutePath());
 		IO.createDirectory(file.getParentFile());
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));

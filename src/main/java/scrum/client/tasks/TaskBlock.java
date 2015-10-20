@@ -1,20 +1,21 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.tasks;
 
 import ilarkesto.gwt.client.AnchorPanel;
+
 import scrum.client.collaboration.EmoticonsWidget;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.AScrumAction;
@@ -68,13 +69,13 @@ public class TaskBlock extends ABlockWidget<Task> implements TrashSupport {
 		header.setDragHandle(task.getReference());
 		Image statusImage = null;
 		if (task.isClosed()) {
-			statusImage = Img.bundle.tskClosed().createImage();
+			statusImage = Img.tskClosed();
 			statusImage.setTitle("Closed.");
 		} else if (task.isBlocked()) {
-			statusImage = Img.bundle.tskBlocked().createImage();
-			statusImage.setTitle("Blocked by " + task.getImpediment().getReferenceAndLabel() + ".");
+			statusImage = Img.tskBlocked();
+			statusImage.setTitle("Blocked by " + task.getBlockingImpedimentLabelsAsText() + ".");
 		} else if (task.isOwnerSet()) {
-			statusImage = Img.bundle.tskClaimed().createImage();
+			statusImage = Img.tskClaimed();
 			statusImage.setTitle("Claimed by " + task.getOwner().getName() + ".");
 		}
 		statusIcon.setWidget(statusImage);

@@ -1,26 +1,28 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.common;
 
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
+
 import scrum.client.ScrumScopeManager;
+import scrum.client.core.EventBus;
 import scrum.client.dnd.BlockDndMarkerWidget;
-import scrum.client.workspace.BlockCollapsedEvent;
-import scrum.client.workspace.BlockExpandedEvent;
 import scrum.client.workspace.Navigator;
+import scrum.client.workspace.history.HistoryToken;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Base class for a block widget, which can be added to a <code>BlockWidgetList</code>.
- * 
+ *
  */
 @SuppressWarnings("unchecked")
 public abstract class ABlockWidget<O> extends AScrumWidget {
@@ -90,7 +92,7 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 	protected String getUpdateSignature() {
 		updateHref();
 		if (isExtended()) return null;
-		if (object instanceof AGwtEntity) return String.valueOf(((AGwtEntity) object).getLocalModificationTime());
+		if (object instanceof Entity) return String.valueOf(((Entity) object).getModificationTime());
 		return super.getUpdateSignature();
 	}
 
@@ -121,7 +123,7 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		if (ScrumScopeManager.isProjectScope() && object instanceof AGwtEntity) {
 			AGwtEntity entity = getHrefEntity();
 			String href = Navigator.getEntityHref(entity);
-			href += "|toggle=" + toggleCounter++;// + isExtended();
+			href += HistoryToken.SEPARATOR + "toggle=" + toggleCounter++;// + isExtended();
 			header.setHref(href);
 		}
 	}
@@ -194,10 +196,10 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		this.extended = extended;
 
 		if (extended) {
-			new BlockExpandedEvent(getObject()).fireInCurrentScope();
+			EventBus.get().blockExpanded(object);
 			panel.addStyleName("ABlockWidget-extended");
 		} else {
-			new BlockCollapsedEvent(getObject()).fireInCurrentScope();
+			EventBus.get().blockCollapsed(object);
 			panel.removeStyleName("ABlockWidget-extended");
 		}
 
@@ -222,13 +224,12 @@ public abstract class ABlockWidget<O> extends AScrumWidget {
 		if (getList().isDndSorting()) {
 			getList().dndManager.registerDropTarget(this);
 		}
-		if (extended) new BlockExpandedEvent(getObject()).fireInCurrentScope();
-
+		if (extended) EventBus.get().blockExpanded(object);
 	}
 
 	@Override
 	protected void onUnload() {
-		if (extended) new BlockCollapsedEvent(getObject()).fireInCurrentScope();
+		if (extended) EventBus.get().blockCollapsed(object);
 
 		if (list.dndManager != null) list.dndManager.unregisterDropTarget(this);
 		super.onUnload();

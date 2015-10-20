@@ -15,6 +15,7 @@
 package scrum.client.issues;
 
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
 import ilarkesto.gwt.client.ButtonWidget;
@@ -33,6 +34,7 @@ import scrum.client.collaboration.EmoticonSelectorWidget;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.ThemesWidget;
 import scrum.client.journal.ChangeHistoryWidget;
+import scrum.client.project.Project;
 import scrum.client.release.Release;
 
 import com.google.gwt.user.client.ui.HTML;
@@ -55,11 +57,18 @@ public class IssueWidget extends AScrumWidget {
 
 		TableBuilder left = ScrumGwt.createFieldTable();
 		left.addFieldRow("Label", issue.getLabelModel());
+
+		Project project = issue.getProject();
+		if (!Str.isBlank(project.getExternalTrackerUrlTemplate())) {
+			left.addFieldRow(project.getExternalTrackerLabelOrDefault() + " ID", issue.getExternalTrackerIdModel());
+		}
+
 		if (issue.isBug()) {
 			left.addFieldRow("Severity", new DropdownEditorWidget<Integer>(issue.getSeverityModel(),
 					Issue.SEVERITY_LABELS));
 		}
 		left.addFieldRow("Description", issue.getDescriptionModel());
+		left.addFieldRow("Additional info", issue.getAdditionalInfoModel());
 		left.addFieldRow("Themes", new ThemesWidget(issue));
 		left.addFieldRow("Issuer", new TextOutputWidget(new AFieldModel<String>() {
 
@@ -125,8 +134,7 @@ public class IssueWidget extends AScrumWidget {
 
 			@Override
 			protected void onEditorUpdate() {
-				List<Release> releases = issue.getProject().getReleases();
-				Collections.sort(releases, Release.DATE_REVERSE_COMPARATOR);
+				List<Release> releases = Utl.sort(issue.getProject().getReleases(), Release.DATE_REVERSE_COMPARATOR);
 				setEditorItems(releases);
 				setEditorSelectedItems(issue.getFixReleases());
 			}

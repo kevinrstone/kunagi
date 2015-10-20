@@ -15,6 +15,7 @@
 package scrum.server.project;
 
 import ilarkesto.core.base.Utl;
+
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;
@@ -46,13 +47,13 @@ public class Quality extends GQuality implements Numbered, ReferenceSupport, Lab
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
 		updateNumber();
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 

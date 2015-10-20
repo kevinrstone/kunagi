@@ -52,7 +52,7 @@ public class DeleteRequirementAction extends GDeleteRequirementAction {
 		if (getCurrentProject().isInHistory(requirement)) {
 			new DeleteStoryServiceCall(requirement.getId()).execute();
 		} else {
-			requirement.getProject().deleteRequirement(requirement);
+			requirement.delete();
 		}
 		addUndo(new Undo());
 	}
@@ -69,7 +69,7 @@ public class DeleteRequirementAction extends GDeleteRequirementAction {
 			if (requirement.isDeleted()) {
 				requirement.setDeleted(false);
 			} else {
-				getDao().createRequirement(requirement);
+				requirement.persist();
 			}
 		}
 

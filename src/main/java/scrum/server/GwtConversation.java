@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -16,9 +16,11 @@ package scrum.server;
 
 import ilarkesto.auth.Auth;
 import ilarkesto.core.logging.Log;
+import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.persistence.AEntity;
+
 import scrum.client.DataTransferObject;
 import scrum.client.communication.Pinger;
 import scrum.server.admin.ProjectUserConfig;
@@ -28,7 +30,7 @@ import scrum.server.collaboration.Emoticon;
 import scrum.server.collaboration.EmoticonDao;
 import scrum.server.project.Project;
 
-public class GwtConversation extends AGwtConversation {
+public class GwtConversation extends AGwtConversation<WebSession> {
 
 	private static final Log LOG = Log.get(GwtConversation.class);
 	private TimePeriod TIMEOUT = new TimePeriod(Pinger.MAX_DELAY * 10);
@@ -50,7 +52,7 @@ public class GwtConversation extends AGwtConversation {
 	}
 
 	@Override
-	protected void filterEntityProperties(AEntity entity, java.util.Map propertiesMap) {
+	protected void filterEntityProperties(Entity entity, java.util.Map propertiesMap) {
 		super.filterEntityProperties(entity, propertiesMap);
 		User user = getSession().getUser();
 
@@ -69,7 +71,7 @@ public class GwtConversation extends AGwtConversation {
 	}
 
 	@Override
-	protected boolean isEntityVisible(AEntity entity) {
+	protected boolean isEntityVisible(Entity entity) {
 		return Auth.isVisible(entity, getSession().getUser());
 	}
 
@@ -83,9 +85,9 @@ public class GwtConversation extends AGwtConversation {
 	}
 
 	@Override
-	public synchronized void sendToClient(AEntity entity) {
+	public synchronized void sendToClient(Entity entity) {
 		super.sendToClient(entity);
-		for (Emoticon emoticon : emoticonDao.getEmoticonsByParent(entity)) {
+		for (Emoticon emoticon : emoticonDao.getEmoticonsByParent((AEntity) entity)) {
 			super.sendToClient(emoticon);
 		}
 	}
@@ -108,13 +110,13 @@ public class GwtConversation extends AGwtConversation {
 	}
 
 	@Override
-	public WebSession getSession() {
-		return (WebSession) super.getSession();
+	public DataTransferObject getNextData() {
+		return (DataTransferObject) super.getNextData();
 	}
 
 	@Override
-	public DataTransferObject getNextData() {
-		return (DataTransferObject) super.getNextData();
+	public DataTransferObject getDataTransferObject() {
+		return (DataTransferObject) super.getDataTransferObject();
 	}
 
 	public Project getProject() {

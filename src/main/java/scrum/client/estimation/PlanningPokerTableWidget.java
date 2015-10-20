@@ -26,13 +26,13 @@ import java.util.Set;
 import scrum.client.ScrumGwt;
 import scrum.client.admin.User;
 import scrum.client.common.AScrumWidget;
+import scrum.client.core.EventBus;
 import scrum.client.project.CloseRequirementEstimationVotingAction;
 import scrum.client.project.PlanningPokerStoryFinder;
 import scrum.client.project.Project;
 import scrum.client.project.Requirement;
 import scrum.client.project.RequirementEstimationVotingShowoffAction;
 import scrum.client.project.ResetRequirementEstimationVotingAction;
-import scrum.client.workspace.VisibleDataChangedEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -242,7 +242,7 @@ public class PlanningPokerTableWidget extends AScrumWidget {
 			if (estimation >= 0) {
 				requirement.setEstimatedWork(estimation);
 				requirement.deactivateWorkEstimationVoting();
-				new VisibleDataChangedEvent().fireInCurrentScope();
+				EventBus.get().visibleDataChanged();
 			}
 		}
 	}
@@ -259,7 +259,7 @@ public class PlanningPokerTableWidget extends AScrumWidget {
 		@Override
 		public void onClick(ClickEvent event) {
 			requirement.setVote(estimation);
-			new VisibleDataChangedEvent().fireInCurrentScope();
+			EventBus.get().visibleDataChanged();
 		}
 	}
 
@@ -268,7 +268,7 @@ public class PlanningPokerTableWidget extends AScrumWidget {
 		@Override
 		public void onClick(ClickEvent event) {
 			requirement.setVote(null);
-			new VisibleDataChangedEvent().fireInCurrentScope();
+			EventBus.get().visibleDataChanged();
 		}
 	}
 }

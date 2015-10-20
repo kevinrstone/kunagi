@@ -1,20 +1,33 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.issues;
 
-public class SendIssueReplyEmailServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String issueId;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class SendIssueReplyEmailServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    private String from;
+    private static scrum.client.ScrumServiceAsync service;
 
-    private String to;
+    java.lang.String issueId;
+    java.lang.String from;
+    java.lang.String to;
+    java.lang.String subject;
+    java.lang.String text;
 
-    private String subject;
-
-    private String text;
-
-    public  SendIssueReplyEmailServiceCall(String issueId, String from, String to, String subject, String text) {
+    public SendIssueReplyEmailServiceCall(java.lang.String issueId, java.lang.String from, java.lang.String to, java.lang.String subject, java.lang.String text) {
         this.issueId = issueId;
         this.from = from;
         this.to = to;
@@ -22,15 +35,18 @@ public class SendIssueReplyEmailServiceCall extends scrum.client.core.AServiceCa
         this.text = text;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().sendIssueReplyEmail(serviceCaller.getConversationNumber(), issueId, from, to, subject, text, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.sendIssueReplyEmail(conversationNumber, issueId, from, to, subject, text, callback);
     }
 
     @Override
     public String toString() {
-        return "SendIssueReplyEmail";
+        return "sendIssueReplyEmail";
     }
 
 }
-

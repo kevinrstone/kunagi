@@ -1,19 +1,20 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package scrum.client.risks;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.HyperlinkWidget;
@@ -21,7 +22,6 @@ import ilarkesto.gwt.client.editor.AFieldModel;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.Auth;
@@ -40,12 +40,14 @@ public class Risk extends GRisk implements Comparable<Risk>, ReferenceSupport, L
 	public static final List<Integer> IMPACTS = Gwt.toList(20, 40, 60, 80, 100);
 	public static final List<Integer> PROBABILITIES = Gwt.toList(20, 40, 60, 80, 100);
 
-	public Risk(Project project) {
-		setProject(project);
-	}
+	public static Risk post(Project project) {
+		Args.assertNotNull(project, "project");
 
-	public Risk(Map data) {
-		super(data);
+		Risk risk = new Risk();
+		risk.setProject(project);
+
+		risk.persist();
+		return risk;
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class Risk extends GRisk implements Comparable<Risk>, ReferenceSupport, L
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReference() + " " + getLabel();
 	}
 

@@ -14,7 +14,7 @@
  */
 package scrum.server.collaboration;
 
-import ilarkesto.fp.Predicate;
+import ilarkesto.core.fp.Predicate;
 import scrum.server.project.Project;
 
 public class SubjectDao extends GSubjectDao {
@@ -33,7 +33,7 @@ public class SubjectDao extends GSubjectDao {
 		Subject subject = newEntityInstance();
 		subject.setProject(project);
 		subject.setLabel(label);
-		saveEntity(subject);
+		persist(subject);
 		return subject;
 	}
 

@@ -16,26 +16,25 @@ package scrum.client.collaboration;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.gwt.client.AGwtEntity;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.admin.User;
 import scrum.client.project.Project;
 
 public class Comment extends GComment {
 
-	public Comment(AGwtEntity parent, User author, String text) {
-		setParent(parent);
-		setAuthor(author);
-		setAuthorName(author.getName());
-		setText(text);
-		setDateAndTime(DateAndTime.now());
-	}
+	public static Comment post(AScrumGwtEntity parent, User author, String text) {
+		Comment comment = new Comment();
 
-	public Comment(Map data) {
-		super(data);
+		comment.setParent(parent);
+		comment.setAuthor(author);
+		comment.setAuthorName(author.getName());
+		comment.setText(text);
+		comment.setDateAndTime(DateAndTime.now());
+
+		comment.persist();
+		return comment;
 	}
 
 	@Override

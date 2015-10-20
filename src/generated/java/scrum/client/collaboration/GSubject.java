@@ -1,6 +1,6 @@
 // ----------> GENERATED FILE - DON'T TOUCH! <----------
 
-// generator: ilarkesto.mda.legacy.generator.GwtEntityGenerator
+// generator: scrum.mda.KunagiModelApplication$1
 
 
 
@@ -14,77 +14,351 @@
 package scrum.client.collaboration;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
-import scrum.client.common.*;
-import ilarkesto.gwt.client.*;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.AEntity;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GSubject
-            extends scrum.client.common.AScrumGwtEntity {
+            extends scrum.client.common.AScrumGwtEntity
+            implements java.lang.Comparable<Subject> {
 
-    protected scrum.client.Dao getDao() {
-        return scrum.client.Dao.get();
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Subject.class);
+
+    private static transient ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Subject> projectBackReferencesCache = new ilarkesto.core.persistance.AEntitySetBackReferenceHelper<Subject>() {
+    @Override
+        protected Set<Subject> loadById(final String id) {
+        return new ASubjectQuery() {
+            @Override
+            public boolean test(Subject entity) {
+                return id.equals(entity.getProjectId());
+            }
+            @Override
+            public String toString() {
+                return "Subject:byProject";
+            }
+        }.list();
+        }
+    };
+
+    public static Set< Subject> listByProject(final scrum.client.project.Project project) {
+        if (project == null) return new HashSet<Subject>();
+        return projectBackReferencesCache.getById(project.getId());
     }
 
-    public GSubject() {
+    public static Set< Subject> listByLabel(final java.lang.String label) {
+        return new ASubjectQuery() {
+            @Override
+            public boolean test(Subject entity) {
+                return entity.isLabel(label);
+            }
+            @Override
+            public String toString() {
+                return "Subject:byLabel";
+            }
+        }.list();
     }
 
-    public GSubject(Map data) {
-        super(data);
-        updateProperties(data);
+    public static Set< Subject> listByText(final java.lang.String text) {
+        return new ASubjectQuery() {
+            @Override
+            public boolean test(Subject entity) {
+                return entity.isText(text);
+            }
+            @Override
+            public String toString() {
+                return "Subject:byText";
+            }
+        }.list();
     }
 
-    public static final String ENTITY_TYPE = "subject";
+    public static Set< Subject> listByNumber(final int number) {
+        return new ASubjectQuery() {
+            @Override
+            public boolean test(Subject entity) {
+                return entity.isNumber(number);
+            }
+            @Override
+            public String toString() {
+                return "Subject:byNumber";
+            }
+        }.list();
+    }
 
     @Override
-    public final String getEntityType() {
-        return ENTITY_TYPE;
+    protected void onAfterPersist() {
+        super.onAfterPersist();
+        projectBackReferencesCache.clear(getProjectId());
     }
 
-    // --- project ---
+    public abstract static class ASubjectQuery extends ilarkesto.core.persistance.AEntityQuery<Subject> {
+    @Override
+        public Class<Subject> getType() {
+            return Subject.class;
+        }
+    }
+
+    public static Set<Subject> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Subject.class).list();
+    }
+
+    public static Subject getById(String id) {
+        return (Subject) AEntity.getById(id);
+    }
+
+    @Override
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getProject()); } catch(EntityDoesNotExistException ex) {}
+        return ret;
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+        properties.put("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+        properties.put("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+        properties.put("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    @Override
+    public int compareTo(Subject other) {
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
+    }
+
+    private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GSubject.class);
+
+    public static final String TYPE = "Subject";
+
+
+    // -----------------------------------------------------------
+    // - Searchable
+    // -----------------------------------------------------------
+
+    @Override
+    public boolean matches(ilarkesto.core.search.SearchText search) {
+         return search.matches(getLabel(), getText());
+    }
+
+    // -----------------------------------------------------------
+    // - project
+    // -----------------------------------------------------------
 
     private String projectId;
 
+    public final String getProjectId() {
+        return this.projectId;
+    }
+
     public final scrum.client.project.Project getProject() {
-        if (projectId == null) return null;
-        return getDao().getProject(this.projectId);
+        try {
+            return this.projectId == null ? null : (scrum.client.project.Project) AEntity.getById(this.projectId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Subject.project");
+        }
+    }
+
+    public final void setProject(scrum.client.project.Project project) {
+        project = prepareProject(project);
+        if (isProject(project)) return;
+        setProjectId(project == null ? null : project.getId());
+    }
+
+    public final void setProjectId(String id) {
+        if (Utl.equals(projectId, id)) return;
+        clearProjectBackReferenceCache(id, this.projectId);
+        this.projectId = id;
+            updateLastModified();
+            fireModified("projectId", ilarkesto.core.persistance.Persistence.propertyAsString(this.projectId));
+    }
+
+    private void clearProjectBackReferenceCache(String oldId, String newId) {
+        projectBackReferencesCache.clear(oldId);
+        projectBackReferencesCache.clear(newId);
+    }
+
+    private final void updateProjectId(String id) {
+        setProjectId(id);
+    }
+
+    protected scrum.client.project.Project prepareProject(scrum.client.project.Project project) {
+        return project;
+    }
+
+    protected void repairDeadProjectReference(String entityId) {
+        if (!isPersisted()) return;
+        if (this.projectId == null || entityId.equals(this.projectId)) {
+            repairMissingMaster();
+        }
     }
 
     public final boolean isProjectSet() {
-        return projectId != null;
-    }
-
-    public final Subject setProject(scrum.client.project.Project project) {
-        String id = project == null ? null : project.getId();
-        if (equals(this.projectId, id)) return (Subject) this;
-        this.projectId = id;
-        propertyChanged("projectId", this.projectId);
-        return (Subject)this;
+        return this.projectId != null;
     }
 
     public final boolean isProject(scrum.client.project.Project project) {
-        String id = project==null ? null : project.getId();
-        return equals(this.projectId, id);
+        if (this.projectId == null && project == null) return true;
+        return project != null && project.getId().equals(this.projectId);
     }
 
-    // --- label ---
 
-    private java.lang.String label ;
+    // -----------------------------------------------------------
+    // - label
+    // -----------------------------------------------------------
+
+    private java.lang.String label;
 
     public final java.lang.String getLabel() {
-        return this.label ;
+        return label;
     }
 
-    public final Subject setLabel(java.lang.String label) {
-        if (isLabel(label)) return (Subject)this;
-        if (ilarkesto.core.base.Str.isBlank(label)) throw new RuntimeException("Field is mandatory.");
-        this.label = label ;
-        propertyChanged("label", this.label);
-        return (Subject)this;
+    public final void setLabel(java.lang.String label) {
+        label = prepareLabel(label);
+        if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    private final void updateLabel(java.lang.String label) {
+        if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    protected java.lang.String prepareLabel(java.lang.String label) {
+        // label = Str.removeUnreadableChars(label);
+        return label;
+    }
+
+    public final boolean isLabelSet() {
+        return this.label != null;
     }
 
     public final boolean isLabel(java.lang.String label) {
-        return equals(this.label, label);
+        if (this.label == null && label == null) return true;
+        return this.label != null && this.label.equals(label);
     }
+
+    protected final void updateLabel(Object value) {
+        setLabel((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - text
+    // -----------------------------------------------------------
+
+    private java.lang.String text;
+
+    public final java.lang.String getText() {
+        return text;
+    }
+
+    public final void setText(java.lang.String text) {
+        text = prepareText(text);
+        if (isText(text)) return;
+        this.text = text;
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+    }
+
+    private final void updateText(java.lang.String text) {
+        if (isText(text)) return;
+        this.text = text;
+            updateLastModified();
+            fireModified("text", ilarkesto.core.persistance.Persistence.propertyAsString(this.text));
+    }
+
+    protected java.lang.String prepareText(java.lang.String text) {
+        // text = Str.removeUnreadableChars(text);
+        return text;
+    }
+
+    public final boolean isTextSet() {
+        return this.text != null;
+    }
+
+    public final boolean isText(java.lang.String text) {
+        if (this.text == null && text == null) return true;
+        return this.text != null && this.text.equals(text);
+    }
+
+    protected final void updateText(Object value) {
+        setText((java.lang.String)value);
+    }
+
+    // -----------------------------------------------------------
+    // - number
+    // -----------------------------------------------------------
+
+    private int number;
+
+    public final int getNumber() {
+        return number;
+    }
+
+    public final void setNumber(int number) {
+        number = prepareNumber(number);
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    private final void updateNumber(int number) {
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    protected int prepareNumber(int number) {
+        return number;
+    }
+
+    public final boolean isNumber(int number) {
+        return this.number == number;
+    }
+
+    protected final void updateNumber(Object value) {
+        setNumber((Integer)value);
+    }
+
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
+            if (property.equals("id")) continue;
+            String value = entry.getValue();
+            if (property.equals("projectId")) updateProjectId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("label")) updateLabel(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("text")) updateText(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("number")) updateNumber(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+        }
+    }
+
+    // --- ensure integrity ---
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
+        if (!isProjectSet()) {
+            repairMissingMaster();
+        }
+        try {
+            getProject();
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            LOG.info("Repairing dead project reference");
+            repairDeadProjectReference(this.projectId);
+        }
+    }
+
+    // --- PLUGIN: GwtEntityPropertyEditorClassGeneratorPlugin ---
 
     private transient LabelModel labelModel;
 
@@ -126,25 +400,6 @@ public abstract class GSubject
 
     }
 
-    // --- text ---
-
-    private java.lang.String text ;
-
-    public final java.lang.String getText() {
-        return this.text ;
-    }
-
-    public final Subject setText(java.lang.String text) {
-        if (isText(text)) return (Subject)this;
-        this.text = text ;
-        propertyChanged("text", this.text);
-        return (Subject)this;
-    }
-
-    public final boolean isText(java.lang.String text) {
-        return equals(this.text, text);
-    }
-
     private transient TextModel textModel;
 
     public TextModel getTextModel() {
@@ -182,25 +437,6 @@ public abstract class GSubject
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- number ---
-
-    private int number ;
-
-    public final int getNumber() {
-        return this.number ;
-    }
-
-    public final Subject setNumber(int number) {
-        if (isNumber(number)) return (Subject)this;
-        this.number = number ;
-        propertyChanged("number", this.number);
-        return (Subject)this;
-    }
-
-    public final boolean isNumber(int number) {
-        return equals(this.number, number);
     }
 
     private transient NumberModel numberModel;
@@ -249,33 +485,6 @@ public abstract class GSubject
             addUndo(this, oldValue);
         }
 
-    }
-
-    // --- update properties by map ---
-
-    public void updateProperties(Map props) {
-        projectId = (String) props.get("projectId");
-        label  = (java.lang.String) props.get("label");
-        text  = (java.lang.String) props.get("text");
-        number  = (Integer) props.get("number");
-        updateLocalModificationTime();
-    }
-
-    @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("projectId", this.projectId);
-        properties.put("label", this.label);
-        properties.put("text", this.text);
-        properties.put("number", this.number);
-    }
-
-    @Override
-    public boolean matchesKey(String key) {
-        if (super.matchesKey(key)) return true;
-        if (matchesKey(getLabel(), key)) return true;
-        if (matchesKey(getText(), key)) return true;
-        return false;
     }
 
 }

@@ -69,9 +69,11 @@ execute('git clone ' + githubUser + '/ilarkesto.git ' + workDir + '/ilarkesto')
 execute('git checkout kunagi-' + branchName, workDir + '/ilarkesto')
 
 
-#update libs
-print '  Updating libs'
-execute('./update-libs.bsh', workDir + '/ilarkesto')
+#download dependencies
+print '  Downloading dependencies'
+mkdir(wirkDir + '/ilarkesto/lib')
+execute('./download-dependencies.bsh', workDir + '/ilarkesto')
+
 
 
 # write build.properties file

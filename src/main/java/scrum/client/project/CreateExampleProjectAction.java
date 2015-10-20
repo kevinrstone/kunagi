@@ -16,8 +16,9 @@ package scrum.client.project;
 
 import ilarkesto.core.scope.Scope;
 
-import java.util.List;
+import java.util.Set;
 
+import scrum.client.admin.SystemConfig;
 import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.Ui;
 import scrum.client.workspace.UsersWorkspaceWidgets;
@@ -32,34 +33,33 @@ public class CreateExampleProjectAction extends GCreateExampleProjectAction {
 	@Override
 	protected void updateTooltip(TooltipBuilder tb) {
 		tb.setText("Create a new example Project with some content.");
-		if (!getCurrentUser().isAdmin() && getDao().getSystemConfig().isProjectCreationDisabled())
+		if (!getCurrentUser().isAdmin() && SystemConfig.get().isProjectCreationDisabled())
 			tb.addRemark("Creating new projects is disabled.");
 	}
 
 	@Override
 	public boolean isPermitted() {
-		if (!getCurrentUser().isAdmin() && getDao().getSystemConfig().isProjectCreationDisabled()) return false;
+		if (!getCurrentUser().isAdmin() && SystemConfig.get().isProjectCreationDisabled()) return false;
 		return true;
 	}
 
 	@Override
 	protected void onExecute() {
 		Scope.get().getComponent(Ui.class).lock("Creating Example Project...");
-		final List<Project> previousProjects = getDao().getProjects();
+		final Set<Project> previousProjects = Project.listAll();
 		new CreateExampleProjectServiceCall().execute(new Runnable() {
 
 			@Override
 			public void run() {
 				Scope.get().getComponent(Ui.class).unlock();
-				List<Project> newProjects = getDao().getProjects();
+				Set<Project> newProjects = Project.listAll();
 				newProjects.removeAll(previousProjects);
 				if (!newProjects.isEmpty()) {
-					Project project = newProjects.get(0);
+					Project project = newProjects.iterator().next();
 					Scope.get().getComponent(UsersWorkspaceWidgets.class).getProjectSelector().select(project);
 					getNavigator().gotoProject(project.getId());
 				}
 			}
 		});
 	}
-
 }

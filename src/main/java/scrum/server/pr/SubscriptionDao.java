@@ -8,7 +8,7 @@ public class SubscriptionDao extends GSubscriptionDao {
 		Subscription subscription = newEntityInstance();
 		subscription.setSubject(subject);
 
-		saveEntity(subscription);
+		persist(subscription);
 
 		return subscription;
 	}

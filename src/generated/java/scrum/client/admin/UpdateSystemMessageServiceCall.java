@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.admin;
 
-public class UpdateSystemMessageServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private scrum.client.admin.SystemMessage systemMessage;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class UpdateSystemMessageServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  UpdateSystemMessageServiceCall(scrum.client.admin.SystemMessage systemMessage) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    scrum.client.admin.SystemMessage systemMessage;
+
+    public UpdateSystemMessageServiceCall(scrum.client.admin.SystemMessage systemMessage) {
         this.systemMessage = systemMessage;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().updateSystemMessage(serviceCaller.getConversationNumber(), systemMessage, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.updateSystemMessage(conversationNumber, systemMessage, callback);
     }
 
     @Override
     public String toString() {
-        return "UpdateSystemMessage";
+        return "updateSystemMessage";
     }
 
 }
-

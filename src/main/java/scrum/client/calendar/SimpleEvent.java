@@ -14,13 +14,13 @@
  */
 package scrum.client.calendar;
 
+import ilarkesto.core.base.Args;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.Time;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.HyperlinkWidget;
 
 import java.util.Comparator;
-import java.util.Map;
 
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.common.LabelSupport;
@@ -34,14 +34,14 @@ public class SimpleEvent extends GSimpleEvent implements ForumSupport, Reference
 
 	public static final String REFERENCE_PREFIX = "evt";
 
-	public SimpleEvent(Project project, Date date) {
-		super();
-		setDate(date);
-		setProject(project);
-	}
+	public static SimpleEvent post(Project project, Date date) {
+		Args.assertNotNull(project, "project", date, "date");
+		SimpleEvent event = new SimpleEvent();
+		event.setDate(date);
+		event.setProject(project);
 
-	public SimpleEvent(Map data) {
-		super(data);
+		event.persist();
+		return event;
 	}
 
 	public String getTimeAsString() {
@@ -55,7 +55,7 @@ public class SimpleEvent extends GSimpleEvent implements ForumSupport, Reference
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getReference()).append(" ");
 		sb.append(getDate().toString());

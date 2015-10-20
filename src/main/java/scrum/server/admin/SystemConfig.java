@@ -56,12 +56,16 @@ public class SystemConfig extends GSystemConfig {
 	}
 
 	@Override
-	public void ensureIntegrity() {
-		super.ensureIntegrity();
-		if (!isDefaultUserPasswordSet()) setDefaultUserPassword(config.getInitialPassword());
+	public void onEnsureIntegrity() {
+		super.onEnsureIntegrity();
+		updateDefaultPasswordIfBlank();
 		if (!isMaxFileSizeSet()) setMaxFileSize(20);
 		if (!isSubscriptionKeySeedSet()) setSubscriptionKeySeed(Str.generatePassword(32));
 		if (!isSmtpServerSet()) updateSmtp();
+	}
+
+	void updateDefaultPasswordIfBlank() {
+		if (!isDefaultUserPasswordSet()) setDefaultUserPassword(config.getInitialPassword());
 	}
 
 	private void updateSmtp() {

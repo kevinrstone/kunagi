@@ -14,8 +14,8 @@
  */
 package scrum.server.files;
 
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.time.DateAndTime;
-import ilarkesto.fp.Predicate;
 import scrum.server.project.Project;
 
 public class FileDao extends GFileDao {
@@ -45,7 +45,7 @@ public class FileDao extends GFileDao {
 		file.setLabel(createLabel(f));
 		file.setUploadTime(DateAndTime.now());
 		file.updateNumber();
-		saveEntity(file);
+		persist(file);
 		return file;
 	}
 

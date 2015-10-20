@@ -14,8 +14,8 @@
  */
 package scrum.server.impediments;
 
+import ilarkesto.core.fp.Predicate;
 import ilarkesto.core.time.Date;
-import ilarkesto.fp.Predicate;
 import scrum.server.project.Project;
 
 public class ImpedimentDao extends GImpedimentDao {
@@ -45,7 +45,7 @@ public class ImpedimentDao extends GImpedimentDao {
 		im.setDate(dateCreated);
 		im.setLabel(label);
 		im.setClosed(closed);
-		saveEntity(im);
+		persist(im);
 		return im;
 	}
 }

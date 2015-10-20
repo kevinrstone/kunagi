@@ -1,24 +1,44 @@
-// // ----------> GENERATED FILE - DON'T TOUCH! <----------
+// ----------> GENERATED FILE - DON'T TOUCH! <----------
+
+// generator: ilarkesto.mda.legacy.generator.GwtServiceCallGenerator
+
+
+
+
+
+
+
+
+
 
 package scrum.client.sprint;
 
-public class RequestHistorySprintServiceCall extends scrum.client.core.AServiceCall {
+import java.util.*;
 
-    private String sprintId;
+@com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
+public class RequestHistorySprintServiceCall
+            extends ilarkesto.gwt.client.AServiceCall<scrum.client.DataTransferObject> {
 
-    public  RequestHistorySprintServiceCall(String sprintId) {
+    private static scrum.client.ScrumServiceAsync service;
+
+    java.lang.String sprintId;
+
+    public RequestHistorySprintServiceCall(java.lang.String sprintId) {
         this.sprintId = sprintId;
     }
 
-    public void execute(Runnable returnHandler) {
-        serviceCaller.onServiceCall(this);
-        serviceCaller.getService().requestHistorySprint(serviceCaller.getConversationNumber(), sprintId, new DefaultCallback(this, returnHandler));
+    @Override
+    protected synchronized void onExecute(int conversationNumber, com.google.gwt.user.client.rpc.AsyncCallback<scrum.client.DataTransferObject> callback) {
+        if (service==null) {
+            service = (scrum.client.ScrumServiceAsync) com.google.gwt.core.client.GWT.create(scrum.client.ScrumService.class);
+            initializeService(service, "scrum");
+        }
+        service.requestHistorySprint(conversationNumber, sprintId, callback);
     }
 
     @Override
     public String toString() {
-        return "RequestHistorySprint";
+        return "requestHistorySprint";
     }
 
 }
-

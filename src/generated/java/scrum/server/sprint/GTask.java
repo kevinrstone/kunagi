@@ -14,17 +14,19 @@
 package scrum.server.sprint;
 
 import java.util.*;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.ADatob;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.AStructure;
-import ilarkesto.auth.AUser;
-import ilarkesto.persistence.EntityDoesNotExistException;
-import ilarkesto.base.Str;
+import ilarkesto.auth.AuthUser;
+import ilarkesto.core.base.Str;
+import ilarkesto.core.persistance.EntityDoesNotExistException;
 
 public abstract class GTask
-            extends AEntity
-            implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, ilarkesto.search.Searchable, java.lang.Comparable<Task> {
+            extends ilarkesto.persistence.AEntity
+            implements ilarkesto.auth.ViewProtected<scrum.server.admin.User>, java.lang.Comparable<Task>, ilarkesto.core.search.Searchable {
+
+    protected static final ilarkesto.core.logging.Log log = ilarkesto.core.logging.Log.get(Task.class);
 
     // --- AEntity ---
 
@@ -35,42 +37,76 @@ public abstract class GTask
     protected void repairDeadDatob(ADatob datob) {
     }
 
+    public abstract static class ATaskQuery extends ilarkesto.core.persistance.AEntityQuery<Task> {
     @Override
-    public void storeProperties(Map properties) {
-        super.storeProperties(properties);
-        properties.put("requirementId", this.requirementId);
-        properties.put("number", this.number);
-        properties.put("label", this.label);
-        properties.put("description", this.description);
-        properties.put("remainingWork", this.remainingWork);
-        properties.put("burnedWork", this.burnedWork);
-        properties.put("ownerId", this.ownerId);
-        properties.put("impedimentId", this.impedimentId);
-        properties.put("closedInPastSprintId", this.closedInPastSprintId);
+        public Class<Task> getType() {
+            return Task.class;
+        }
     }
 
+    public static Set<Task> listAll() {
+        return new ilarkesto.core.persistance.AllByTypeQuery(Task.class).list();
+    }
+
+    public static Task getById(String id) {
+        return (Task) AEntity.getById(id);
+    }
+
+    @Override
+    public Set<ilarkesto.core.persistance.Entity> getReferencedEntities() {
+        Set<ilarkesto.core.persistance.Entity> ret = super.getReferencedEntities();
+    // --- references ---
+        try { Utl.addIfNotNull(ret, getRequirement()); } catch(EntityDoesNotExistException ex) {}
+        try { Utl.addIfNotNull(ret, getOwner()); } catch(EntityDoesNotExistException ex) {}
+        if (impedimentsIds!=null) for (String id : impedimentsIds) {
+            try { ret.add(AEntity.getById(id)); } catch(EntityDoesNotExistException ex) {}
+        }
+        try { Utl.addIfNotNull(ret, getClosedInPastSprint()); } catch(EntityDoesNotExistException ex) {}
+    // --- back references ---
+        ret.addAll(getSprintReports());
+        ret.addAll(getSprintReportWithOpenTaskss());
+        return ret;
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        super.storeProperties(properties);
+        properties.put("requirementId", ilarkesto.core.persistance.Persistence.propertyAsString(this.requirementId));
+        properties.put("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+        properties.put("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+        properties.put("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
+        properties.put("remainingWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.remainingWork));
+        properties.put("burnedWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.burnedWork));
+        properties.put("ownerId", ilarkesto.core.persistance.Persistence.propertyAsString(this.ownerId));
+        properties.put("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        properties.put("closedInPastSprintId", ilarkesto.core.persistance.Persistence.propertyAsString(this.closedInPastSprintId));
+    }
+
+    @Override
     public int compareTo(Task other) {
-        return toString().toLowerCase().compareTo(other.toString().toLowerCase());
+        return ilarkesto.core.localization.GermanComparator.INSTANCE.compare(toString(), other.toString());
     }
 
     public final java.util.Set<scrum.server.sprint.SprintReport> getSprintReports() {
         return sprintReportDao.getSprintReportsByClosedTask((Task)this);
     }
 
+    public final java.util.Set<scrum.server.sprint.SprintReport> getSprintReportWithOpenTaskss() {
+        return sprintReportDao.getSprintReportsByOpenTask((Task)this);
+    }
+
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GTask.class);
 
-    public static final String TYPE = "task";
+    public static final String TYPE = "Task";
 
 
     // -----------------------------------------------------------
     // - Searchable
     // -----------------------------------------------------------
 
-    public boolean matchesKey(String key) {
-        if (super.matchesKey(key)) return true;
-        if (matchesKey(getLabel(), key)) return true;
-        if (matchesKey(getDescription(), key)) return true;
-        return false;
+    @Override
+    public boolean matches(ilarkesto.core.search.SearchText search) {
+         return search.matches(getLabel(), getDescription());
     }
 
     // -----------------------------------------------------------
@@ -78,28 +114,34 @@ public abstract class GTask
     // -----------------------------------------------------------
 
     private String requirementId;
-    private transient scrum.server.project.Requirement requirementCache;
-
-    private void updateRequirementCache() {
-        requirementCache = this.requirementId == null ? null : (scrum.server.project.Requirement)requirementDao.getById(this.requirementId);
-    }
 
     public final String getRequirementId() {
         return this.requirementId;
     }
 
     public final scrum.server.project.Requirement getRequirement() {
-        if (requirementCache == null) updateRequirementCache();
-        return requirementCache;
+        try {
+            return this.requirementId == null ? null : (scrum.server.project.Requirement) AEntity.getById(this.requirementId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Task.requirement");
+        }
     }
 
     public final void setRequirement(scrum.server.project.Requirement requirement) {
         requirement = prepareRequirement(requirement);
         if (isRequirement(requirement)) return;
-        this.requirementId = requirement == null ? null : requirement.getId();
-        requirementCache = requirement;
-        updateLastModified();
-        fireModified("requirement="+requirement);
+        setRequirementId(requirement == null ? null : requirement.getId());
+    }
+
+    public final void setRequirementId(String id) {
+        if (Utl.equals(requirementId, id)) return;
+        this.requirementId = id;
+            updateLastModified();
+            fireModified("requirementId", ilarkesto.core.persistance.Persistence.propertyAsString(this.requirementId));
+    }
+
+    private final void updateRequirementId(String id) {
+        setRequirementId(id);
     }
 
     protected scrum.server.project.Requirement prepareRequirement(scrum.server.project.Requirement requirement) {
@@ -107,6 +149,7 @@ public abstract class GTask
     }
 
     protected void repairDeadRequirementReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.requirementId == null || entityId.equals(this.requirementId)) {
             repairMissingMaster();
         }
@@ -139,8 +182,15 @@ public abstract class GTask
         number = prepareNumber(number);
         if (isNumber(number)) return;
         this.number = number;
-        updateLastModified();
-        fireModified("number="+number);
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
+    }
+
+    private final void updateNumber(int number) {
+        if (isNumber(number)) return;
+        this.number = number;
+            updateLastModified();
+            fireModified("number", ilarkesto.core.persistance.Persistence.propertyAsString(this.number));
     }
 
     protected int prepareNumber(int number) {
@@ -168,9 +218,18 @@ public abstract class GTask
     public final void setLabel(java.lang.String label) {
         label = prepareLabel(label);
         if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
         this.label = label;
-        updateLastModified();
-        fireModified("label="+label);
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
+    }
+
+    private final void updateLabel(java.lang.String label) {
+        if (isLabel(label)) return;
+        if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
+        this.label = label;
+            updateLastModified();
+            fireModified("label", ilarkesto.core.persistance.Persistence.propertyAsString(this.label));
     }
 
     protected java.lang.String prepareLabel(java.lang.String label) {
@@ -205,8 +264,15 @@ public abstract class GTask
         description = prepareDescription(description);
         if (isDescription(description)) return;
         this.description = description;
-        updateLastModified();
-        fireModified("description="+description);
+            updateLastModified();
+            fireModified("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
+    }
+
+    private final void updateDescription(java.lang.String description) {
+        if (isDescription(description)) return;
+        this.description = description;
+            updateLastModified();
+            fireModified("description", ilarkesto.core.persistance.Persistence.propertyAsString(this.description));
     }
 
     protected java.lang.String prepareDescription(java.lang.String description) {
@@ -241,8 +307,15 @@ public abstract class GTask
         remainingWork = prepareRemainingWork(remainingWork);
         if (isRemainingWork(remainingWork)) return;
         this.remainingWork = remainingWork;
-        updateLastModified();
-        fireModified("remainingWork="+remainingWork);
+            updateLastModified();
+            fireModified("remainingWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.remainingWork));
+    }
+
+    private final void updateRemainingWork(int remainingWork) {
+        if (isRemainingWork(remainingWork)) return;
+        this.remainingWork = remainingWork;
+            updateLastModified();
+            fireModified("remainingWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.remainingWork));
     }
 
     protected int prepareRemainingWork(int remainingWork) {
@@ -271,8 +344,15 @@ public abstract class GTask
         burnedWork = prepareBurnedWork(burnedWork);
         if (isBurnedWork(burnedWork)) return;
         this.burnedWork = burnedWork;
-        updateLastModified();
-        fireModified("burnedWork="+burnedWork);
+            updateLastModified();
+            fireModified("burnedWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.burnedWork));
+    }
+
+    private final void updateBurnedWork(int burnedWork) {
+        if (isBurnedWork(burnedWork)) return;
+        this.burnedWork = burnedWork;
+            updateLastModified();
+            fireModified("burnedWork", ilarkesto.core.persistance.Persistence.propertyAsString(this.burnedWork));
     }
 
     protected int prepareBurnedWork(int burnedWork) {
@@ -292,28 +372,34 @@ public abstract class GTask
     // -----------------------------------------------------------
 
     private String ownerId;
-    private transient scrum.server.admin.User ownerCache;
-
-    private void updateOwnerCache() {
-        ownerCache = this.ownerId == null ? null : (scrum.server.admin.User)userDao.getById(this.ownerId);
-    }
 
     public final String getOwnerId() {
         return this.ownerId;
     }
 
     public final scrum.server.admin.User getOwner() {
-        if (ownerCache == null) updateOwnerCache();
-        return ownerCache;
+        try {
+            return this.ownerId == null ? null : (scrum.server.admin.User) AEntity.getById(this.ownerId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Task.owner");
+        }
     }
 
     public final void setOwner(scrum.server.admin.User owner) {
         owner = prepareOwner(owner);
         if (isOwner(owner)) return;
-        this.ownerId = owner == null ? null : owner.getId();
-        ownerCache = owner;
-        updateLastModified();
-        fireModified("owner="+owner);
+        setOwnerId(owner == null ? null : owner.getId());
+    }
+
+    public final void setOwnerId(String id) {
+        if (Utl.equals(ownerId, id)) return;
+        this.ownerId = id;
+            updateLastModified();
+            fireModified("ownerId", ilarkesto.core.persistance.Persistence.propertyAsString(this.ownerId));
+    }
+
+    private final void updateOwnerId(String id) {
+        setOwnerId(id);
     }
 
     protected scrum.server.admin.User prepareOwner(scrum.server.admin.User owner) {
@@ -321,6 +407,7 @@ public abstract class GTask
     }
 
     protected void repairDeadOwnerReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.ownerId == null || entityId.equals(this.ownerId)) {
             setOwner(null);
         }
@@ -340,55 +427,128 @@ public abstract class GTask
     }
 
     // -----------------------------------------------------------
-    // - impediment
+    // - impediments
     // -----------------------------------------------------------
 
-    private String impedimentId;
-    private transient scrum.server.impediments.Impediment impedimentCache;
+    private java.util.Set<String> impedimentsIds = new java.util.HashSet<String>();
 
-    private void updateImpedimentCache() {
-        impedimentCache = this.impedimentId == null ? null : (scrum.server.impediments.Impediment)impedimentDao.getById(this.impedimentId);
+    public final Collection<String> getImpedimentsIds() {
+        return java.util.Collections .unmodifiableCollection(this.impedimentsIds);
     }
 
-    public final String getImpedimentId() {
-        return this.impedimentId;
-    }
-
-    public final scrum.server.impediments.Impediment getImpediment() {
-        if (impedimentCache == null) updateImpedimentCache();
-        return impedimentCache;
-    }
-
-    public final void setImpediment(scrum.server.impediments.Impediment impediment) {
-        impediment = prepareImpediment(impediment);
-        if (isImpediment(impediment)) return;
-        this.impedimentId = impediment == null ? null : impediment.getId();
-        impedimentCache = impediment;
-        updateLastModified();
-        fireModified("impediment="+impediment);
-    }
-
-    protected scrum.server.impediments.Impediment prepareImpediment(scrum.server.impediments.Impediment impediment) {
-        return impediment;
-    }
-
-    protected void repairDeadImpedimentReference(String entityId) {
-        if (this.impedimentId == null || entityId.equals(this.impedimentId)) {
-            setImpediment(null);
+    public final java.util.Set<scrum.server.impediments.Impediment> getImpediments() {
+        try {
+            return (java.util.Set) AEntity.getByIdsAsSet(this.impedimentsIds);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Task.impediments");
         }
     }
 
-    public final boolean isImpedimentSet() {
-        return this.impedimentId != null;
+    public final void setImpediments(Collection<scrum.server.impediments.Impediment> impediments) {
+        impediments = prepareImpediments(impediments);
+        if (impediments == null) impediments = Collections.emptyList();
+        java.util.Set<String> ids = getIdsAsSet(impediments);
+        setImpedimentsIds(ids);
     }
 
-    public final boolean isImpediment(scrum.server.impediments.Impediment impediment) {
-        if (this.impedimentId == null && impediment == null) return true;
-        return impediment != null && impediment.getId().equals(this.impedimentId);
+    public final void setImpedimentsIds(java.util.Set<String> ids) {
+        if (Utl.equals(impedimentsIds, ids)) return;
+        impedimentsIds = ids;
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
     }
 
-    protected final void updateImpediment(Object value) {
-        setImpediment(value == null ? null : (scrum.server.impediments.Impediment)impedimentDao.getById((String)value));
+    private final void updateImpedimentsIds(java.util.Set<String> ids) {
+        setImpedimentsIds(ids);
+    }
+
+    protected Collection<scrum.server.impediments.Impediment> prepareImpediments(Collection<scrum.server.impediments.Impediment> impediments) {
+        return impediments;
+    }
+
+    protected void repairDeadImpedimentReference(String entityId) {
+        if (!isPersisted()) return;
+        if (this.impedimentsIds == null ) return;
+        if (this.impedimentsIds.remove(entityId)) {
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        }
+    }
+
+    public final boolean containsImpediment(scrum.server.impediments.Impediment impediment) {
+        if (impediment == null) return false;
+        if (this.impedimentsIds == null) return false;
+        return this.impedimentsIds.contains(impediment.getId());
+    }
+
+    public final int getImpedimentsCount() {
+        if (this.impedimentsIds == null) return 0;
+        return this.impedimentsIds.size();
+    }
+
+    public final boolean isImpedimentsEmpty() {
+        if (this.impedimentsIds == null) return true;
+        return this.impedimentsIds.isEmpty();
+    }
+
+    public final boolean addImpediment(scrum.server.impediments.Impediment impediment) {
+        if (impediment == null) throw new IllegalArgumentException("impediment == null");
+        if (this.impedimentsIds == null) this.impedimentsIds = new java.util.HashSet<String>();
+        boolean added = this.impedimentsIds.add(impediment.getId());
+        if (added) {
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        }
+        return added;
+    }
+
+    public final boolean addImpediments(Collection<scrum.server.impediments.Impediment> impediments) {
+        if (impediments == null) throw new IllegalArgumentException("impediments == null");
+        if (this.impedimentsIds == null) this.impedimentsIds = new java.util.HashSet<String>();
+        boolean added = false;
+        for (scrum.server.impediments.Impediment impediment : impediments) {
+            added = added | this.impedimentsIds.add(impediment.getId());
+        }
+        if (added) {
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        }
+        return added;
+    }
+
+    public final boolean removeImpediment(scrum.server.impediments.Impediment impediment) {
+        if (impediment == null) return false;
+        if (this.impedimentsIds == null) return false;
+        boolean removed = this.impedimentsIds.remove(impediment.getId());
+        if (removed) {
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        }
+        return removed;
+    }
+
+    public final boolean removeImpediments(Collection<scrum.server.impediments.Impediment> impediments) {
+        if (impediments == null) return false;
+        if (impediments.isEmpty()) return false;
+        if (this.impedimentsIds == null) return false;
+        boolean removed = false;
+        for (scrum.server.impediments.Impediment _element: impediments) {
+            removed = removed | this.impedimentsIds.remove(_element);
+        }
+        if (removed) {
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        }
+        return removed;
+    }
+
+    public final boolean clearImpediments() {
+        if (this.impedimentsIds == null) return false;
+        if (this.impedimentsIds.isEmpty()) return false;
+        this.impedimentsIds.clear();
+            updateLastModified();
+            fireModified("impedimentsIds", ilarkesto.core.persistance.Persistence.propertyAsString(this.impedimentsIds));
+        return true;
     }
 
     // -----------------------------------------------------------
@@ -396,28 +556,34 @@ public abstract class GTask
     // -----------------------------------------------------------
 
     private String closedInPastSprintId;
-    private transient scrum.server.sprint.Sprint closedInPastSprintCache;
-
-    private void updateClosedInPastSprintCache() {
-        closedInPastSprintCache = this.closedInPastSprintId == null ? null : (scrum.server.sprint.Sprint)sprintDao.getById(this.closedInPastSprintId);
-    }
 
     public final String getClosedInPastSprintId() {
         return this.closedInPastSprintId;
     }
 
     public final scrum.server.sprint.Sprint getClosedInPastSprint() {
-        if (closedInPastSprintCache == null) updateClosedInPastSprintCache();
-        return closedInPastSprintCache;
+        try {
+            return this.closedInPastSprintId == null ? null : (scrum.server.sprint.Sprint) AEntity.getById(this.closedInPastSprintId);
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+            throw ex.setCallerInfo("Task.closedInPastSprint");
+        }
     }
 
     public final void setClosedInPastSprint(scrum.server.sprint.Sprint closedInPastSprint) {
         closedInPastSprint = prepareClosedInPastSprint(closedInPastSprint);
         if (isClosedInPastSprint(closedInPastSprint)) return;
-        this.closedInPastSprintId = closedInPastSprint == null ? null : closedInPastSprint.getId();
-        closedInPastSprintCache = closedInPastSprint;
-        updateLastModified();
-        fireModified("closedInPastSprint="+closedInPastSprint);
+        setClosedInPastSprintId(closedInPastSprint == null ? null : closedInPastSprint.getId());
+    }
+
+    public final void setClosedInPastSprintId(String id) {
+        if (Utl.equals(closedInPastSprintId, id)) return;
+        this.closedInPastSprintId = id;
+            updateLastModified();
+            fireModified("closedInPastSprintId", ilarkesto.core.persistance.Persistence.propertyAsString(this.closedInPastSprintId));
+    }
+
+    private final void updateClosedInPastSprintId(String id) {
+        setClosedInPastSprintId(id);
     }
 
     protected scrum.server.sprint.Sprint prepareClosedInPastSprint(scrum.server.sprint.Sprint closedInPastSprint) {
@@ -425,6 +591,7 @@ public abstract class GTask
     }
 
     protected void repairDeadClosedInPastSprintReference(String entityId) {
+        if (!isPersisted()) return;
         if (this.closedInPastSprintId == null || entityId.equals(this.closedInPastSprintId)) {
             setClosedInPastSprint(null);
         }
@@ -443,63 +610,71 @@ public abstract class GTask
         setClosedInPastSprint(value == null ? null : (scrum.server.sprint.Sprint)sprintDao.getById((String)value));
     }
 
-    public void updateProperties(Map<?, ?> properties) {
-        for (Map.Entry entry : properties.entrySet()) {
-            String property = (String) entry.getKey();
+    public void updateProperties(Map<String, String> properties) {
+        super.updateProperties(properties);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String property = entry.getKey();
             if (property.equals("id")) continue;
-            Object value = entry.getValue();
-            if (property.equals("requirementId")) updateRequirement(value);
-            if (property.equals("number")) updateNumber(value);
-            if (property.equals("label")) updateLabel(value);
-            if (property.equals("description")) updateDescription(value);
-            if (property.equals("remainingWork")) updateRemainingWork(value);
-            if (property.equals("burnedWork")) updateBurnedWork(value);
-            if (property.equals("ownerId")) updateOwner(value);
-            if (property.equals("impedimentId")) updateImpediment(value);
-            if (property.equals("closedInPastSprintId")) updateClosedInPastSprint(value);
+            String value = entry.getValue();
+            if (property.equals("requirementId")) updateRequirementId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("number")) updateNumber(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+            if (property.equals("label")) updateLabel(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("description")) updateDescription(ilarkesto.core.persistance.Persistence.parsePropertyString(value));
+            if (property.equals("remainingWork")) updateRemainingWork(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+            if (property.equals("burnedWork")) updateBurnedWork(ilarkesto.core.persistance.Persistence.parsePropertyint(value));
+            if (property.equals("ownerId")) updateOwnerId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
+            if (property.equals("impedimentsIds")) updateImpedimentsIds(ilarkesto.core.persistance.Persistence.parsePropertyReferenceSet(value));
+            if (property.equals("closedInPastSprintId")) updateClosedInPastSprintId(ilarkesto.core.persistance.Persistence.parsePropertyReference(value));
         }
     }
 
     protected void repairDeadReferences(String entityId) {
+        if (!isPersisted()) return;
         super.repairDeadReferences(entityId);
         repairDeadRequirementReference(entityId);
         repairDeadOwnerReference(entityId);
+        if (this.impedimentsIds == null) this.impedimentsIds = new java.util.HashSet<String>();
         repairDeadImpedimentReference(entityId);
         repairDeadClosedInPastSprintReference(entityId);
     }
 
     // --- ensure integrity ---
-
-    public void ensureIntegrity() {
-        super.ensureIntegrity();
+    @Override
+    public void onEnsureIntegrity() {
+        super.onEnsureIntegrity();
         if (!isRequirementSet()) {
             repairMissingMaster();
-            return;
         }
         try {
             getRequirement();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead requirement reference");
             repairDeadRequirementReference(this.requirementId);
         }
         try {
             getOwner();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead owner reference");
             repairDeadOwnerReference(this.ownerId);
         }
-        try {
-            getImpediment();
-        } catch (EntityDoesNotExistException ex) {
-            LOG.info("Repairing dead impediment reference");
-            repairDeadImpedimentReference(this.impedimentId);
+        if (this.impedimentsIds == null) this.impedimentsIds = new java.util.HashSet<String>();
+        Set<String> impediments = new HashSet<String>(this.impedimentsIds);
+        for (String entityId : impediments) {
+            try {
+                AEntity.getById(entityId);
+            } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
+                LOG.info("Repairing dead impediment reference");
+                repairDeadImpedimentReference(entityId);
+            }
         }
         try {
             getClosedInPastSprint();
-        } catch (EntityDoesNotExistException ex) {
+        } catch (ilarkesto.core.persistance.EntityDoesNotExistException ex) {
             LOG.info("Repairing dead closedInPastSprint reference");
             repairDeadClosedInPastSprintReference(this.closedInPastSprintId);
         }
+        Collection<scrum.server.sprint.SprintReport> sprintReport = getSprintReports();
+        Collection<scrum.server.sprint.SprintReport> sprintReportWithOpenTasks = getSprintReportWithOpenTaskss();
     }
 
 
@@ -511,6 +686,12 @@ public abstract class GTask
 
     public static final void setRequirementDao(scrum.server.project.RequirementDao requirementDao) {
         GTask.requirementDao = requirementDao;
+    }
+
+    static scrum.server.admin.UserDao userDao;
+
+    public static final void setUserDao(scrum.server.admin.UserDao userDao) {
+        GTask.userDao = userDao;
     }
 
     static scrum.server.impediments.ImpedimentDao impedimentDao;

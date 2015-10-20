@@ -50,10 +50,10 @@ public class RequirementInHistoryBlock extends ABlockWidget<Requirement> {
 		boolean completed = report.containsCompletedRequirement(requirement);
 		Image statusImage = null;
 		if (completed) {
-			statusImage = Img.bundle.reqClosed().createImage();
+			statusImage = Img.reqClosed();
 			statusImage.setTitle("Completed.");
 		} else {
-			statusImage = Img.bundle.reqRejected().createImage();
+			statusImage = Img.reqRejected();
 			statusImage.setTitle("Rejected.");
 		}
 		header.addIconWrapper().setWidget(statusImage);

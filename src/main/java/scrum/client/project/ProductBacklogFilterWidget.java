@@ -14,6 +14,7 @@
  */
 package scrum.client.project;
 
+import ilarkesto.core.search.SearchText;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.ADropdownViewEditWidget;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
@@ -29,7 +30,6 @@ import scrum.client.ScrumGwt;
 import scrum.client.admin.ProjectUserConfig;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.ThemesWidget;
-import scrum.client.search.Search;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -66,7 +66,7 @@ public class ProductBacklogFilterWidget extends AScrumWidget {
 			if (estimatedWork == null || estimatedWork > userConfig.getPblFilterEstimationTo()) return false;
 		}
 		if (userConfig.getPblFilterText() != null) {
-			if (!Search.matchesQuery(req, userConfig.getPblFilterText())) return false;
+			if (!req.matches(new SearchText(userConfig.getPblFilterText()))) return false;
 		}
 		// if (userConfig.getPblFilterDateFrom()!=null) {
 		// if (!req.getlastM)

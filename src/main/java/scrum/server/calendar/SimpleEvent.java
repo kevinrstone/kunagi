@@ -16,6 +16,7 @@ package scrum.server.calendar;
 
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.time.Date;
+
 import scrum.server.admin.User;
 import scrum.server.common.Numbered;
 
@@ -40,10 +41,10 @@ public class SimpleEvent extends GSimpleEvent implements Numbered, Comparable<Si
 	}
 
 	@Override
-	public void ensureIntegrity() {
+	public void onEnsureIntegrity() {
 		if (!isDateSet()) setDate(Date.today());
 		updateNumber();
-		super.ensureIntegrity();
+		super.onEnsureIntegrity();
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class SimpleEvent extends GSimpleEvent implements Numbered, Comparable<Si
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return getReferenceAndLabel();
 	}
 

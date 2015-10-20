@@ -1,14 +1,14 @@
 /*
  * Copyright 2011 Witoslaw Koczewsi <wi@koczewski.de>, Artjom Kochtchi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -61,6 +61,7 @@ public class TestUtil {
 		IO.copyFile(configFileOrig, configFile);
 		KunagiRootConfig config = new KunagiRootConfig(configFile, null);
 		app = new ScrumWebApplication(config);
+		app.setUnitTestMode(true);
 		app.start();
 
 	}
@@ -68,7 +69,7 @@ public class TestUtil {
 	public static User getDuke() {
 		initialize();
 		User duke = app.getUserDao().getUserByName("duke");
-		if (duke == null) duke = app.getUserDao().postUserWithDefaultPassword("duke");
+		if (duke == null) duke = app.getUserDao().postUser("duke");
 		duke.setEmail("duke@kunagi.org");
 		duke.setEmailVerified(true);
 		return duke;
@@ -78,7 +79,7 @@ public class TestUtil {
 		initialize();
 		User admin = app.getUserDao().getUserByName("admin");
 		if (admin == null) {
-			admin = app.getUserDao().postUserWithDefaultPassword("admin");
+			admin = app.getUserDao().postUser("admin");
 			admin.setAdmin(true);
 		}
 		return admin;
@@ -98,6 +99,7 @@ public class TestUtil {
 		release.setReleaseDate(releaseDate);
 		release.setReleaseNotes(releaseNotes);
 		release.setNote(note);
+		release.persist();
 		return release;
 	}
 
@@ -120,6 +122,7 @@ public class TestUtil {
 		comment.setAuthorName(author);
 		comment.setText(text);
 		comment.setPublished(published);
+		comment.persist();
 		return comment;
 	}
 
@@ -140,12 +143,14 @@ public class TestUtil {
 		task.setLabel(label);
 		task.setRemainingWork(remainingWork);
 		task.setBurnedWork(burnedWork);
+		task.persist();
 		return task;
 	}
 
 	public static User createUser(String name) {
 		User user = app.getUserDao().newEntityInstance();
 		user.setName(name);
+		user.persist();
 		return user;
 	}
 
@@ -170,6 +175,7 @@ public class TestUtil {
 		issue.setDescription(description);
 		issue.setStatement(statement);
 		issue.setPublished(published);
+		issue.persist();
 		return issue;
 	}
 
@@ -186,6 +192,7 @@ public class TestUtil {
 		wikipage.setProject(project);
 		wikipage.setName(name);
 		wikipage.setText(text);
+		wikipage.persist();
 		return wikipage;
 	}
 
@@ -201,6 +208,7 @@ public class TestUtil {
 		event.setLabel(label);
 		event.setLocation(location);
 		event.setNote(note);
+		event.persist();
 		return event;
 	}
 
@@ -216,6 +224,7 @@ public class TestUtil {
 		risk.setDescription(description);
 		risk.setImpact(number);
 		risk.setProbability(number);
+		risk.persist();
 		return risk;
 	}
 
@@ -231,6 +240,7 @@ public class TestUtil {
 		impediment.setNumber(number);
 		impediment.setLabel(label);
 		impediment.setDescription(description);
+		impediment.persist();
 		return impediment;
 	}
 
@@ -247,6 +257,7 @@ public class TestUtil {
 		entry.setTitle(title);
 		entry.setText(text);
 		entry.setDateAndTime(dateAndTime);
+		entry.persist();
 		return entry;
 	}
 
@@ -270,6 +281,7 @@ public class TestUtil {
 		requirement.setLabel(label);
 		requirement.setDescription(description);
 		requirement.setTestDescription(testDescription);
+		requirement.persist();
 		return requirement;
 	}
 
@@ -280,13 +292,14 @@ public class TestUtil {
 
 	public static Quality createQuality(Project project, int number, String label, String description,
 			String testDescription) {
-		Quality requirement = app.getQualityDao().newEntityInstance();
-		requirement.setProject(project);
-		requirement.setNumber(number);
-		requirement.setLabel(label);
-		requirement.setDescription(description);
-		requirement.setTestDescription(testDescription);
-		return requirement;
+		Quality quality = app.getQualityDao().newEntityInstance();
+		quality.setProject(project);
+		quality.setNumber(number);
+		quality.setLabel(label);
+		quality.setDescription(description);
+		quality.setTestDescription(testDescription);
+		quality.persist();
+		return quality;
 	}
 
 	public static Sprint createSprint(Project project, Date end) {
@@ -300,6 +313,7 @@ public class TestUtil {
 		sprint.setEnd(end);
 		sprint.setLabel("Sprint from " + begin + " to " + end);
 		sprint.setGoal("Sprint from " + begin + " to " + end);
+		sprint.persist();
 		return sprint;
 	}
 

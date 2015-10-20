@@ -60,10 +60,10 @@ public class ReleaseBlock extends ABlockWidget<Release> implements TrashSupport 
 		Release release = getObject();
 		Image image;
 		if (release.isBugfix()) {
-			image = Img.bundle.bugfixRelease().createImage();
+			image = Img.bugfixRelease();
 			image.setTitle("Bugfix Release");
 		} else {
-			image = Img.bundle.majorRelease().createImage();
+			image = Img.majorRelease();
 			image.setTitle("Major Release");
 		}
 		return image;

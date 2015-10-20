@@ -4,7 +4,6 @@ import ilarkesto.base.Proc;
 import ilarkesto.concurrent.ATask;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.AEntity;
-import ilarkesto.persistence.TransactionService;
 
 import java.io.File;
 
@@ -21,7 +20,6 @@ public class ReleaseTask extends ATask {
 
 	private ChatMessageDao chatMessageDao;
 	private ScrumWebApplication webApplication;
-	private TransactionService transactionService;
 
 	private User user;
 	private Release release;
@@ -29,10 +27,6 @@ public class ReleaseTask extends ATask {
 	public ReleaseTask(User user, Release release) {
 		this.user = user;
 		this.release = release;
-	}
-
-	public void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
 	}
 
 	public void setWebApplication(ScrumWebApplication webApplication) {
@@ -60,7 +54,6 @@ public class ReleaseTask extends ATask {
 			log.info("Release script failed.", ex);
 			release.setScriptOutput(ex.getOutput());
 			release.setScriptRunning(false);
-			transactionService.commit();
 			String message = "Releasing failed: " + release.getReferenceAndLabel();
 			AEntity chatMessage = chatMessageDao.postChatMessage(project, message);
 			webApplication.sendToConversationsByProject(project, chatMessage);
@@ -72,7 +65,6 @@ public class ReleaseTask extends ATask {
 		log.info("Release script successful:\n", output);
 		release.setScriptOutput(output);
 		release.markReleased(project, user, webApplication);
-		transactionService.commit();
 	}
 
 }
