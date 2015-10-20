@@ -15,7 +15,6 @@
 package scrum.client.files;
 
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.common.TooltipBuilder;
 
 public class DeleteFileAction extends GDeleteFileAction {

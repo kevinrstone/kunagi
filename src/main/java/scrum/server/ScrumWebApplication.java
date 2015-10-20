@@ -20,7 +20,6 @@ package scrum.server;
 import ilarkesto.auth.Auth;
 import ilarkesto.auth.OpenId;
 import ilarkesto.base.Sys;
-import ilarkesto.base.Tm;
 import ilarkesto.base.Utl;
 import ilarkesto.concurrent.TaskManager;
 import ilarkesto.core.base.Str;
@@ -28,6 +27,7 @@ import ilarkesto.core.logging.Log;
 import ilarkesto.core.persistance.EntitiesBackend;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.TimePeriod;
+import ilarkesto.di.app.AApplication;
 import ilarkesto.di.app.BackupApplicationDataDirTask;
 import ilarkesto.di.app.WebApplicationStarter;
 import ilarkesto.gwt.server.AGwtConversation;
@@ -257,19 +257,19 @@ public class ScrumWebApplication extends GScrumWebApplication {
 
 	@Override
 	protected void scheduleTasks(TaskManager tm) {
-		tm.scheduleWithFixedDelay(autowire(new BackupApplicationDataDirTask()), Tm.HOUR * 24 + (Tm.MINUTE));
-		tm.scheduleWithFixedDelay(autowire(new DestroyTimeoutedSessionsTask()), Tm.MINUTE);
-		tm.scheduleWithFixedDelay(autowire(new HomepageUpdaterTask()), Tm.HOUR);
-		tm.scheduleWithFixedDelay(autowire(getSubscriptionService().new Task()), Tm.MINUTE);
+		tm.scheduleWithFixedDelay(autowire(new BackupApplicationDataDirTask()), ilarkesto.core.time.Tm.HOUR * 24 + (ilarkesto.core.time.Tm.MINUTE));
+		tm.scheduleWithFixedDelay(autowire(new DestroyTimeoutedSessionsTask()), ilarkesto.core.time.Tm.MINUTE);
+		tm.scheduleWithFixedDelay(autowire(new HomepageUpdaterTask()), ilarkesto.core.time.Tm.HOUR);
+		tm.scheduleWithFixedDelay(autowire(getSubscriptionService().new Task()), ilarkesto.core.time.Tm.MINUTE);
 
 		if (getConfig().isDisableUsersWithUnverifiedEmails())
-			tm.scheduleWithFixedDelay(autowire(new DisableUsersWithUnverifiedEmailsTask()), Tm.SECOND * 10, Tm.HOUR);
+			tm.scheduleWithFixedDelay(autowire(new DisableUsersWithUnverifiedEmailsTask()), ilarkesto.core.time.Tm.SECOND * 10, ilarkesto.core.time.Tm.HOUR);
 		if (getConfig().isDisableInactiveUsers())
-			tm.scheduleWithFixedDelay(autowire(new DisableInactiveUsersTask()), Tm.SECOND * 20, Tm.HOUR);
+			tm.scheduleWithFixedDelay(autowire(new DisableInactiveUsersTask()), ilarkesto.core.time.Tm.SECOND * 20, ilarkesto.core.time.Tm.HOUR);
 		if (getConfig().isDeleteOldProjects())
-			tm.scheduleWithFixedDelay(autowire(new DeleteOldProjectsTask()), Tm.SECOND * 30, Tm.HOUR * 25);
+			tm.scheduleWithFixedDelay(autowire(new DeleteOldProjectsTask()), ilarkesto.core.time.Tm.SECOND * 30, ilarkesto.core.time.Tm.HOUR * 25);
 		if (getConfig().isDeleteDisabledUsers())
-			tm.scheduleWithFixedDelay(autowire(new DeleteDisabledUsersTask()), Tm.MINUTE * 3, Tm.HOUR * 26);
+			tm.scheduleWithFixedDelay(autowire(new DeleteDisabledUsersTask()), ilarkesto.core.time.Tm.MINUTE * 3, ilarkesto.core.time.Tm.HOUR * 26);
 	}
 
 	@Override
@@ -406,7 +406,7 @@ public class ScrumWebApplication extends GScrumWebApplication {
 	}
 
 	public static synchronized ScrumWebApplication get(ServletConfig servletConfig) {
-		if (AWebApplication.isStarted()) return get();
+		if (AApplication.isStarted()) return get();
 		return (ScrumWebApplication) WebApplicationStarter.startWebApplication(ScrumWebApplication.class.getName(),
 			servletConfig);
 	}

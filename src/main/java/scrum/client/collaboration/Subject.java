@@ -16,7 +16,6 @@ package scrum.client.collaboration;
 
 import ilarkesto.core.base.Args;
 import ilarkesto.gwt.client.TableBuilder;
-
 import scrum.client.ScrumGwt;
 import scrum.client.project.Project;
 

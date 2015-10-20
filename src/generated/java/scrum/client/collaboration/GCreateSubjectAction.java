@@ -13,7 +13,6 @@
 
 package scrum.client.collaboration;
 
-import java.util.*;
 
 public abstract class GCreateSubjectAction
             extends scrum.client.common.AScrumAction {

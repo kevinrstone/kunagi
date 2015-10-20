@@ -159,7 +159,7 @@ public class IssueWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(issue.getRelatedIssues()));
+				setViewer(Gwt.createToHtmlItemsWidget(issue.getRelatedIssues()));
 			}
 		});
 
@@ -167,7 +167,7 @@ public class IssueWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(issue.getRelatedRequirements()));
+				setViewer(Gwt.createToHtmlItemsWidget(issue.getRelatedRequirements()));
 			}
 		});
 
@@ -196,10 +196,10 @@ public class IssueWidget extends AScrumWidget {
 		TableBuilder right = ScrumGwt.createFieldTable();
 		if (issue.isOpen() && issue.getProject().isProductOwner(getCurrentUser())) {
 			right.addRow(createActionsPanelForOpenIssue(), 2);
-			right.addRow(ScrumGwt.createSpacer(1, 10), 2);
+			right.addRow(Gwt.createSpacer(1, 10), 2);
 		} else if (issue.isBug() && issue.isFixed() && issue.getProject().isProductOwner(getCurrentUser())) {
 			right.addRow(createActionsPanelForFixedIssue(), 2);
-			right.addRow(ScrumGwt.createSpacer(1, 10), 2);
+			right.addRow(Gwt.createSpacer(1, 10), 2);
 		}
 		right.addFieldRow("My emoticon", new EmoticonSelectorWidget(issue));
 		right.addRow(new CommentsWidget(issue), 2);

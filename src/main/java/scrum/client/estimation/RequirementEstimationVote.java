@@ -16,7 +16,6 @@ package scrum.client.estimation;
 
 import ilarkesto.core.base.Args;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
-
 import scrum.client.admin.User;
 import scrum.client.project.Requirement;
 

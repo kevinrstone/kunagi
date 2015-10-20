@@ -20,6 +20,7 @@ import ilarkesto.core.time.DateAndTime;
 import java.util.Comparator;
 
 import scrum.client.admin.User;
+import scrum.client.common.AScrumGwtEntity;
 import scrum.client.project.Project;
 
 public class Comment extends GComment {

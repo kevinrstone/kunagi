@@ -13,7 +13,6 @@
 
 package scrum.client.issues;
 
-import java.util.*;
 
 public abstract class GReplyToIssueAuthorAction
             extends scrum.client.common.AScrumAction {

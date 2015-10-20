@@ -1,13 +1,13 @@
 package scrum.server.sprint;
 
 import ilarkesto.base.Tm;
+import ilarkesto.core.base.Color;
 import ilarkesto.pdf.APdfContainerElement;
 import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
 import ilarkesto.pdf.FieldList;
 import ilarkesto.pdf.FontStyle;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

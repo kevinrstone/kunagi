@@ -2,7 +2,6 @@ package scrum.server.pr;
 
 import ilarkesto.auth.Auth;
 import ilarkesto.core.time.TimePeriod;
-
 import scrum.server.admin.User;
 
 public class Subscription extends GSubscription {

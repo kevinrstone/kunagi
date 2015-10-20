@@ -13,7 +13,6 @@
 
 package scrum.client.release;
 
-import java.util.*;
 
 public abstract class GReleaseReleaseAction
             extends scrum.client.common.AScrumAction {

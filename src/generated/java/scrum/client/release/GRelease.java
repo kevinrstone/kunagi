@@ -13,12 +13,18 @@
 
 package scrum.client.release;
 
-import java.util.*;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
-import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.issues.GIssue;
+import scrum.client.pr.GBlogEntry;
 
 public abstract class GRelease
             extends scrum.client.common.AScrumGwtEntity
@@ -283,19 +289,19 @@ public abstract class GRelease
     }
 
     public final Set<scrum.client.release.Release> getReleases() {
-        return scrum.client.release.Release.listByParentRelease((Release)this);
+        return GRelease.listByParentRelease((Release)this);
     }
 
     public final Set<scrum.client.issues.Issue> getAffectedIssues() {
-        return scrum.client.issues.Issue.listByAffectedRelease((Release)this);
+        return GIssue.listByAffectedRelease((Release)this);
     }
 
     public final Set<scrum.client.issues.Issue> getFixIssues() {
-        return scrum.client.issues.Issue.listByFixRelease((Release)this);
+        return GIssue.listByFixRelease((Release)this);
     }
 
     public final Set<scrum.client.pr.BlogEntry> getBlogEntrys() {
-        return scrum.client.pr.BlogEntry.listByRelease((Release)this);
+        return GBlogEntry.listByRelease((Release)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GRelease.class);

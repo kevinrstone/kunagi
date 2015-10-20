@@ -15,7 +15,6 @@
 package scrum.server.files;
 
 import ilarkesto.io.IO;
-
 import scrum.server.admin.User;
 
 public class File extends GFile {

@@ -23,7 +23,7 @@ import ilarkesto.gwt.client.ToolbarWidget;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
 import scrum.client.files.File;
 import scrum.client.files.Uploader;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.wiki.ScrumHtmlContext;
 import scrum.client.wiki.WikiModel;
 import scrum.client.wiki.WikiParser;
@@ -77,7 +77,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 		public void initialize(final RichtextEditorWidget editor) {
 			final ToolbarWidget toolbar = editor.getEditorToolbar();
 
-			toolbar.insert(createToolbarButton(Img.toc(), "Table of contents", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.toc(), "Table of contents", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -86,7 +86,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.upload(), "Upload file", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.upload(), "Upload file", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -97,7 +97,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.formatTextCode(), "Code", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.formatTextCode(), "Code", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -106,7 +106,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.image(), "Image", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.image(), "Image", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -120,7 +120,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.table(), "Table", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.table(), "Table", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -129,7 +129,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.hyperlink(), "Hyperlink", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.hyperlink(), "Hyperlink", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -143,7 +143,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.enumlist(), "Numbered list", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.enumlist(), "Numbered list", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -151,7 +151,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.itemlist(), "Bulleted list", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.itemlist(), "Bulleted list", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -160,7 +160,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.h2(), "Heading 2", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.h2(), "Heading 2", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -169,7 +169,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.h1(), "Heading 1", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.h1(), "Heading 1", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -178,7 +178,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.formatTextBold(), "Bold", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.formatTextBold(), "Bold", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -187,7 +187,7 @@ public class Wiki extends GWiki implements RichtextFormater {
 				}
 			}), 0);
 
-			toolbar.insert(createToolbarButton(Img.formatTextItalic(), "Italic", new ClickHandler() {
+			toolbar.insert(createToolbarButton(GImageBundle.formatTextItalic(), "Italic", new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {

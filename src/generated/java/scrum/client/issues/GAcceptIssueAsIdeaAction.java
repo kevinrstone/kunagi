@@ -13,7 +13,6 @@
 
 package scrum.client.issues;
 
-import java.util.*;
 
 public abstract class GAcceptIssueAsIdeaAction
             extends scrum.client.common.AScrumAction {

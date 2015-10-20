@@ -17,7 +17,6 @@ package scrum.client.core;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AViewEditWidget;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
-
 import scrum.client.admin.ProjectUserConfig;
 
 import com.google.gwt.user.client.Timer;
@@ -37,7 +36,7 @@ public class RichtextAutosaver extends GRichtextAutosaver {
 	}
 
 	public void autosave() {
-		AViewEditWidget currentEditor = RichtextEditorWidget.getCurrentEditor();
+		AViewEditWidget currentEditor = AViewEditWidget.getCurrentEditor();
 		if (currentEditor == null) return;
 
 		try {

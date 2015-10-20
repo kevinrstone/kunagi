@@ -303,7 +303,7 @@ public class TestUtil {
 	}
 
 	public static Sprint createSprint(Project project, Date end) {
-		return createSprint(project, end.beforeDays(30), end);
+		return createSprint(project, Date.beforeDays(30), end);
 	}
 
 	public static Sprint createSprint(Project project, Date begin, Date end) {

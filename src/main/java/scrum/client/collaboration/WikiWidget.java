@@ -15,7 +15,6 @@
 package scrum.client.collaboration;
 
 import ilarkesto.gwt.client.ButtonWidget;
-
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.BlockListWidget;
 import scrum.client.impediments.RequestImpedimentsServiceCall;

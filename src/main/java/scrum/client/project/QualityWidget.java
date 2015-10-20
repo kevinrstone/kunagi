@@ -15,7 +15,6 @@
 package scrum.client.project;
 
 import ilarkesto.gwt.client.TableBuilder;
-
 import scrum.client.ScrumGwt;
 import scrum.client.common.AScrumWidget;
 

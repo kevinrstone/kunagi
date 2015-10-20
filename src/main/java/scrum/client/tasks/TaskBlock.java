@@ -15,14 +15,13 @@
 package scrum.client.tasks;
 
 import ilarkesto.gwt.client.AnchorPanel;
-
 import scrum.client.collaboration.EmoticonsWidget;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.sprint.ClaimTaskAction;
 import scrum.client.sprint.CloseTaskAction;
@@ -69,13 +68,13 @@ public class TaskBlock extends ABlockWidget<Task> implements TrashSupport {
 		header.setDragHandle(task.getReference());
 		Image statusImage = null;
 		if (task.isClosed()) {
-			statusImage = Img.tskClosed();
+			statusImage = GImageBundle.tskClosed();
 			statusImage.setTitle("Closed.");
 		} else if (task.isBlocked()) {
-			statusImage = Img.tskBlocked();
+			statusImage = GImageBundle.tskBlocked();
 			statusImage.setTitle("Blocked by " + task.getBlockingImpedimentLabelsAsText() + ".");
 		} else if (task.isOwnerSet()) {
-			statusImage = Img.tskClaimed();
+			statusImage = GImageBundle.tskClaimed();
 			statusImage.setTitle("Claimed by " + task.getOwner().getName() + ".");
 		}
 		statusIcon.setWidget(statusImage);

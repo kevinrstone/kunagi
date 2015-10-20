@@ -13,7 +13,6 @@
 
 package scrum.client;
 
-import java.util.*;
 
 @com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
 public interface ScrumService

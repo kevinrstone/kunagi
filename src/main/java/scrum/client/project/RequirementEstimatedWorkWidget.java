@@ -17,7 +17,6 @@ package scrum.client.project;
 import ilarkesto.gwt.client.ADropdownViewEditWidget;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.ToolbarWidget;
-
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
 

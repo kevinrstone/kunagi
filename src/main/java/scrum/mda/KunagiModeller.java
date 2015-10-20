@@ -14,7 +14,6 @@
  */
 package scrum.mda;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.time.Date;
@@ -61,7 +60,7 @@ public class KunagiModeller extends Starter {
 		for (EntityModel entity : scrumModelApplication.getEntityModels(false)) {
 			if (!entity.isGwtSupport()) continue;
 			log.info(entity.getName());
-			String packageName = Str.removePrefix(entity.getPackageName(), "scrum.server.");
+			String packageName = ilarkesto.core.base.Str.removePrefix(entity.getPackageName(), "scrum.server.");
 			Node nPackage = nScrum.getChildOrCreate(NodeTypes.Package, packageName);
 			Node nEntity = nPackage.getChildOrCreate("Entity", entity.getName());
 			for (PropertyModel property : entity.getProperties()) {
@@ -112,7 +111,7 @@ public class KunagiModeller extends Starter {
 			List<Node> nodes = model.getRoot().getChildrenByTypeRecursive(NodeTypes.EN);
 			for (Node n : nodes) {
 				System.out.println("");
-				System.out.println("<h2>" + Str.uppercaseFirstLetter(n.getParent().getValue()) + "</h2>");
+				System.out.println("<h2>" + ilarkesto.core.base.Str.uppercaseFirstLetter(n.getParent().getValue()) + "</h2>");
 				System.out.println(n.getValue());
 			}
 

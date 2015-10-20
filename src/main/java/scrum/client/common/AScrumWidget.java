@@ -16,7 +16,6 @@ package scrum.client.common;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AWidget;
-
 import scrum.client.ScrumGwtApplication;
 import scrum.client.ScrumScopeManager;
 import scrum.client.admin.Auth;

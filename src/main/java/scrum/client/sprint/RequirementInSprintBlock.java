@@ -28,7 +28,7 @@ import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockListWidget;
 import scrum.client.common.BlockWidgetFactory;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.journal.ChangeHistoryWidget;
 import scrum.client.project.CloseRequirementAction;
@@ -88,19 +88,19 @@ public class RequirementInSprintBlock extends ABlockWidget<Requirement> {
 		header.setDragHandle(requirement.getReference());
 		Image statusImage = null;
 		if (requirement.isRejected()) {
-			statusImage = Img.reqRejected();
+			statusImage = GImageBundle.reqRejected();
 			statusImage.setTitle("Rejected.");
 		} else if (requirement.isClosed()) {
-			statusImage = Img.reqClosed();
+			statusImage = GImageBundle.reqClosed();
 			statusImage.setTitle("Accepted.");
 // from kevinrstone HEAD
 //		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
 //			statusImage = Img.bundle.reqTasksClosed().createImage();
 		} else if (requirement.isTasksClosed()) {
-			statusImage = Img.reqTasksClosed();
+			statusImage = GImageBundle.reqTasksClosed();
 			statusImage.setTitle("All tasks done.");
 		} else if (requirement.isBlocked()) {
-			statusImage = Img.tskBlocked();
+			statusImage = GImageBundle.tskBlocked();
 			statusImage.setTitle("Blocked by " + requirement.getBlockingImpedimentLabelsAsText() + ".");
 		}
 		statusIcon.setWidget(statusImage);

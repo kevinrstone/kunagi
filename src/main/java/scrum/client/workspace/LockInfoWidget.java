@@ -18,6 +18,7 @@ import scrum.client.ScrumGwt;
 import scrum.client.common.AScrumWidget;
 
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -43,7 +44,7 @@ public class LockInfoWidget extends AScrumWidget {
 		panel.add(image);
 		panel.setCellWidth(image, "36px");
 		panel.add(message);
-		panel.setCellVerticalAlignment(message, HorizontalPanel.ALIGN_MIDDLE);
+		panel.setCellVerticalAlignment(message, HasVerticalAlignment.ALIGN_MIDDLE);
 		return panel;
 	}
 

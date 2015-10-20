@@ -15,7 +15,6 @@
 package scrum.server;
 
 import ilarkesto.testng.ATest;
-
 import scrum.TestUtil;
 
 public class AKunagiTest extends ATest {

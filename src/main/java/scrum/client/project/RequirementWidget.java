@@ -137,7 +137,7 @@ public class RequirementWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(requirement.getRelatedRequirements()));
+				setViewer(Gwt.createToHtmlItemsWidget(requirement.getRelatedRequirements()));
 			}
 		});
 
@@ -145,7 +145,7 @@ public class RequirementWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(requirement.getRelatedIssues()));
+				setViewer(Gwt.createToHtmlItemsWidget(requirement.getRelatedIssues()));
 			}
 		});
 

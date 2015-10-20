@@ -1,7 +1,6 @@
 package scrum.client.project;
 
 import ilarkesto.core.scope.Scope;
-
 import scrum.client.common.TooltipBuilder;
 import scrum.client.workspace.ProjectWorkspaceWidgets;
 

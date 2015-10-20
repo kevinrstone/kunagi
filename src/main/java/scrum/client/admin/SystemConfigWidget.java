@@ -17,7 +17,6 @@ package scrum.client.admin;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.TableBuilder;
-
 import scrum.client.ScrumGwt;
 import scrum.client.common.AScrumWidget;
 import scrum.client.workspace.PagePanel;
@@ -29,7 +28,7 @@ public class SystemConfigWidget extends AScrumWidget {
 
 	@Override
 	protected Widget onInitialization() {
-		SystemConfig config = SystemConfig.get();
+		SystemConfig config = GSystemConfig.get();
 
 		PagePanel page = new PagePanel();
 

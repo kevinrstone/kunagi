@@ -20,7 +20,6 @@ import ilarkesto.core.persistance.Entity;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.server.AGwtConversation;
 import ilarkesto.persistence.AEntity;
-
 import scrum.client.DataTransferObject;
 import scrum.client.communication.Pinger;
 import scrum.server.admin.ProjectUserConfig;

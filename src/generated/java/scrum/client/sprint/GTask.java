@@ -13,12 +13,15 @@
 
 package scrum.client.sprint;
 
-import java.util.*;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
-import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class GTask
             extends scrum.client.common.AScrumGwtEntity
@@ -267,11 +270,11 @@ public abstract class GTask
     }
 
     public final Set<scrum.client.sprint.SprintReport> getSprintReports() {
-        return scrum.client.sprint.SprintReport.listByClosedTask((Task)this);
+        return GSprintReport.listByClosedTask((Task)this);
     }
 
     public final Set<scrum.client.sprint.SprintReport> getSprintReportWithOpenTaskss() {
-        return scrum.client.sprint.SprintReport.listByOpenTask((Task)this);
+        return GSprintReport.listByOpenTask((Task)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GTask.class);

@@ -15,12 +15,11 @@
 package scrum.client.tasks;
 
 import ilarkesto.gwt.client.AnchorPanel;
-
 import scrum.client.collaboration.EmoticonsWidget;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.project.CloseRequirementAction;
 import scrum.client.project.FixRequirementAction;
@@ -63,19 +62,19 @@ public class RequirementInWhiteboardBlock extends ABlockWidget<Requirement> {
 		header.setDragHandle(requirement.getReference());
 		Image statusImage = null;
 		if (requirement.isRejected()) {
-			statusImage = Img.reqRejected();
+			statusImage = GImageBundle.reqRejected();
 			statusImage.setTitle("Rejected.");
 		} else if (requirement.isClosed()) {
-			statusImage = Img.reqClosed();
+			statusImage = GImageBundle.reqClosed();
 			statusImage.setTitle("Accepted.");
 // FROM kevinrstone HEAD
 //		} else if (requirement.hasTasks() && requirement.isTasksClosed()) {
 //			statusImage = Img.bundle.reqTasksClosed().createImage();
 		} else if (requirement.isTasksClosed()) {
-			statusImage = Img.reqTasksClosed();
+			statusImage = GImageBundle.reqTasksClosed();
 			statusImage.setTitle("All tasks done.");
 		} else if (requirement.isBlocked()) {
-			statusImage = Img.tskBlocked();
+			statusImage = GImageBundle.tskBlocked();
 			statusImage.setTitle("Blocked by " + requirement.getBlockingImpedimentLabelsAsText() + ".");
 		}
 		statusIcon.setWidget(statusImage);

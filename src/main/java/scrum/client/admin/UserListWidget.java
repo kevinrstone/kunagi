@@ -15,7 +15,6 @@
 package scrum.client.admin;
 
 import ilarkesto.gwt.client.ButtonWidget;
-
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.BlockListWidget;
 import scrum.client.workspace.PagePanel;
@@ -39,7 +38,7 @@ public class UserListWidget extends AScrumWidget {
 
 	@Override
 	protected void onUpdate() {
-		list.setObjects(User.listAll());
+		list.setObjects(GUser.listAll());
 		super.onUpdate();
 	}
 

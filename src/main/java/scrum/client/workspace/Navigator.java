@@ -19,12 +19,12 @@ import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.ScrumGwt;
 import scrum.client.ScrumScopeManager;
 import scrum.client.admin.User;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.communication.TouchLastActivityServiceCall;
+import scrum.client.project.GProject;
 import scrum.client.project.Project;
 import scrum.client.project.SelectProjectServiceCall;
 import scrum.client.search.SearchInputWidget;
@@ -44,8 +44,6 @@ public class Navigator extends GNavigator {
 
 	private HistoryToken historyToken;
 	private Mode currentMode;
-	private SearchInputWidget search;
-
 	@Override
 	public void initialize() {
 		historyToken = new HistoryToken(this);
@@ -121,7 +119,7 @@ public class Navigator extends GNavigator {
 		}
 
 		if (project == null) {
-			project = Project.getById(projectId);
+			project = GProject.getById(projectId);
 			if (project == null) throw new RuntimeException("Project does not exist: " + projectId);
 			acitvateProjectMode(project, page, entityId);
 			return;
@@ -258,7 +256,6 @@ public class Navigator extends GNavigator {
 	}
 
 	public void setSearch(SearchInputWidget search) {
-		this.search = search;
 	}
 
 }

@@ -16,7 +16,6 @@ package scrum.server.collaboration;
 
 import ilarkesto.core.persistance.Transient;
 import ilarkesto.core.time.TimePeriod;
-
 import scrum.server.admin.User;
 
 public class ChatMessage extends GChatMessage implements Transient {

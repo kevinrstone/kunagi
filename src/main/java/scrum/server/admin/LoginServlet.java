@@ -18,7 +18,6 @@ import ilarkesto.auth.Auth;
 import ilarkesto.auth.AuthenticationFailedException;
 import ilarkesto.auth.OpenId;
 import ilarkesto.base.Str;
-import ilarkesto.base.Utl;
 import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
@@ -91,7 +90,7 @@ public class LoginServlet extends AKunagiServlet {
 
 	private void passwordRequest(String login, String historyToken, RequestWrapper<WebSession> req)
 			throws UnsupportedEncodingException, IOException {
-		if (login == null || Str.isBlank(login)) {
+		if (login == null || ilarkesto.core.base.Str.isBlank(login)) {
 			renderLoginPage(req, login, null, historyToken, "E-Mail required.", true, false);
 			return;
 		}
@@ -133,9 +132,9 @@ public class LoginServlet extends AKunagiServlet {
 			return;
 		}
 
-		if (Str.isBlank(username)) username = null;
-		if (Str.isBlank(email)) email = null;
-		if (Str.isBlank(password)) password = null;
+		if (ilarkesto.core.base.Str.isBlank(username)) username = null;
+		if (ilarkesto.core.base.Str.isBlank(email)) email = null;
+		if (ilarkesto.core.base.Str.isBlank(password)) password = null;
 
 		if (username == null) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Username required.", false,
@@ -153,13 +152,13 @@ public class LoginServlet extends AKunagiServlet {
 			return;
 		}
 
-		if (Str.containsNonLetterOrDigit(username)) {
+		if (ilarkesto.core.base.Str.containsNonLetterOrDigit(username)) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Name '" + username
 				+ "' contains an illegal character. Only letters and digits allowed.", false, true);
 			return;
 		}
 
-		if (email != null && !Str.isEmail(email)) {
+		if (email != null && !ilarkesto.core.base.Str.isEmail(email)) {
 			renderLoginPage(req, username, email, historyToken, "Creating account failed. Illegal email address.",
 				false, true);
 			return;
@@ -214,7 +213,7 @@ public class LoginServlet extends AKunagiServlet {
 		} catch (RuntimeException ex) {
 			log.error("OpenID authentication failed.", ex);
 			renderLoginPage(req, null, null, historyToken,
-				"OpenID authentication failed: " + Str.format(Utl.getRootCause(ex)), false, false);
+				"OpenID authentication failed: " + ilarkesto.core.base.Str.format(ilarkesto.core.base.Utl.getRootCause(ex)), false, false);
 			return;
 		}
 		String openId = OpenId.getOpenId(openIdResult);
@@ -283,7 +282,7 @@ public class LoginServlet extends AKunagiServlet {
 
 	private void redirectOpenId(String openId, boolean keepmeloggedin, String historyToken,
 			RequestWrapper<WebSession> req) throws UnsupportedEncodingException, IOException {
-		if (Str.isBlank(openId)) openId = null;
+		if (ilarkesto.core.base.Str.isBlank(openId)) openId = null;
 
 		if (openId == null) {
 			renderLoginPage(req, null, null, historyToken, "Login failed. OpenID required.", false, true);
@@ -302,7 +301,7 @@ public class LoginServlet extends AKunagiServlet {
 		} catch (RuntimeException ex) {
 			log.error("OpenID authentication failed.", ex);
 			renderLoginPage(req, null, null, historyToken,
-				"OpenID authentication failed: " + Str.format(Utl.getRootCause(ex)), false, false);
+				"OpenID authentication failed: " + ilarkesto.core.base.Str.format(ilarkesto.core.base.Utl.getRootCause(ex)), false, false);
 			return;
 		}
 
@@ -333,7 +332,7 @@ public class LoginServlet extends AKunagiServlet {
 			} catch (Exception ex) {
 				log.error("LDAP authentication failed.", ex);
 				renderLoginPage(req, username, null, historyToken,
-					"LDAP authentication failed: " + Utl.getRootCauseMessage(ex), false, false);
+					"LDAP authentication failed: " + ilarkesto.core.base.Utl.getRootCauseMessage(ex), false, false);
 				return;
 			}
 
@@ -355,10 +354,10 @@ public class LoginServlet extends AKunagiServlet {
 				} catch (Exception ex) {
 					log.warn(ex);
 					renderLoginPage(req, username, null, historyToken, "Creating a new user <" + username
-						+ "> with email <" + email + "> failed: " + Utl.getRootCauseMessage(ex), false, false);
+						+ "> with email <" + email + "> failed: " + ilarkesto.core.base.Utl.getRootCauseMessage(ex), false, false);
 					return;
 				}
-				if (Str.isEmail(email)) user.setEmail(email);
+				if (ilarkesto.core.base.Str.isEmail(email)) user.setEmail(email);
 				webApplication.triggerRegisterNotification(user, req.getRemoteHost());
 			}
 		} else {
@@ -411,7 +410,7 @@ public class LoginServlet extends AKunagiServlet {
 		html.startDIV("loginPage");
 		html.startDIV("panel");
 		String logoUrl = webApplication.getSystemConfig().getLoginPageLogoUrl();
-		if (Str.isBlank(logoUrl)) logoUrl = "kunagi.png";
+		if (ilarkesto.core.base.Str.isBlank(logoUrl)) logoUrl = "kunagi.png";
 		html.IMG(logoUrl, "Kunagi", null, null, null, null);
 		html.DIV("separator", null);
 		if (message != null) renderMessage(html, message);
@@ -556,9 +555,9 @@ public class LoginServlet extends AKunagiServlet {
 
 	private void renderOpenIdLink(String openId, String label, String historyToken, HtmlBuilder html) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("login.html?openid=").append(Str.encodeUrlParameter(openId));
+		sb.append("login.html?openid=").append(ilarkesto.core.base.Str.encodeUrlParameter(openId));
 		sb.append("&login=Login");
-		if (historyToken != null) sb.append("&historyToken=").append(Str.encodeUrlParameter(historyToken));
+		if (historyToken != null) sb.append("&historyToken=").append(ilarkesto.core.base.Str.encodeUrlParameter(historyToken));
 		html.startA("openid", sb.toString());
 		html.startDIV("button");
 		html.text(label);

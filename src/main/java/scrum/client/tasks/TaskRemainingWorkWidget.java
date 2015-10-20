@@ -17,7 +17,6 @@ package scrum.client.tasks;
 import ilarkesto.gwt.client.AIntegerViewEditWidget;
 import ilarkesto.gwt.client.AWidget;
 import ilarkesto.gwt.client.ToolbarWidget;
-
 import scrum.client.common.AScrumAction;
 import scrum.client.sprint.CloseTaskAction;
 import scrum.client.sprint.ReopenTaskAction;

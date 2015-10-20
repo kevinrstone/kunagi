@@ -13,12 +13,25 @@
 
 package scrum.client.admin;
 
-import java.util.*;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
-import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.collaboration.GChatMessage;
+import scrum.client.collaboration.GComment;
+import scrum.client.collaboration.GEmoticon;
+import scrum.client.estimation.GRequirementEstimationVote;
+import scrum.client.issues.GIssue;
+import scrum.client.journal.GChange;
+import scrum.client.pr.GBlogEntry;
+import scrum.client.project.GProject;
+import scrum.client.sprint.GSprint;
+import scrum.client.sprint.GTask;
 
 public abstract class GUser
             extends scrum.client.common.AScrumGwtEntity
@@ -514,79 +527,79 @@ public abstract class GUser
     }
 
     public final Set<scrum.client.project.Project> getProjects() {
-        return scrum.client.project.Project.listByParticipant((User)this);
+        return GProject.listByParticipant((User)this);
     }
 
     public final Set<scrum.client.project.Project> getProjectWithAdminss() {
-        return scrum.client.project.Project.listByAdmin((User)this);
+        return GProject.listByAdmin((User)this);
     }
 
     public final Set<scrum.client.project.Project> getProjectWithProductOwnerss() {
-        return scrum.client.project.Project.listByProductOwner((User)this);
+        return GProject.listByProductOwner((User)this);
     }
 
     public final Set<scrum.client.project.Project> getProjectWithScrumMasterss() {
-        return scrum.client.project.Project.listByScrumMaster((User)this);
+        return GProject.listByScrumMaster((User)this);
     }
 
     public final Set<scrum.client.project.Project> getProjectWithTeamMemberss() {
-        return scrum.client.project.Project.listByTeamMember((User)this);
+        return GProject.listByTeamMember((User)this);
     }
 
     public final Set<scrum.client.sprint.Sprint> getSprints() {
-        return scrum.client.sprint.Sprint.listByProductOwner((User)this);
+        return GSprint.listByProductOwner((User)this);
     }
 
     public final Set<scrum.client.sprint.Sprint> getSprintWithScrumMasterss() {
-        return scrum.client.sprint.Sprint.listByScrumMaster((User)this);
+        return GSprint.listByScrumMaster((User)this);
     }
 
     public final Set<scrum.client.sprint.Sprint> getSprintWithTeamMemberss() {
-        return scrum.client.sprint.Sprint.listByTeamMember((User)this);
+        return GSprint.listByTeamMember((User)this);
     }
 
     public final Set<scrum.client.collaboration.Emoticon> getEmoticons() {
-        return scrum.client.collaboration.Emoticon.listByOwner((User)this);
+        return GEmoticon.listByOwner((User)this);
     }
 
     public final Set<scrum.client.admin.ProjectUserConfig> getProjectUserConfigs() {
-        return scrum.client.admin.ProjectUserConfig.listByUser((User)this);
+        return GProjectUserConfig.listByUser((User)this);
     }
 
     public final Set<scrum.client.issues.Issue> getIssues() {
-        return scrum.client.issues.Issue.listByCreator((User)this);
+        return GIssue.listByCreator((User)this);
     }
 
     public final Set<scrum.client.issues.Issue> getIssueWithOwners() {
-        return scrum.client.issues.Issue.listByOwner((User)this);
+        return GIssue.listByOwner((User)this);
     }
 
     public final Set<scrum.client.sprint.Task> getTasks() {
-        return scrum.client.sprint.Task.listByOwner((User)this);
+        return GTask.listByOwner((User)this);
     }
 
     public final Set<scrum.client.journal.Change> getChanges() {
-        return scrum.client.journal.Change.listByUser((User)this);
+        return GChange.listByUser((User)this);
     }
 
     public final Set<scrum.client.collaboration.Comment> getComments() {
-        return scrum.client.collaboration.Comment.listByAuthor((User)this);
+        return GComment.listByAuthor((User)this);
     }
 
     public final Set<scrum.client.collaboration.ChatMessage> getChatMessages() {
-        return scrum.client.collaboration.ChatMessage.listByAuthor((User)this);
+        return GChatMessage.listByAuthor((User)this);
     }
 
     public final Set<scrum.client.pr.BlogEntry> getBlogEntrys() {
-        return scrum.client.pr.BlogEntry.listByAuthor((User)this);
+        return GBlogEntry.listByAuthor((User)this);
     }
 
     public final Set<scrum.client.estimation.RequirementEstimationVote> getRequirementEstimationVotes() {
-        return scrum.client.estimation.RequirementEstimationVote.listByUser((User)this);
+        return GRequirementEstimationVote.listByUser((User)this);
     }
 
     public final Set<scrum.client.collaboration.Emoticon> getEmoticonWithOwners() {
-        return scrum.client.collaboration.Emoticon.listByOwner((User)this);
+        return GEmoticon.listByOwner((User)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GUser.class);
@@ -617,7 +630,7 @@ public abstract class GUser
         name = prepareName(name);
         if (isName(name)) return;
         if (name != null) {
-            Object existing = User.getByName(name);
+            Object existing = GUser.getByName(name);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"name", name);
         }
         this.name = name;
@@ -628,7 +641,7 @@ public abstract class GUser
     private final void updateName(java.lang.String name) {
         if (isName(name)) return;
         if (name != null) {
-            Object existing = User.getByName(name);
+            Object existing = GUser.getByName(name);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"name", name);
         }
         this.name = name;
@@ -914,7 +927,7 @@ public abstract class GUser
         email = prepareEmail(email);
         if (isEmail(email)) return;
         if (email != null) {
-            Object existing = User.getByEmail(email);
+            Object existing = GUser.getByEmail(email);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"email", email);
         }
         this.email = email;
@@ -925,7 +938,7 @@ public abstract class GUser
     private final void updateEmail(java.lang.String email) {
         if (isEmail(email)) return;
         if (email != null) {
-            Object existing = User.getByEmail(email);
+            Object existing = GUser.getByEmail(email);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"email", email);
         }
         this.email = email;
@@ -1748,7 +1761,7 @@ public abstract class GUser
         loginToken = prepareLoginToken(loginToken);
         if (isLoginToken(loginToken)) return;
         if (loginToken != null) {
-            Object existing = User.getByLoginToken(loginToken);
+            Object existing = GUser.getByLoginToken(loginToken);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"loginToken", loginToken);
         }
         this.loginToken = loginToken;
@@ -1759,7 +1772,7 @@ public abstract class GUser
     private final void updateLoginToken(java.lang.String loginToken) {
         if (isLoginToken(loginToken)) return;
         if (loginToken != null) {
-            Object existing = User.getByLoginToken(loginToken);
+            Object existing = GUser.getByLoginToken(loginToken);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"loginToken", loginToken);
         }
         this.loginToken = loginToken;
@@ -1799,7 +1812,7 @@ public abstract class GUser
         openId = prepareOpenId(openId);
         if (isOpenId(openId)) return;
         if (openId != null) {
-            Object existing = User.getByOpenId(openId);
+            Object existing = GUser.getByOpenId(openId);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"openId", openId);
         }
         this.openId = openId;
@@ -1810,7 +1823,7 @@ public abstract class GUser
     private final void updateOpenId(java.lang.String openId) {
         if (isOpenId(openId)) return;
         if (openId != null) {
-            Object existing = User.getByOpenId(openId);
+            Object existing = GUser.getByOpenId(openId);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("User" ,"openId", openId);
         }
         this.openId = openId;

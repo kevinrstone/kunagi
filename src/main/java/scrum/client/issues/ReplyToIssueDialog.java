@@ -15,6 +15,7 @@
 package scrum.client.issues;
 
 import ilarkesto.core.scope.Scope;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.ToolbarWidget;
 import scrum.client.ScrumGwt;
@@ -65,10 +66,10 @@ public class ReplyToIssueDialog {
 		template = fillTemplate(template, "${user.publicName}", user.getPublicName());
 		template = fillTemplate(template, "${user.email}", user.getEmail());
 
-		from = ScrumGwt.createTextBox("issueReplyFrom", project.getSupportEmail(), 400);
-		to = ScrumGwt.createTextBox("issueReplyTo", issue.getIssuerEmail(), 400);
-		subject = ScrumGwt.createTextBox("issueReplySubject", subjectText, 400);
-		text = ScrumGwt.createTextArea("issueReplyText", template, 400, 400);
+		from = Gwt.createTextBox("issueReplyFrom", project.getSupportEmail(), 400);
+		to = Gwt.createTextBox("issueReplyTo", issue.getIssuerEmail(), 400);
+		subject = Gwt.createTextBox("issueReplySubject", subjectText, 400);
+		text = Gwt.createTextArea("issueReplyText", template, 400, 400);
 
 		ToolbarWidget buttonbar = new ToolbarWidget();
 		buttonbar.addButton(new SendEmailAction());

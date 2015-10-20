@@ -30,7 +30,6 @@ public class KunagiRootConfig {
 
 	private APropertiesStore props;
 
-	private String webappName;
 	private File configFile;
 
 	// used by TestUtil
@@ -45,7 +44,6 @@ public class KunagiRootConfig {
 
 	private KunagiRootConfig(File configFile, File defaultsFile, String webappName) {
 		this.configFile = configFile;
-		this.webappName = webappName;
 		log.info("\n\n     CONFIGURATION FILE:", configFile.getAbsolutePath(), "\n\n");
 		props = new FilePropertiesStore(configFile, true).setLabel("Kunagi Configuration");
 

@@ -13,7 +13,6 @@
 
 package scrum.server;
 
-import java.util.*;
 
 public abstract class GScrumServiceImpl
             extends ilarkesto.gwt.server.AGwtServiceImpl

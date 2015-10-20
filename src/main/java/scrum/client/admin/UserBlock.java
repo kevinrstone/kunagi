@@ -17,12 +17,13 @@ package scrum.client.admin;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
 import ilarkesto.gwt.client.AnchorPanel;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import scrum.client.ScrumGwt;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,10 +51,10 @@ public class UserBlock extends ABlockWidget<User> {
 		header.setDragHandle("usr");
 		Image icon = null;
 		if (user.isDisabled()) {
-			icon = Img.usrDisabled();
+			icon = GImageBundle.usrDisabled();
 			icon.setTitle("User is disabled.");
 		} else if (!user.isEmailVerified()) {
-			icon = Img.usrEmailUnverified();
+			icon = GImageBundle.usrEmailUnverified();
 			icon.setTitle("Users email is not verified.");
 		}
 		iconWrapper.setWidget(icon);
@@ -73,7 +74,7 @@ public class UserBlock extends ABlockWidget<User> {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(user.getProjects()));
+				setViewer(Gwt.createToHtmlItemsWidget(user.getProjects()));
 			}
 		});
 		return tb.createTable();

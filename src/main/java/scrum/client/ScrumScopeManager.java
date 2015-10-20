@@ -19,9 +19,8 @@ import ilarkesto.core.scope.NonConcurrentScopeManager;
 import ilarkesto.core.scope.Scope;
 import ilarkesto.core.scope.ScopeManager;
 import ilarkesto.gwt.client.AGwtApplication;
-
 import scrum.client.admin.Auth;
-import scrum.client.admin.SystemConfig;
+import scrum.client.admin.GSystemConfig;
 import scrum.client.admin.SystemMessageManager;
 import scrum.client.admin.User;
 import scrum.client.calendar.Calendar;
@@ -80,7 +79,7 @@ public class ScrumScopeManager {
 		Scope scope = scopeManager.setScope(userScope);
 
 		scope.putComponent(user);
-		scope.putComponent(SystemConfig.get());
+		scope.putComponent(GSystemConfig.get());
 		scope.putComponent(new UsersWorkspaceWidgets());
 		scope.putComponent(new Localizer());
 

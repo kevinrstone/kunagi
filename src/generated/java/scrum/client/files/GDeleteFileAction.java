@@ -13,7 +13,6 @@
 
 package scrum.client.files;
 
-import java.util.*;
 
 public abstract class GDeleteFileAction
             extends scrum.client.common.AScrumAction {

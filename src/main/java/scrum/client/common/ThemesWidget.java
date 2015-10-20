@@ -16,13 +16,12 @@ package scrum.client.common;
 
 import ilarkesto.core.base.Str;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.MultiSelectionWidget;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import scrum.client.ScrumGwt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -101,7 +100,7 @@ public class ThemesWidget extends AMultiSelectionViewEditWidget<String> {
 		createThemeButton.setEnabled(model.isThemesCreatable());
 		createThemeButton.setTitle(tooltip.toString());
 
-		HorizontalPanel hp = ScrumGwt.createHorizontalPanel(3, newThemeTextBox, createThemeButton);
+		HorizontalPanel hp = Gwt.createHorizontalPanel(3, newThemeTextBox, createThemeButton);
 		hp.setWidth("");
 		return hp;
 

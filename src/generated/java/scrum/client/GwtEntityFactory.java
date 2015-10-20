@@ -13,7 +13,6 @@
 
 package scrum.client;
 
-import java.util.*;
 
 public class GwtEntityFactory
             extends ilarkesto.gwt.client.persistence.AGwtEntityFactory {

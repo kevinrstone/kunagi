@@ -15,7 +15,6 @@
 package scrum.client.admin;
 
 import ilarkesto.core.base.Str;
-
 import scrum.client.common.TooltipBuilder;
 
 public class SendTestEmailAction extends GSendTestEmailAction {
@@ -32,7 +31,7 @@ public class SendTestEmailAction extends GSendTestEmailAction {
 
 	@Override
 	public boolean isExecutable() {
-		SystemConfig config = SystemConfig.get();
+		SystemConfig config = GSystemConfig.get();
 		if (Str.isBlank(config.getSmtpFrom())) return false;
 		if (Str.isBlank(config.getSmtpServer())) return false;
 		if (Str.isBlank(config.getAdminEmail())) return false;

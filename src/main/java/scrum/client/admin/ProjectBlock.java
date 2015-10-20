@@ -81,7 +81,7 @@ public class ProjectBlock extends ABlockWidget<Project> {
 
 			@Override
 			protected void onEditorUpdate() {
-				List<User> users = new ArrayList<User>(User.listByDisabled(false));
+				List<User> users = new ArrayList<User>(GUser.listByDisabled(false));
 				Set<User> participants = project.getParticipants();
 				for (User participant : participants) {
 					if (!users.contains(participant)) users.add(participant);

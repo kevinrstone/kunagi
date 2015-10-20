@@ -31,6 +31,7 @@ import scrum.client.ScrumGwt;
 import scrum.client.collaboration.ForumSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.client.common.ShowEntityAction;
+import scrum.client.issues.GIssue;
 import scrum.client.issues.Issue;
 import scrum.client.project.Project;
 import scrum.client.project.Requirement;
@@ -70,12 +71,12 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 	}
 
 	public Set<Release> getBugfixReleases() {
-		return Release.listByParentRelease(this);
+		return GRelease.listByParentRelease(this);
 	}
 
 	public List<Issue> getAffectedByIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : Issue.listAll()) {
+		for (Issue issue : GIssue.listAll()) {
 			if (issue.getAffectedReleases().contains(this)) ret.add(issue);
 		}
 		return ret;
@@ -83,7 +84,7 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 	public List<Issue> getFixedIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : Issue.listAll()) {
+		for (Issue issue : GIssue.listAll()) {
 			if (issue.isClosed() && issue.containsFixRelease(this)) ret.add(issue);
 		}
 		return ret;
@@ -91,7 +92,7 @@ public class Release extends GRelease implements ReferenceSupport, ForumSupport 
 
 	public List<Issue> getPlannedIssues() {
 		List<Issue> ret = new ArrayList<Issue>();
-		for (Issue issue : Issue.listAll()) {
+		for (Issue issue : GIssue.listAll()) {
 			if (!issue.isClosed() && issue.getFixReleases().contains(this)) ret.add(issue);
 		}
 		return ret;

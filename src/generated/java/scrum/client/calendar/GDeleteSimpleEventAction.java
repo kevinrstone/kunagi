@@ -13,7 +13,6 @@
 
 package scrum.client.calendar;
 
-import java.util.*;
 
 public abstract class GDeleteSimpleEventAction
             extends scrum.client.common.AScrumAction {

@@ -38,10 +38,13 @@ import java.util.Set;
 
 import scrum.client.ScrumGwt;
 import scrum.client.admin.Auth;
+import scrum.client.admin.GProjectUserConfig;
 import scrum.client.admin.ProjectUserConfig;
 import scrum.client.admin.User;
 import scrum.client.collaboration.Comment;
 import scrum.client.collaboration.ForumSupport;
+import scrum.client.collaboration.GComment;
+import scrum.client.collaboration.GWikipage;
 import scrum.client.collaboration.Wikipage;
 import scrum.client.common.ShowEntityAction;
 import scrum.client.common.WeekdaySelector;
@@ -218,14 +221,14 @@ public class Project extends GProject implements ForumSupport {
 
 	public Wikipage getWikipage(String name) {
 		name = name.toLowerCase();
-		for (Wikipage page : Wikipage.listByProject(this)) {
+		for (Wikipage page : GWikipage.listByProject(this)) {
 			if (page.getName().toLowerCase().equals(name)) return page;
 		}
 		return null;
 	}
 
 	public ProjectUserConfig getUserConfig(User user) {
-		for (ProjectUserConfig config : ProjectUserConfig.listByProject(this)) {
+		for (ProjectUserConfig config : GProjectUserConfig.listByProject(this)) {
 			if (config.isUser(user)) return config;
 		}
 		return null;
@@ -312,7 +315,7 @@ public class Project extends GProject implements ForumSupport {
 	public Set<ForumSupport> getEntitiesWithComments() {
 		Set<ForumSupport> ret = new HashSet<ForumSupport>();
 		ret.addAll(getSubjects());
-		for (Comment comment : Comment.listAll()) {
+		for (Comment comment : GComment.listAll()) {
 			AGwtEntity entity = comment.getParent();
 			if (!(entity instanceof ForumSupport)) {
 				LOG.error(entity.getClass().getName() + " needs to implement ForumSupport");

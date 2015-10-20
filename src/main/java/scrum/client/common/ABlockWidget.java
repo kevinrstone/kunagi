@@ -17,7 +17,6 @@ package scrum.client.common;
 import ilarkesto.core.persistance.Entity;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.ScrumScopeManager;
 import scrum.client.core.EventBus;
 import scrum.client.dnd.BlockDndMarkerWidget;

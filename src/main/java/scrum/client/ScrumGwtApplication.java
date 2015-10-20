@@ -22,6 +22,7 @@ import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtApplication;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.ErrorWrapper;
+import ilarkesto.gwt.client.desktop.AActivityCatalog;
 import ilarkesto.gwt.client.persistence.AGwtEntityFactory;
 
 import java.util.ArrayList;
@@ -231,6 +232,12 @@ public class ScrumGwtApplication extends AGwtApplication<DataTransferObject> {
 
 	public static ScrumGwtApplication get() {
 		return (ScrumGwtApplication) AGwtApplication.get();
+	}
+
+	@Override
+	public AActivityCatalog createActivityCatalog() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

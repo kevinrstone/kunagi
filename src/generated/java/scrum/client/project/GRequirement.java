@@ -13,12 +13,21 @@
 
 package scrum.client.project;
 
-import java.util.*;
-import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.estimation.GRequirementEstimationVote;
+import scrum.client.issues.GIssue;
+import scrum.client.sprint.GSprintReport;
+import scrum.client.sprint.GTask;
 
 public abstract class GRequirement
             extends scrum.client.common.AScrumGwtEntity
@@ -421,27 +430,27 @@ public abstract class GRequirement
     }
 
     public final Set<scrum.client.issues.Issue> getIssues() {
-        return scrum.client.issues.Issue.listByStory((Requirement)this);
+        return GIssue.listByStory((Requirement)this);
     }
 
     public final Set<scrum.client.project.Requirement> getRequirements() {
-        return scrum.client.project.Requirement.listByEpic((Requirement)this);
+        return GRequirement.listByEpic((Requirement)this);
     }
 
     public final Set<scrum.client.sprint.SprintReport> getSprintReports() {
-        return scrum.client.sprint.SprintReport.listByCompletedRequirement((Requirement)this);
+        return GSprintReport.listByCompletedRequirement((Requirement)this);
     }
 
     public final Set<scrum.client.sprint.SprintReport> getSprintReportWithRejectedRequirementss() {
-        return scrum.client.sprint.SprintReport.listByRejectedRequirement((Requirement)this);
+        return GSprintReport.listByRejectedRequirement((Requirement)this);
     }
 
     public final Set<scrum.client.sprint.Task> getTasks() {
-        return scrum.client.sprint.Task.listByRequirement((Requirement)this);
+        return GTask.listByRequirement((Requirement)this);
     }
 
     public final Set<scrum.client.estimation.RequirementEstimationVote> getRequirementEstimationVotes() {
-        return scrum.client.estimation.RequirementEstimationVote.listByRequirement((Requirement)this);
+        return GRequirementEstimationVote.listByRequirement((Requirement)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GRequirement.class);

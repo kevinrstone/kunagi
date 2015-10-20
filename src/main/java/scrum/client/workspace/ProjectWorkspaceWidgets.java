@@ -20,7 +20,6 @@ import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AGwtEntity;
 import ilarkesto.gwt.client.AWidget;
 import ilarkesto.gwt.client.SwitcherWidget;
-
 import scrum.client.admin.ProjectUserConfigWidget;
 import scrum.client.admin.PunishmentsWidget;
 import scrum.client.admin.SystemConfigWidget;
@@ -62,11 +61,11 @@ import scrum.client.risks.Risk;
 import scrum.client.risks.RiskListWidget;
 import scrum.client.search.Search;
 import scrum.client.search.SearchResultsWidget;
+import scrum.client.sprint.GSprintReport;
 import scrum.client.sprint.NextSprintWidget;
 import scrum.client.sprint.Sprint;
 import scrum.client.sprint.SprintBacklogWidget;
 import scrum.client.sprint.SprintHistoryWidget;
-import scrum.client.sprint.SprintReport;
 import scrum.client.sprint.Task;
 import scrum.client.tasks.WhiteboardWidget;
 
@@ -241,7 +240,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets {
 
 		AEntity entity;
 		try {
-			entity = AGwtEntity.getById(entityId);
+			entity = AEntity.getById(entityId);
 		} catch (EntityDoesNotExistException ex) {
 			entity = null;
 		}
@@ -256,7 +255,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets {
 			public void run() {
 				AEntity entity;
 				try {
-					entity = AGwtEntity.getById(entityId);
+					entity = AEntity.getById(entityId);
 				} catch (EntityDoesNotExistException ex) {
 					entity = null;
 				}
@@ -338,7 +337,7 @@ public class ProjectWorkspaceWidgets extends GProjectWorkspaceWidgets {
 
 			if (getWorkarea().isShowing(sprintHistory)) {
 				// FIXME multiple requirements on same page
-				boolean existsInHistory = !SprintReport.listByRejectedRequirement(requirement).isEmpty();
+				boolean existsInHistory = !GSprintReport.listByRejectedRequirement(requirement).isEmpty();
 				if (existsInHistory) return sprintHistory;
 			}
 

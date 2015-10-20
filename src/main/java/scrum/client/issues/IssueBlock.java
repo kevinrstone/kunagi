@@ -21,7 +21,7 @@ import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 
 import com.google.gwt.user.client.ui.Image;
@@ -73,10 +73,10 @@ public class IssueBlock extends ABlockWidget<Issue> implements TrashSupport {
 		if (issue.isUnclosedBug()) {
 			Image statusImage = null;
 			if (issue.isFixed()) {
-				statusImage = Img.issFixed();
+				statusImage = GImageBundle.issFixed();
 				statusImage.setTitle("Closed.");
 			} else if (issue.isOwnerSet()) {
-				statusImage = Img.issClaimed();
+				statusImage = GImageBundle.issClaimed();
 				statusImage.setTitle("Claimed by " + issue.getOwner().getName());
 			}
 			if (statusIcon != null) statusIcon.setWidget(statusImage);

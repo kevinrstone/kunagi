@@ -16,7 +16,6 @@ package scrum.client.collaboration;
 
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
-
 import scrum.client.common.AScrumGwtEntity;
 import scrum.client.common.AScrumWidget;
 import scrum.client.core.EventBus;

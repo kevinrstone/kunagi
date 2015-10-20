@@ -21,7 +21,7 @@ public class Auth extends GAuth {
 	private User user;
 
 	public void setUser(String userId) {
-		user = User.getById(userId);
+		user = GUser.getById(userId);
 		log.info("User logged in:", user);
 		ScrumScopeManager.createUserScope(user);
 	}

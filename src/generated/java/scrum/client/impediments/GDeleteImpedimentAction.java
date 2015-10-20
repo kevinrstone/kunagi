@@ -13,7 +13,6 @@
 
 package scrum.client.impediments;
 
-import java.util.*;
 
 public abstract class GDeleteImpedimentAction
             extends scrum.client.common.AScrumAction {

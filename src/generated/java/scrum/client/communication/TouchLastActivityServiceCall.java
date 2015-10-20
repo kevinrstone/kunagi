@@ -13,7 +13,6 @@
 
 package scrum.client.communication;
 
-import java.util.*;
 
 @com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
 public class TouchLastActivityServiceCall

@@ -18,6 +18,7 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.gwt.client.AMultiSelectionViewEditWidget;
 import ilarkesto.gwt.client.AOutputViewEditWidget;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public class ReleaseWidget extends AScrumWidget {
 
 				@Override
 				protected void onViewerUpdate() {
-					setViewer(ScrumGwt.createToHtmlItemsWidget(release.getRequirements()));
+					setViewer(Gwt.createToHtmlItemsWidget(release.getRequirements()));
 				}
 
 				@Override
@@ -99,7 +100,7 @@ public class ReleaseWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(release.getAffectedByIssues()));
+				setViewer(Gwt.createToHtmlItemsWidget(release.getAffectedByIssues()));
 			}
 
 			@Override
@@ -111,7 +112,7 @@ public class ReleaseWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(release.getFixedIssues()));
+				setViewer(Gwt.createToHtmlItemsWidget(release.getFixedIssues()));
 			}
 
 			@Override
@@ -123,7 +124,7 @@ public class ReleaseWidget extends AScrumWidget {
 
 			@Override
 			protected void onViewerUpdate() {
-				setViewer(ScrumGwt.createToHtmlItemsWidget(release.getPlannedIssues()));
+				setViewer(Gwt.createToHtmlItemsWidget(release.getPlannedIssues()));
 			}
 
 			@Override
@@ -137,19 +138,19 @@ public class ReleaseWidget extends AScrumWidget {
 				@Override
 				protected void onViewerUpdate() {
 					if (release.isScriptRunning()) {
-						setViewer(ScrumGwt.createDiv("ReleaseWidget-script-running", "Release script is running..."));
+						setViewer(Gwt.createDiv("ReleaseWidget-script-running", "Release script is running..."));
 						return;
 					}
 					String output = Str.toHtml(release.getScriptOutput());
 					if (release.isReleased()) {
-						setViewer(ScrumGwt.createDiv("ReleaseWidget-script-ok", new HTML(output)));
+						setViewer(Gwt.createDiv("ReleaseWidget-script-ok", new HTML(output)));
 						return;
 					}
 					if (Str.isBlank(output)) {
-						setViewer(ScrumGwt.createDiv("ReleaseWidget-script-empty", output));
+						setViewer(Gwt.createDiv("ReleaseWidget-script-empty", output));
 						return;
 					}
-					setViewer(ScrumGwt.createDiv("ReleaseWidget-script-failed", new HTML(output)));
+					setViewer(Gwt.createDiv("ReleaseWidget-script-failed", new HTML(output)));
 				}
 			});
 		}

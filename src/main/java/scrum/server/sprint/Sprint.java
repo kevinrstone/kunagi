@@ -14,7 +14,6 @@
  */
 package scrum.server.sprint;
 
-import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
@@ -115,7 +114,7 @@ public class Sprint extends GSprint implements Numbered {
 	}
 
 	public List<Requirement> getClosedRequirementsAsList() {
-		return Utl.sort(getClosedRequirements(), getRequirementsOrderComparator());
+		return ilarkesto.core.base.Utl.sort(getClosedRequirements(), getRequirementsOrderComparator());
 	}
 
 	public Set<Requirement> getClosedRequirements() {
@@ -265,15 +264,15 @@ public class Sprint extends GSprint implements Numbered {
 	}
 
 	public String getProductOwnersAsString() {
-		return Str.concat(User.getNames(getProductOwners()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getProductOwners()), ", ");
 	}
 
 	public String getScrumMastersAsString() {
-		return Str.concat(User.getNames(getScrumMasters()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getScrumMasters()), ", ");
 	}
 
 	public String getTeamMembersAsString() {
-		return Str.concat(User.getNames(getTeamMembers()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getTeamMembers()), ", ");
 	}
 
 	public List<SprintDaySnapshot> getDaySnapshots() {
@@ -477,7 +476,7 @@ public class Sprint extends GSprint implements Numbered {
 
 		@Override
 		public int compare(Sprint a, Sprint b) {
-			return Utl.compare(a.getEnd(), b.getEnd());
+			return ilarkesto.core.base.Utl.compare(a.getEnd(), b.getEnd());
 		}
 
 	};

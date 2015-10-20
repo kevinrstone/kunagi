@@ -15,6 +15,7 @@
 package scrum.client.sprint;
 
 import ilarkesto.gwt.client.AFieldValueWidget;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
 import ilarkesto.gwt.client.editor.TextOutputWidget;
@@ -46,7 +47,7 @@ public class SprintWidget extends AScrumWidget {
 
 			@Override
 			protected void onUpdate() {
-				setContent(ScrumGwt.createToHtmlItemsWidget(sprint.getReleases()));
+				setContent(Gwt.createToHtmlItemsWidget(sprint.getReleases()));
 			}
 		});
 

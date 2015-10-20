@@ -15,7 +15,6 @@
 package scrum.client.admin;
 
 import ilarkesto.core.base.Str;
-
 import scrum.client.common.TooltipBuilder;
 
 public class TestLdapAction extends GTestLdapAction {
@@ -32,7 +31,7 @@ public class TestLdapAction extends GTestLdapAction {
 
 	@Override
 	public boolean isExecutable() {
-		SystemConfig config = SystemConfig.get();
+		SystemConfig config = GSystemConfig.get();
 		if (Str.isBlank(config.getLdapUrl())) return false;
 		return true;
 	}

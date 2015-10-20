@@ -13,19 +13,21 @@
 
 package scrum.server.sprint;
 
-import java.util.*;
-import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
-import ilarkesto.persistence.EntityEvent;
 import ilarkesto.core.fp.Predicate;
+import ilarkesto.persistence.EntityEvent;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class GSprintReportDao
             extends ilarkesto.persistence.ADao<SprintReport> {
 
     public final String getEntityName() {
-        return SprintReport.TYPE;
+        return GSprintReport.TYPE;
     }
 
     public final Class getEntityClass() {

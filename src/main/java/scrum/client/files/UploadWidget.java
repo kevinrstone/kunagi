@@ -20,7 +20,6 @@ import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.Uploader;
-
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.scope.Scope;
 

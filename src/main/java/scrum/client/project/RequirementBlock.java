@@ -17,14 +17,13 @@ package scrum.client.project;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.TimePeriod;
 import ilarkesto.gwt.client.AnchorPanel;
-
 import scrum.client.collaboration.EmoticonsWidget;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.sprint.Sprint;
 
@@ -68,16 +67,16 @@ public class RequirementBlock extends ABlockWidget<Requirement> implements Trash
 		header.setDragHandle(requirement.getReference());
 		Image statusImage = null;
 		if (requirement.isWorkEstimationVotingActive()) {
-			statusImage = Img.reqPoker();
+			statusImage = GImageBundle.reqPoker();
 			statusImage.setTitle("Estimation game \"Planning Poker\" active.");
 		} else if (requirement.isInCurrentSprint()) {
-			statusImage = Img.reqInSprint();
+			statusImage = GImageBundle.reqInSprint();
 			statusImage.setTitle("In current sprint.");
 		} else if (requirement.isClosed()) {
-			statusImage = Img.reqClosed();
+			statusImage = GImageBundle.reqClosed();
 			statusImage.setTitle("Closed.");
 		} else if (!requirement.isEstimatedWorkValid()) {
-			statusImage = Img.reqDirty();
+			statusImage = GImageBundle.reqDirty();
 			statusImage.setTitle("Needs estimation.");
 		}
 		statusIcon.setWidget(statusImage);

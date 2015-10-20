@@ -13,12 +13,16 @@
 
 package scrum.client.project;
 
-import java.util.*;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
-import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.admin.GProjectUserConfig;
 
 public abstract class GQuality
             extends scrum.client.common.AScrumGwtEntity
@@ -193,11 +197,11 @@ public abstract class GQuality
     }
 
     public final Set<scrum.client.admin.ProjectUserConfig> getProjectUserConfigs() {
-        return scrum.client.admin.ProjectUserConfig.listByPblFilterQuality((Quality)this);
+        return GProjectUserConfig.listByPblFilterQuality((Quality)this);
     }
 
     public final Set<scrum.client.project.Requirement> getRequirements() {
-        return scrum.client.project.Requirement.listByQuality((Quality)this);
+        return GRequirement.listByQuality((Quality)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GQuality.class);

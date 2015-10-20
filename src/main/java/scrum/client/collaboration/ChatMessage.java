@@ -18,7 +18,6 @@ import ilarkesto.core.base.Args;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
-
 import scrum.client.admin.User;
 import scrum.client.project.Project;
 

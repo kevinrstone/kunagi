@@ -14,7 +14,6 @@
  */
 package scrum.server.issues;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.webapp.RequestWrapper;
@@ -54,12 +53,12 @@ public class IssueServlet extends AKunagiServlet {
 		String text = req.get("text");
 		String additionalInfo = req.get("additionalInfo");
 		String externalTrackerId = req.get("externalTrackerId");
-		String name = Str.cutRight(req.get("name"), 33);
-		if (Str.isBlank(name)) name = null;
-		String email = Str.cutRight(req.get("email"), 66);
-		if (Str.isBlank(email)) email = null;
-		boolean publish = Str.isTrue(req.get("publish"));
-		boolean wiki = Str.isTrue(req.get("wiki"));
+		String name = ilarkesto.core.base.Str.cutRight(req.get("name"), 33);
+		if (ilarkesto.core.base.Str.isBlank(name)) name = null;
+		String email = ilarkesto.core.base.Str.cutRight(req.get("email"), 66);
+		if (ilarkesto.core.base.Str.isBlank(email)) email = null;
+		boolean publish = ilarkesto.core.base.Str.isTrue(req.get("publish"));
+		boolean wiki = ilarkesto.core.base.Str.isTrue(req.get("wiki"));
 
 		log.info("Message from the internets");
 		log.info("    projectId: " + projectId);
@@ -87,7 +86,7 @@ public class IssueServlet extends AKunagiServlet {
 
 		String returnUrl = req.get("returnUrl");
 		if (returnUrl != null) {
-			returnUrl = returnUrl.replace("{message}", Str.encodeUrlParameter(message));
+			returnUrl = returnUrl.replace("{message}", ilarkesto.core.base.Str.encodeUrlParameter(message));
 			req.sendRedirect(returnUrl);
 			return;
 		}
@@ -100,9 +99,9 @@ public class IssueServlet extends AKunagiServlet {
 	private String submitIssue(String projectId, String label, String text, String additionalInfo,
 			String externalTrackerId, String name, String email, boolean wiki, boolean publish, String remoteHost) {
 		if (projectId == null) throw new RuntimeException("projectId == null");
-		if (Str.isBlank(label))
+		if (ilarkesto.core.base.Str.isBlank(label))
 			throw new RuntimeException("Subject is empty, but required. Please write a short title for your issue.");
-		if (Str.isBlank(text))
+		if (ilarkesto.core.base.Str.isBlank(text))
 			throw new RuntimeException("Text is empty, but required. Please wirte a short description of your issue.");
 		Project project = projectDao.getById(projectId);
 		String textAsWiki = wiki ? text : "<nowiki>" + text + "</nowiki>";
@@ -112,10 +111,10 @@ public class IssueServlet extends AKunagiServlet {
 			project.updateHomepage(issue);
 		}
 		String issuer = issue.getIssuer();
-		if (Str.isBlank(issuer)) issuer = "anonymous";
+		if (ilarkesto.core.base.Str.isBlank(issuer)) issuer = "anonymous";
 		ProjectEvent event = projectEventDao.postEvent(project, issuer + " submitted " + issue.getReferenceAndLabel(),
 			issue);
-		if (Str.isEmail(email)) subscriptionService.subscribe(email, issue);
+		if (ilarkesto.core.base.Str.isEmail(email)) subscriptionService.subscribe(email, issue);
 
 		webApplication.sendToConversationsByProject(project, issue);
 		webApplication.sendToConversationsByProject(project, event);

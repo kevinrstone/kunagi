@@ -14,9 +14,7 @@
  */
 package scrum.server.pr;
 
-import ilarkesto.base.Utl;
 import ilarkesto.core.time.DateAndTime;
-
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;
@@ -71,7 +69,7 @@ public class BlogEntry extends GBlogEntry implements Numbered, ReferenceSupport,
 
 	@Override
 	public int compareTo(BlogEntry other) {
-		return Utl.compare(getDateAndTime(), other.getDateAndTime()) * -1;
+		return ilarkesto.core.base.Utl.compare(getDateAndTime(), other.getDateAndTime()) * -1;
 	}
 
 	@Override

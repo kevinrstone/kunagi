@@ -14,7 +14,6 @@
  */
 package scrum.server.collaboration;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.AEntity;
@@ -55,10 +54,10 @@ public class CommentServlet extends AKunagiServlet {
 		String projectId = req.get("projectId");
 		String entityId = req.get("entityId");
 		String text = req.get("text");
-		String name = Str.cutRight(req.get("name"), 33);
-		if (Str.isBlank(name)) name = null;
-		String email = Str.cutRight(req.get("email"), 33);
-		if (Str.isBlank(email)) email = null;
+		String name = ilarkesto.core.base.Str.cutRight(req.get("name"), 33);
+		if (ilarkesto.core.base.Str.isBlank(name)) name = null;
+		String email = ilarkesto.core.base.Str.cutRight(req.get("email"), 33);
+		if (ilarkesto.core.base.Str.isBlank(email)) email = null;
 
 		log.info("Comment from the internets");
 		log.info("    projectId: " + projectId);
@@ -81,7 +80,7 @@ public class CommentServlet extends AKunagiServlet {
 
 		String returnUrl = req.get("returnUrl");
 		if (returnUrl == null) returnUrl = "http://kunagi.org/message.html?#{message}";
-		returnUrl = returnUrl.replace("{message}", Str.encodeUrlParameter(message));
+		returnUrl = returnUrl.replace("{message}", ilarkesto.core.base.Str.encodeUrlParameter(message));
 
 		req.sendRedirect(returnUrl);
 	}
@@ -89,13 +88,13 @@ public class CommentServlet extends AKunagiServlet {
 	private String postComment(String projectId, String entityId, String text, String name, String email,
 			String remoteHost) {
 		if (projectId == null) throw new RuntimeException("projectId == null");
-		if (Str.isBlank(text)) throw new RuntimeException("Comment is empty.");
+		if (ilarkesto.core.base.Str.isBlank(text)) throw new RuntimeException("Comment is empty.");
 		Project project = projectDao.getById(projectId);
 		AEntity entity = daoService.getById(entityId);
 		Comment comment = commentDao.postComment(entity, "<nowiki>" + text + "</nowiki>", name, email, true);
 
 		String message = "New comment posted";
-		if (!Str.isBlank(name)) message += " by " + name;
+		if (!ilarkesto.core.base.Str.isBlank(name)) message += " by " + name;
 		subscriptionService.notifySubscribers(entity, message, project, email);
 
 		project.updateHomepage(entity);
@@ -103,7 +102,7 @@ public class CommentServlet extends AKunagiServlet {
 		String label = ((LabelSupport) entity).getLabel();
 		ProjectEvent event = projectEventDao.postEvent(project, comment.getAuthorName() + " commented on " + reference
 			+ " " + label, entity);
-		if (Str.isEmail(email)) subscriptionService.subscribe(email, entity);
+		if (ilarkesto.core.base.Str.isEmail(email)) subscriptionService.subscribe(email, entity);
 
 		webApplication.sendToConversationsByProject(project, event);
 

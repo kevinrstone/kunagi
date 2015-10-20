@@ -14,7 +14,6 @@
  */
 package scrum.server.pr;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.persistence.AEntity;
@@ -42,8 +41,8 @@ public class UnsubscribeServlet extends AKunagiServlet {
 	@Override
 	protected void onRequest(RequestWrapper<WebSession> req) throws IOException {
 		String subjectId = req.get("subject");
-		String email = Str.cutRight(req.get("email"), 64);
-		if (Str.isBlank(email)) email = null;
+		String email = ilarkesto.core.base.Str.cutRight(req.get("email"), 64);
+		if (ilarkesto.core.base.Str.isBlank(email)) email = null;
 		String key = req.get("key");
 
 		log.info("Unsubscription from the internet");
@@ -81,7 +80,7 @@ public class UnsubscribeServlet extends AKunagiServlet {
 	private void sendResponse(RequestWrapper<WebSession> req, String message) throws IOException {
 		String returnUrl = req.get("returnUrl");
 		if (returnUrl == null) returnUrl = "http://kunagi.org/message.html?#{message}";
-		returnUrl = returnUrl.replace("{message}", Str.encodeUrlParameter(message));
+		returnUrl = returnUrl.replace("{message}", ilarkesto.core.base.Str.encodeUrlParameter(message));
 
 		req.sendRedirect(returnUrl);
 	}

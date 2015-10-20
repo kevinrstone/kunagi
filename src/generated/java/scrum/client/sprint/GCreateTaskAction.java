@@ -13,7 +13,6 @@
 
 package scrum.client.sprint;
 
-import java.util.*;
 
 public abstract class GCreateTaskAction
             extends scrum.client.common.AScrumAction {

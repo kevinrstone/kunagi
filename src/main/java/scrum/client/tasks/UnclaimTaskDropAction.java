@@ -16,7 +16,6 @@ package scrum.client.tasks;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.undo.AUndoOperation;
-
 import scrum.client.admin.User;
 import scrum.client.core.EventBus;
 import scrum.client.dnd.BlockListDropAction;

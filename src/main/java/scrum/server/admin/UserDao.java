@@ -61,12 +61,12 @@ public class UserDao extends GUserDao {
 		}
 
 		if (name == null && email != null) {
-			name = Str.cutTo(email, "@");
+			name = ilarkesto.core.base.Str.cutTo(email, "@");
 		}
 
 		if (name == null) {
 			name = OpenId.cutUsername(openId);
-			name = Str.removePrefix(name, "AItOaw");
+			name = ilarkesto.core.base.Str.removePrefix(name, "AItOaw");
 			if (name.length() > 10) name = name.substring(0, 9);
 		}
 
@@ -81,7 +81,7 @@ public class UserDao extends GUserDao {
 		user.setName(name);
 		user.setFullName(fullname);
 		user.setOpenId(openId);
-		if (!Str.isBlank(email)) {
+		if (!ilarkesto.core.base.Str.isBlank(email)) {
 			user.setEmail(email);
 			user.setEmailVerified(true);
 		}

@@ -21,7 +21,7 @@ import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockListWidget;
 import scrum.client.common.BlockWidgetFactory;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.journal.ChangeHistoryWidget;
 import scrum.client.project.Requirement;
@@ -50,10 +50,10 @@ public class RequirementInHistoryBlock extends ABlockWidget<Requirement> {
 		boolean completed = report.containsCompletedRequirement(requirement);
 		Image statusImage = null;
 		if (completed) {
-			statusImage = Img.reqClosed();
+			statusImage = GImageBundle.reqClosed();
 			statusImage.setTitle("Completed.");
 		} else {
-			statusImage = Img.reqRejected();
+			statusImage = GImageBundle.reqRejected();
 			statusImage.setTitle("Rejected.");
 		}
 		header.addIconWrapper().setWidget(statusImage);

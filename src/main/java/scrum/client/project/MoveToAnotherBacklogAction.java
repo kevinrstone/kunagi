@@ -20,11 +20,8 @@ import scrum.client.common.TooltipBuilder;
 
 public class MoveToAnotherBacklogAction extends AScrumAction {
 
-	private AScrumGwtEntity entity;
-
 	public MoveToAnotherBacklogAction(AScrumGwtEntity entity) {
 		super();
-		this.entity = entity;
 	}
 
 	@Override

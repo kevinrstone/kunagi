@@ -20,7 +20,7 @@ import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 import scrum.client.tasks.TaskWidget;
 
@@ -46,7 +46,7 @@ public class TaskInHistoryBlock extends ABlockWidget<Task> implements TrashSuppo
 		statusIcon = header.addIconWrapper();
 		Image statusImage = null;
 		if (closed) {
-			statusImage = Img.tskClosed();
+			statusImage = GImageBundle.tskClosed();
 			statusImage.setTitle("Closed.");
 		}
 		statusIcon.setWidget(statusImage);

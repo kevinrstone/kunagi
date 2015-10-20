@@ -15,7 +15,6 @@
 package scrum.client.journal;
 
 import ilarkesto.core.scope.Scope;
-
 import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumGwtEntity;
 import scrum.client.common.TooltipBuilder;

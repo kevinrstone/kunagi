@@ -15,7 +15,6 @@
 package scrum.server.common;
 
 import ilarkesto.base.PermissionDeniedException;
-import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.core.base.RunnableWithException;
 import ilarkesto.core.logging.Log;
@@ -108,7 +107,7 @@ public abstract class AKunagiServlet extends AServlet<ScrumWebApplication, WebSe
 		if (systemConfig.isInstanceNameSet()) title += " @ " + systemConfig.getInstanceName();
 		html.startHEAD(title, "EN");
 		html.META("X-UA-Compatible", "IE=edge");
-		if (!Str.isBlank(refreshUrl)) html.METArefresh(refreshSeconds, refreshUrl);
+		if (!ilarkesto.core.base.Str.isBlank(refreshUrl)) html.METArefresh(refreshSeconds, refreshUrl);
 		html.LINKfavicon();
 		html.endHEAD();
 		return html;
@@ -220,7 +219,7 @@ public abstract class AKunagiServlet extends AServlet<ScrumWebApplication, WebSe
 
 	protected boolean tokenLogin(RequestWrapper<WebSession> req) throws IOException {
 		String loginToken = req.getCookie(ScrumGwtApplication.LOGIN_TOKEN_COOKIE);
-		if (!Str.isBlank(loginToken)) {
+		if (!ilarkesto.core.base.Str.isBlank(loginToken)) {
 			User user = userDao.getUserByLoginToken(loginToken);
 			if (user != null) {
 				user.setLastLoginDateAndTime(DateAndTime.now());
@@ -234,8 +233,8 @@ public abstract class AKunagiServlet extends AServlet<ScrumWebApplication, WebSe
 
 	protected void redirectToLogin(RequestWrapper<WebSession> req) throws IOException {
 		String url = "login.html";
-		String token = Str.cutFrom(req.getUri(), "#");
-		if (!Str.isBlank(token)) url += "?historyToken=" + Str.encodeUrlParameter(token);
+		String token = ilarkesto.core.base.Str.cutFrom(req.getUri(), "#");
+		if (!ilarkesto.core.base.Str.isBlank(token)) url += "?historyToken=" + ilarkesto.core.base.Str.encodeUrlParameter(token);
 		url = webApplication.createUrl(url);
 		log.debug("Redirecting to", url);
 		req.sendRedirect(url);

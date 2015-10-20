@@ -15,10 +15,8 @@
 package scrum.server.project;
 
 import ilarkesto.base.Proc;
-import ilarkesto.base.Str;
 import ilarkesto.base.Sys;
 import ilarkesto.base.Tm;
-import ilarkesto.base.Utl;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.integration.velocity.ContextBuilder;
@@ -148,7 +146,7 @@ public class HomepageUpdater {
 			if (templateName.startsWith("iss.")) continue;
 			if (templateName.startsWith("blg.")) continue;
 			if (templateName.startsWith("sto.")) continue;
-			String outputFileName = Str.removeSuffix(templateName, ".vm");
+			String outputFileName = ilarkesto.core.base.Str.removeSuffix(templateName, ".vm");
 			velocity.processTemplate(templateName, new File(outputDir.getPath() + "/" + outputFileName), context);
 		}
 	}
@@ -167,8 +165,8 @@ public class HomepageUpdater {
 			String templateName = templateFile.getName();
 			if (!templateName.endsWith(".vm")) continue;
 			if (!templateName.startsWith(prefix + ".")) continue;
-			String outputFileName = Str.removeSuffix(templateName, ".vm");
-			outputFileName = Str.removePrefix(outputFileName, prefix + ".");
+			String outputFileName = ilarkesto.core.base.Str.removeSuffix(templateName, ".vm");
+			outputFileName = ilarkesto.core.base.Str.removePrefix(outputFileName, prefix + ".");
 			outputFileName = reference + "." + outputFileName;
 			velocity.processTemplate(templateName, new File(outputDir.getPath() + "/" + outputFileName), context);
 		}
@@ -297,9 +295,9 @@ public class HomepageUpdater {
 	}
 
 	private void fillComments(ContextBuilder context, AEntity entity) {
-		CommentDao commentDao = (CommentDao) entity.getDaoService().getDaoByClass(Comment.class);
+		CommentDao commentDao = (CommentDao) AEntity.getDaoService().getDaoByClass(Comment.class);
 		Collection<Comment> comments = commentDao.getPublishedCommentsByParent(entity);
-		comments = Utl.sort(comments);
+		comments = ilarkesto.core.base.Utl.sort(comments);
 		for (Comment comment : comments) {
 			fillComment(context.addSubContext("comments"), comment);
 		}
@@ -371,10 +369,10 @@ public class HomepageUpdater {
 		context.put("id", entry.getId());
 		context.put("reference", entry.getReference());
 		context.put("url", entry.getUrl());
-		context.put("urlEncodedForUrl", Str.encodeUrlParameter(entry.getUrl()));
+		context.put("urlEncodedForUrl", ilarkesto.core.base.Str.encodeUrlParameter(entry.getUrl()));
 		context.put("title", toHtml(entry.getTitle()));
 		context.put("text", wikiToHtml(entry.getText()));
-		context.put("textShort", wikiToHtml(Str.getFirstParagraph(entry.getText())));
+		context.put("textShort", wikiToHtml(ilarkesto.core.base.Str.getFirstParagraph(entry.getText())));
 		context.put("plainText", wikiToText(entry.getText()));
 		DateAndTime date = entry.getDateAndTime();
 		context.put("date", Tm.FORMAT_LONGMONTH_DAY_YEAR.format(date));
@@ -470,14 +468,14 @@ public class HomepageUpdater {
 	}
 
 	public String wikiToHtml(String wikitext) {
-		if (Str.isBlank(wikitext)) return null;
+		if (ilarkesto.core.base.Str.isBlank(wikitext)) return null;
 		WikiParser wikiParser = new WikiParser(wikitext);
 		WikiModel model = wikiParser.parse(false);
 		return model.toHtml(htmlContext);
 	}
 
 	public static String wikiToText(String wikitext) {
-		if (Str.isBlank(wikitext)) return null;
+		if (ilarkesto.core.base.Str.isBlank(wikitext)) return null;
 		return wikitext;
 	}
 
@@ -491,7 +489,7 @@ public class HomepageUpdater {
 
 	public static String toHtml(String text) {
 		if (text == null) return null;
-		text = Str.toHtml(text);
+		text = ilarkesto.core.base.Str.toHtml(text);
 		return text;
 	}
 

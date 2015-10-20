@@ -15,7 +15,6 @@
 package scrum.client.admin;
 
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.common.TooltipBuilder;
 
 public class DeleteUserAction extends GDeleteUserAction {

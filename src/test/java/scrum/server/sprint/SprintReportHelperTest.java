@@ -37,7 +37,7 @@ public class SprintReportHelperTest extends ATest {
 
 	@Test
 	public void decodeRequirement() {
-		String[] req = SprintHistoryHelper.decodeRequirement("sto1;13;Story ;x");
+		String[] req = scrum.client.sprint.SprintHistoryHelper.decodeRequirement("sto1;13;Story ;x");
 		assertEquals(req, new String[] { "sto1", "13", "Story ;x" });
 	}
 
@@ -52,7 +52,7 @@ public class SprintReportHelperTest extends ATest {
 
 	@Test
 	public void decodeTask() {
-		String[] req = SprintHistoryHelper.decodeTask("tsk1;6;1;Task;X :-D");
+		String[] req = scrum.client.sprint.SprintHistoryHelper.decodeTask("tsk1;6;1;Task;X :-D");
 		assertEquals(req, new String[] { "tsk1", "6", "1", "Task;X :-D" });
 	}
 
@@ -72,7 +72,7 @@ public class SprintReportHelperTest extends ATest {
 		req3.setEstimatedWork(8f);
 
 		String encoded = SprintHistoryHelper.encodeRequirementsAndTasks(Utl.toList(req1, req2, req3));
-		List<StoryInfo> reqs = SprintHistoryHelper.parseRequirementsAndTasks(encoded);
+		List<StoryInfo> reqs = scrum.client.sprint.SprintHistoryHelper.parseRequirementsAndTasks(encoded);
 
 		assertEquals(reqs.size(), 3);
 		assertEquals(reqs.get(1).getTasks().size(), 2);

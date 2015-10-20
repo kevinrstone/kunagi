@@ -15,6 +15,7 @@
 package scrum.client.impediments;
 
 import ilarkesto.gwt.client.AFieldValueWidget;
+import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.editor.DateEditorWidget;
 import scrum.client.ScrumGwt;
@@ -47,7 +48,7 @@ public class ImpedimentWidget extends AScrumWidget {
 
 			@Override
 			protected void onUpdate() {
-				setContent(ScrumGwt.createToHtmlItemsWidget(impediment.getProject().getCurrentSprint()
+				setContent(Gwt.createToHtmlItemsWidget(impediment.getProject().getCurrentSprint()
 						.getTasksBlockedBy(impediment)));
 			}
 		});

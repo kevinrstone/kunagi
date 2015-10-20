@@ -15,11 +15,10 @@
 package scrum.client.workspace;
 
 import ilarkesto.core.scope.Scope;
-
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.StyleSheet;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
@@ -39,7 +38,7 @@ public class TrashWidget extends AScrumWidget {
 
 		trash = new HorizontalPanel();
 		trash.setStyleName("TrashWidget");
-		trash.add(Img.trash32());
+		trash.add(GImageBundle.trash32());
 		// trash.add(new Label("Trash"));
 
 		dndManager.getDragController().registerDropController(trashDropController);

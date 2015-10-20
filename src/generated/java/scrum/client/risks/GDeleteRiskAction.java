@@ -13,7 +13,6 @@
 
 package scrum.client.risks;
 
-import java.util.*;
 
 public abstract class GDeleteRiskAction
             extends scrum.client.common.AScrumAction {

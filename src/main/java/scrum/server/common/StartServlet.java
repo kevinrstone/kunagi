@@ -14,7 +14,6 @@
  */
 package scrum.server.common;
 
-import ilarkesto.base.Str;
 import ilarkesto.core.logging.Log;
 import ilarkesto.io.IO;
 import ilarkesto.ui.web.HtmlBuilder;
@@ -39,7 +38,7 @@ public class StartServlet extends AKunagiServlet {
 		if (first) {
 			first = false;
 			String requestUrl = req.getUri();
-			requestUrl = Str.removeSuffix(requestUrl, "index.html");
+			requestUrl = ilarkesto.core.base.Str.removeSuffix(requestUrl, "index.html");
 			if (!systemConfig.isUrlSet()) systemConfig.setUrl(requestUrl);
 		}
 

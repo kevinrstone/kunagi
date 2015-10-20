@@ -13,12 +13,31 @@
 
 package scrum.client.project;
 
-import java.util.*;
-import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.admin.GProjectUserConfig;
+import scrum.client.admin.GUser;
+import scrum.client.calendar.GSimpleEvent;
+import scrum.client.collaboration.GChatMessage;
+import scrum.client.collaboration.GSubject;
+import scrum.client.collaboration.GWikipage;
+import scrum.client.files.GFile;
+import scrum.client.impediments.GImpediment;
+import scrum.client.issues.GIssue;
+import scrum.client.journal.GProjectEvent;
+import scrum.client.pr.GBlogEntry;
+import scrum.client.release.GRelease;
+import scrum.client.risks.GRisk;
+import scrum.client.sprint.GSprint;
 
 public abstract class GProject
             extends scrum.client.common.AScrumGwtEntity
@@ -823,67 +842,67 @@ public abstract class GProject
     }
 
     public final Set<scrum.client.sprint.Sprint> getSprints() {
-        return scrum.client.sprint.Sprint.listByProject((Project)this);
+        return GSprint.listByProject((Project)this);
     }
 
     public final Set<scrum.client.admin.ProjectUserConfig> getProjectUserConfigs() {
-        return scrum.client.admin.ProjectUserConfig.listByProject((Project)this);
+        return GProjectUserConfig.listByProject((Project)this);
     }
 
     public final Set<scrum.client.project.Quality> getQualitys() {
-        return scrum.client.project.Quality.listByProject((Project)this);
+        return GQuality.listByProject((Project)this);
     }
 
     public final Set<scrum.client.impediments.Impediment> getImpediments() {
-        return scrum.client.impediments.Impediment.listByProject((Project)this);
+        return GImpediment.listByProject((Project)this);
     }
 
     public final Set<scrum.client.project.Requirement> getRequirements() {
-        return scrum.client.project.Requirement.listByProject((Project)this);
+        return GRequirement.listByProject((Project)this);
     }
 
     public final Set<scrum.client.issues.Issue> getIssues() {
-        return scrum.client.issues.Issue.listByProject((Project)this);
+        return GIssue.listByProject((Project)this);
     }
 
     public final Set<scrum.client.release.Release> getReleases() {
-        return scrum.client.release.Release.listByProject((Project)this);
+        return GRelease.listByProject((Project)this);
     }
 
     public final Set<scrum.client.journal.ProjectEvent> getProjectEvents() {
-        return scrum.client.journal.ProjectEvent.listByProject((Project)this);
+        return GProjectEvent.listByProject((Project)this);
     }
 
     public final Set<scrum.client.calendar.SimpleEvent> getSimpleEvents() {
-        return scrum.client.calendar.SimpleEvent.listByProject((Project)this);
+        return GSimpleEvent.listByProject((Project)this);
     }
 
     public final Set<scrum.client.collaboration.Subject> getSubjects() {
-        return scrum.client.collaboration.Subject.listByProject((Project)this);
+        return GSubject.listByProject((Project)this);
     }
 
     public final Set<scrum.client.collaboration.ChatMessage> getChatMessages() {
-        return scrum.client.collaboration.ChatMessage.listByProject((Project)this);
+        return GChatMessage.listByProject((Project)this);
     }
 
     public final Set<scrum.client.pr.BlogEntry> getBlogEntrys() {
-        return scrum.client.pr.BlogEntry.listByProject((Project)this);
+        return GBlogEntry.listByProject((Project)this);
     }
 
     public final Set<scrum.client.risks.Risk> getRisks() {
-        return scrum.client.risks.Risk.listByProject((Project)this);
+        return GRisk.listByProject((Project)this);
     }
 
     public final Set<scrum.client.collaboration.Wikipage> getWikipages() {
-        return scrum.client.collaboration.Wikipage.listByProject((Project)this);
+        return GWikipage.listByProject((Project)this);
     }
 
     public final Set<scrum.client.files.File> getFiles() {
-        return scrum.client.files.File.listByProject((Project)this);
+        return GFile.listByProject((Project)this);
     }
 
     public final Set<scrum.client.admin.User> getCurrentProjectUsers() {
-        return scrum.client.admin.User.listByCurrentProject((Project)this);
+        return GUser.listByCurrentProject((Project)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GProject.class);
@@ -905,7 +924,7 @@ public abstract class GProject
         if (isLabel(label)) return;
         if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
         if (label != null) {
-            Object existing = Project.getByLabel(label);
+            Object existing = GProject.getByLabel(label);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("Project" ,"label", label);
         }
         this.label = label;
@@ -917,7 +936,7 @@ public abstract class GProject
         if (isLabel(label)) return;
         if (label == null) throw new IllegalArgumentException("Mandatory field can not be set to null: label");
         if (label != null) {
-            Object existing = Project.getByLabel(label);
+            Object existing = GProject.getByLabel(label);
             if (existing != null && existing != this) throw new ilarkesto.core.persistance.UniqueFieldConstraintException("Project" ,"label", label);
         }
         this.label = label;

@@ -15,7 +15,6 @@
 package scrum.server.project;
 
 import ilarkesto.core.base.Utl;
-
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;

@@ -28,7 +28,7 @@ public class MoveRequirementToOtherProjectAction extends GMoveRequirementToOther
 
 	@Override
 	public boolean isExecutable() {
-		if (Project.listAll().size() < 2) return false;
+		if (GProject.listAll().size() < 2) return false;
 		return true;
 	}
 

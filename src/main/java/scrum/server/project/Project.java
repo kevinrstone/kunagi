@@ -14,7 +14,6 @@
  */
 package scrum.server.project;
 
-import ilarkesto.base.Str;
 import ilarkesto.base.Utl;
 import ilarkesto.core.money.Money;
 import ilarkesto.core.search.SearchText;
@@ -286,7 +285,7 @@ public class Project extends GProject {
 	}
 
 	public List<ProjectEvent> getLatestProjectEvents(int min) {
-		List<ProjectEvent> events = Utl.sort(projectEventDao.getProjectEventsByProject(this));
+		List<ProjectEvent> events = ilarkesto.core.base.Utl.sort(projectEventDao.getProjectEventsByProject(this));
 
 		DateAndTime deadline = new DateAndTime(Date.today().prevDay(), Time.now());
 		List<ProjectEvent> ret = new ArrayList<ProjectEvent>();
@@ -1013,15 +1012,15 @@ public class Project extends GProject {
 	}
 
 	public String getProductOwnersAsString() {
-		return Str.concat(User.getNames(getProductOwners()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getProductOwners()), ", ");
 	}
 
 	public String getScrumMastersAsString() {
-		return Str.concat(User.getNames(getScrumMasters()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getScrumMasters()), ", ");
 	}
 
 	public String getTeamMembersAsString() {
-		return Str.concat(User.getNames(getTeamMembers()), ", ");
+		return ilarkesto.core.base.Str.concat(User.getNames(getTeamMembers()), ", ");
 	}
 
 }

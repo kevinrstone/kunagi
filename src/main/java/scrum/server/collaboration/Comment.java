@@ -17,7 +17,6 @@ package scrum.server.collaboration;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Utl;
 import ilarkesto.core.time.DateAndTime;
-
 import scrum.server.admin.User;
 
 public class Comment extends GComment implements Comparable<Comment> {
@@ -47,7 +46,7 @@ public class Comment extends GComment implements Comparable<Comment> {
 
 	@Override
 	public int compareTo(Comment other) {
-		return Utl.compare(getDateAndTime(), other.getDateAndTime());
+		return ilarkesto.core.base.Utl.compare(getDateAndTime(), other.getDateAndTime());
 	}
 
 	@Override

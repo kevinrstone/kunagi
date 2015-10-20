@@ -31,6 +31,7 @@ import scrum.client.common.AScrumAction;
 import scrum.client.common.AScrumWidget;
 import scrum.client.common.TooltipBuilder;
 import scrum.client.project.ChangeProjectAction;
+import scrum.client.project.GProject;
 import scrum.client.project.Project;
 import scrum.client.search.SearchInputWidget;
 import scrum.client.undo.Undo;
@@ -113,7 +114,7 @@ public class HeaderWidget extends AScrumWidget {
 
 			});
 			switchProjectButton.addSeparator();
-			List<Project> projects = Utl.sort(Project.listAll(), Project.LAST_OPENED_COMPARATOR);
+			List<Project> projects = Utl.sort(GProject.listAll(), Project.LAST_OPENED_COMPARATOR);
 			for (Project p : projects) {
 				if (p == getCurrentProject()) continue;
 				switchProjectButton.addAction("QuickLinks", new ChangeProjectAction(p));

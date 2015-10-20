@@ -16,7 +16,6 @@ package scrum.client.sprint;
 
 import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.common.TooltipBuilder;
 import scrum.client.project.Requirement;
 import scrum.client.workspace.ProjectWorkspaceWidgets;

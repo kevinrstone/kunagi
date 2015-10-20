@@ -17,7 +17,6 @@ package scrum.client.admin;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.gwt.client.editor.ADateAndTimeEditorModel;
 import ilarkesto.gwt.client.editor.ATextEditorModel;
-
 import scrum.client.core.EventBus;
 
 public class SystemMessageManager extends GSystemMessageManager {

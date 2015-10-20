@@ -13,7 +13,6 @@
 
 package scrum.client.project;
 
-import java.util.*;
 
 @com.google.gwt.user.client.rpc.RemoteServiceRelativePath("scrum")
 public class MoveRequirementToProjectServiceCall

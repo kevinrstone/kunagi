@@ -13,7 +13,6 @@
 
 package scrum.client.sprint;
 
-import java.util.*;
 
 public abstract class GDeleteTaskAction
             extends scrum.client.common.AScrumAction {

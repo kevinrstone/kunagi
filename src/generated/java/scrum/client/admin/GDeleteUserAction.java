@@ -13,7 +13,6 @@
 
 package scrum.client.admin;
 
-import java.util.*;
 
 public abstract class GDeleteUserAction
             extends scrum.client.common.AScrumAction {

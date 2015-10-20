@@ -18,7 +18,6 @@ import ilarkesto.core.scope.Scope;
 import ilarkesto.gwt.client.AAction;
 import ilarkesto.gwt.client.undo.AUndoOperation;
 import ilarkesto.gwt.client.undo.UndoManager;
-
 import scrum.client.ScrumGwtApplication;
 import scrum.client.ScrumScopeManager;
 import scrum.client.admin.Auth;

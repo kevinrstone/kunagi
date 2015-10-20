@@ -23,7 +23,7 @@ import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 
 import com.google.gwt.user.client.ui.Image;
@@ -60,10 +60,10 @@ public class ReleaseBlock extends ABlockWidget<Release> implements TrashSupport 
 		Release release = getObject();
 		Image image;
 		if (release.isBugfix()) {
-			image = Img.bugfixRelease();
+			image = GImageBundle.bugfixRelease();
 			image.setTitle("Bugfix Release");
 		} else {
-			image = Img.majorRelease();
+			image = GImageBundle.majorRelease();
 			image.setTitle("Major Release");
 		}
 		return image;

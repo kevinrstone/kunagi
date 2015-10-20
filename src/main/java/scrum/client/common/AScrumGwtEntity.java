@@ -30,20 +30,35 @@ import java.util.Set;
 
 import scrum.client.admin.Auth;
 import scrum.client.admin.User;
+import scrum.client.calendar.GSimpleEvent;
 import scrum.client.calendar.SimpleEvent;
 import scrum.client.collaboration.Comment;
 import scrum.client.collaboration.Emoticon;
 import scrum.client.collaboration.ForumSupport;
+import scrum.client.collaboration.GComment;
+import scrum.client.collaboration.GEmoticon;
+import scrum.client.collaboration.GSubject;
+import scrum.client.collaboration.GWikipage;
 import scrum.client.collaboration.Subject;
 import scrum.client.collaboration.Wikipage;
 import scrum.client.files.File;
+import scrum.client.files.GFile;
+import scrum.client.impediments.GImpediment;
 import scrum.client.impediments.Impediment;
+import scrum.client.issues.GIssue;
 import scrum.client.issues.Issue;
 import scrum.client.pr.BlogEntry;
+import scrum.client.pr.GBlogEntry;
+import scrum.client.project.GQuality;
+import scrum.client.project.GRequirement;
 import scrum.client.project.Quality;
 import scrum.client.project.Requirement;
+import scrum.client.release.GRelease;
 import scrum.client.release.Release;
+import scrum.client.risks.GRisk;
 import scrum.client.risks.Risk;
+import scrum.client.sprint.GSprint;
+import scrum.client.sprint.GTask;
 import scrum.client.sprint.Sprint;
 import scrum.client.sprint.Task;
 
@@ -52,7 +67,7 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 	public AScrumGwtEntity() {}
 
 	public Set<Comment> getComments() {
-		return Comment.listByParent(this);
+		return GComment.listByParent(this);
 	}
 
 	public Comment getLatestComment() {
@@ -69,7 +84,7 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 	}
 
 	public Set<Emoticon> getEmoticons() {
-		return Emoticon.listByParent(this);
+		return GEmoticon.listByParent(this);
 	}
 
 	public void setCurrentUserEmoticon(String emotion) {
@@ -178,7 +193,7 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 
 		if (reference.length() > 4 && reference.startsWith("[[")) {
 			String pageName = reference.substring(2, reference.length() - 2);
-			for (Wikipage e : Wikipage.listAll()) {
+			for (Wikipage e : GWikipage.listAll()) {
 				if (e.isName(pageName)) return e;
 			}
 			return null;
@@ -191,62 +206,62 @@ public abstract class AScrumGwtEntity extends AGwtEntity implements ToHtmlSuppor
 			return null;
 		}
 		if (reference.startsWith(Requirement.REFERENCE_PREFIX)) {
-			for (Requirement e : Requirement.listAll()) {
+			for (Requirement e : GRequirement.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Task.REFERENCE_PREFIX)) {
-			for (Task e : Task.listAll()) {
+			for (Task e : GTask.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Quality.REFERENCE_PREFIX)) {
-			for (Quality e : Quality.listAll()) {
+			for (Quality e : GQuality.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Issue.REFERENCE_PREFIX)) {
-			for (Issue e : Issue.listAll()) {
+			for (Issue e : GIssue.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Sprint.REFERENCE_PREFIX)) {
-			for (Sprint e : Sprint.listAll()) {
+			for (Sprint e : GSprint.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Risk.REFERENCE_PREFIX)) {
-			for (Risk e : Risk.listAll()) {
+			for (Risk e : GRisk.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Impediment.REFERENCE_PREFIX)) {
-			for (Impediment e : Impediment.listAll()) {
+			for (Impediment e : GImpediment.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(File.REFERENCE_PREFIX)) {
-			for (File e : File.listAll()) {
+			for (File e : GFile.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Subject.REFERENCE_PREFIX)) {
-			for (Subject e : Subject.listAll()) {
+			for (Subject e : GSubject.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(SimpleEvent.REFERENCE_PREFIX)) {
-			for (SimpleEvent e : SimpleEvent.listAll()) {
+			for (SimpleEvent e : GSimpleEvent.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(Release.REFERENCE_PREFIX)) {
-			for (Release e : Release.listAll()) {
+			for (Release e : GRelease.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;
 		} else if (reference.startsWith(BlogEntry.REFERENCE_PREFIX)) {
-			for (BlogEntry e : BlogEntry.listAll()) {
+			for (BlogEntry e : GBlogEntry.listAll()) {
 				if (e.isNumber(number)) return e;
 			}
 			return null;

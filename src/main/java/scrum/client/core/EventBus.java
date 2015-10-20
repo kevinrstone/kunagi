@@ -15,7 +15,6 @@
 package scrum.client.core;
 
 import ilarkesto.core.scope.Scope;
-
 import scrum.client.collaboration.UsersStatus;
 import scrum.client.communication.Pinger;
 import scrum.client.files.File;

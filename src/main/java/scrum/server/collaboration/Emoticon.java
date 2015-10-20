@@ -15,7 +15,6 @@
 package scrum.server.collaboration;
 
 import ilarkesto.auth.Auth;
-
 import scrum.server.admin.User;
 
 public class Emoticon extends GEmoticon {

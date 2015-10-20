@@ -15,7 +15,6 @@
 package scrum.server.sprint;
 
 import ilarkesto.core.base.Str;
-
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
 import scrum.server.admin.User;

@@ -13,7 +13,6 @@
 
 package scrum.client.project;
 
-import java.util.*;
 
 public abstract class GFixRequirementAction
             extends scrum.client.common.AScrumAction {

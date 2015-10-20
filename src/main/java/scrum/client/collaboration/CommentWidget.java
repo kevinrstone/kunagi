@@ -18,11 +18,10 @@ import ilarkesto.gwt.client.AOutputViewEditWidget;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.Gwt;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
-import scrum.client.ScrumGwt;
 import scrum.client.admin.ProjectUserConfig;
 import scrum.client.admin.User;
 import scrum.client.common.AScrumWidget;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -67,13 +66,13 @@ public class CommentWidget extends AScrumWidget {
 					Widget widget = null;
 					if (getCurrentProject().isHomepagePublishingEnabled()) {
 						if (comment.isPublished()) {
-							widget = Img.publicComment();
+							widget = GImageBundle.publicComment();
 							widget.setTitle("This comment is visible on the homepage.");
 						} else {
 							widget = new ButtonWidget(new PublishCommentAction(comment)).update();
 						}
 					}
-					setViewer(widget == null ? null : ScrumGwt.createDiv("Comment-Widget-header-pub", widget));
+					setViewer(widget == null ? null : Gwt.createDiv("Comment-Widget-header-pub", widget));
 				}
 			});
 		}

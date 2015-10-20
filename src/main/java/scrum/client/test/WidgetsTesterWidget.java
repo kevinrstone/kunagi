@@ -36,7 +36,7 @@ import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockListWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.common.TooltipBuilder;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.project.SelectProjectServiceCall;
 import scrum.client.workspace.PagePanel;
 
@@ -168,7 +168,7 @@ public class WidgetsTesterWidget extends AScrumWidget {
 
 		@Override
 		protected void onInitializationHeader(BlockHeaderWidget header) {
-			header.addIconWrapper().setWidget(Img.hyperlink());
+			header.addIconWrapper().setWidget(GImageBundle.hyperlink());
 			header.setDragHandle("dmy666");
 			header.addToolbarAction(new DummyAction("Function 1"));
 			header.addToolbarAction(new DummyAction("Function 2"));
@@ -279,17 +279,17 @@ public class WidgetsTesterWidget extends AScrumWidget {
 
 	private void testToolbar() {
 		ToolbarWidget toolbar = new ToolbarWidget();
-		toolbar.add(new ButtonWidget(createAction(Img.hyperlink(), "icon and text")));
+		toolbar.add(new ButtonWidget(createAction(GImageBundle.hyperlink(), "icon and text")));
 		toolbar.add(new ButtonWidget(createAction("text only")));
-		toolbar.add(new ButtonWidget(createAction(Img.hyperlink(), null)));
+		toolbar.add(new ButtonWidget(createAction(GImageBundle.hyperlink(), null)));
 		addTest("ToolbarWidget", toolbar);
 	}
 
 	private void testButtons() {
 		addTest("ButtonWidget:text-only", new ButtonWidget(createAction("text only")));
-		addTest("ButtonWidget:icon-only", new ButtonWidget(createAction(Img.hyperlink(), null)));
-		addTest("ButtonWidget:icon-text", new ButtonWidget(createAction(Img.hyperlink(), "icon and text")));
-		addTest("ButtonWidget:nonexecutable", new ButtonWidget(createAction(Img.hyperlink(), "icon and text", false)));
+		addTest("ButtonWidget:icon-only", new ButtonWidget(createAction(GImageBundle.hyperlink(), null)));
+		addTest("ButtonWidget:icon-text", new ButtonWidget(createAction(GImageBundle.hyperlink(), "icon and text")));
+		addTest("ButtonWidget:nonexecutable", new ButtonWidget(createAction(GImageBundle.hyperlink(), "icon and text", false)));
 
 		FlowPanel multipleButtons = new FlowPanel();
 		multipleButtons.add(new ButtonWidget(createAction("Button 1")).update());
@@ -299,7 +299,7 @@ public class WidgetsTesterWidget extends AScrumWidget {
 	}
 
 	private void testImageAnchor() {
-		ImageAnchor a = new ImageAnchor(Img.hyperlink(), "click");
+		ImageAnchor a = new ImageAnchor(GImageBundle.hyperlink(), "click");
 		addTest("ImageAnchor", a);
 	}
 

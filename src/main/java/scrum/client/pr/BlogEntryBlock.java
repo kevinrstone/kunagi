@@ -19,7 +19,7 @@ import scrum.client.collaboration.EmoticonsWidget;
 import scrum.client.common.ABlockWidget;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 
 import com.google.gwt.user.client.ui.Image;
@@ -48,7 +48,7 @@ public class BlogEntryBlock extends ABlockWidget<BlogEntry> {
 		header.setDragHandle(blogEntry.getReference());
 		Image statusImage = null;
 		if (blogEntry.isPublished()) {
-			statusImage = Img.blgPublished();
+			statusImage = GImageBundle.blgPublished();
 			statusImage.setTitle("Published.");
 		}
 		statusIcon.setWidget(statusImage);

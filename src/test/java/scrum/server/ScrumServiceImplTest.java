@@ -16,7 +16,6 @@ package scrum.server;
 
 import ilarkesto.auth.Auth;
 import ilarkesto.base.PermissionDeniedException;
-import ilarkesto.base.Str;
 import ilarkesto.core.base.UserInputException;
 import ilarkesto.core.persistance.Persistence;
 import ilarkesto.core.time.Date;
@@ -402,12 +401,12 @@ public class ScrumServiceImplTest extends AKunagiTest {
 	private static void assertConversationError(GwtConversation conversation, ErrorWrapper error) {
 		List<ErrorWrapper> errors = conversation.getNextData().getErrors();
 		assertTrue(errors != null && errors.contains(error),
-				"Conversation error not found: <" + error + "> in " + Str.format(errors));
+				"Conversation error not found: <" + error + "> in " + ilarkesto.core.base.Str.format(errors));
 	}
 
 	private static void assertConversationWithoutErrors(GwtConversation conversation) {
 		List<ErrorWrapper> errors = conversation.getNextData().getErrors();
-		assertTrue(errors == null || errors.isEmpty(), "Conversation contains errors: " + Str.format(errors));
+		assertTrue(errors == null || errors.isEmpty(), "Conversation contains errors: " + ilarkesto.core.base.Str.format(errors));
 	}
 
 }

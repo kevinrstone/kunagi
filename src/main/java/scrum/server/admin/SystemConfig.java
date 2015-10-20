@@ -70,8 +70,8 @@ public class SystemConfig extends GSystemConfig {
 
 	private void updateSmtp() {
 		setSmtpServer(config.getSmtpServer());
-		if (!Str.isBlank(config.getSmtpUser())) setSmtpUser(config.getSmtpUser());
-		if (!Str.isBlank(config.getSmtpPassword())) setSmtpPassword(config.getSmtpPassword());
+		if (!ilarkesto.core.base.Str.isBlank(config.getSmtpUser())) setSmtpUser(config.getSmtpUser());
+		if (!ilarkesto.core.base.Str.isBlank(config.getSmtpPassword())) setSmtpPassword(config.getSmtpPassword());
 	}
 
 	public boolean isOpenIdDomainAllowed(String openId) {

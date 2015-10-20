@@ -23,7 +23,6 @@ import ilarkesto.pdf.APdfContainerElement;
 import ilarkesto.pdf.ARow;
 import ilarkesto.pdf.ATable;
 import ilarkesto.pdf.FontStyle;
-
 import scrum.client.wiki.AWikiElement;
 import scrum.client.wiki.Code;
 import scrum.client.wiki.EntityReference;

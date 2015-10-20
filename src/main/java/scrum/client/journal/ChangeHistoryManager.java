@@ -49,7 +49,7 @@ public class ChangeHistoryManager extends GChangeHistoryManager {
 	}
 
 	public Set<Change> getChanges(AScrumGwtEntity entity) {
-		return Change.listByParent(entity);
+		return GChange.listByParent(entity);
 	}
 
 }

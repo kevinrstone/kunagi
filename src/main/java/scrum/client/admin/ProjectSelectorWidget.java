@@ -16,10 +16,10 @@ package scrum.client.admin;
 
 import ilarkesto.gwt.client.AWidget;
 import ilarkesto.gwt.client.ButtonWidget;
-
 import scrum.client.common.BlockListWidget;
 import scrum.client.project.CreateExampleProjectAction;
 import scrum.client.project.CreateProjectAction;
+import scrum.client.project.GProject;
 import scrum.client.project.Project;
 import scrum.client.workspace.PagePanel;
 
@@ -44,7 +44,7 @@ public class ProjectSelectorWidget extends AWidget {
 
 	@Override
 	protected void onUpdate() {
-		list.setObjects(Project.listAll());
+		list.setObjects(GProject.listAll());
 		super.onUpdate();
 	}
 

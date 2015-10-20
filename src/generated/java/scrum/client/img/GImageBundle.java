@@ -13,8 +13,6 @@
 
 package scrum.client.img;
 
-import java.util.*;
-import com.google.gwt.user.client.ui.ImageBundle;
 
 public abstract class GImageBundle {
 

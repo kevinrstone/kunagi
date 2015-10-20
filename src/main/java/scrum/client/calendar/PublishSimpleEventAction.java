@@ -18,7 +18,6 @@ import ilarkesto.core.base.Str;
 import ilarkesto.core.time.DateAndTime;
 import ilarkesto.core.time.Time;
 import ilarkesto.gwt.client.Gwt;
-
 import scrum.client.common.TooltipBuilder;
 import scrum.client.journal.ProjectEvent;
 

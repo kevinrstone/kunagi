@@ -21,7 +21,7 @@ import scrum.client.common.AScrumAction;
 import scrum.client.common.BlockHeaderWidget;
 import scrum.client.common.BlockWidgetFactory;
 import scrum.client.dnd.TrashSupport;
-import scrum.client.img.Img;
+import scrum.client.img.GImageBundle;
 import scrum.client.journal.ActivateChangeHistoryAction;
 
 import com.google.gwt.user.client.ui.Image;
@@ -50,7 +50,7 @@ public class ImpedimentBlock extends ABlockWidget<Impediment> implements TrashSu
 		header.setDragHandle(impediment.getReference());
 		Image statusImage = null;
 		if (impediment.isOpen()) {
-			statusImage = Img.impOpen();
+			statusImage = GImageBundle.impOpen();
 			statusImage.setTitle("Still impeding.");
 		}
 		statusIcon.setWidget(statusImage);

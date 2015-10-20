@@ -43,6 +43,7 @@ import scrum.client.estimation.RequirementEstimationVote;
 import scrum.client.impediments.Impediment;
 import scrum.client.issues.Issue;
 import scrum.client.journal.Change;
+import scrum.client.journal.GChange;
 import scrum.client.sprint.Sprint;
 import scrum.client.sprint.Task;
 import scrum.client.tasks.WhiteboardWidget;
@@ -91,7 +92,7 @@ public class Requirement extends GRequirement implements ReferenceSupport, Label
 	}
 
 	public String getHistoryLabel(final Sprint sprint) {
-		for (Change change : Change.listByParent(this)) {
+		for (Change change : GChange.listByParent(this)) {
 			String key = change.getKey();
 			if (!change.isNewValue(sprint.getId())) continue;
 			if (Change.REQ_COMPLETED_IN_SPRINT.equals(key) || Change.REQ_REJECTED_IN_SPRINT.equals(key))

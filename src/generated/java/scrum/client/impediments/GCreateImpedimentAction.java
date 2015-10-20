@@ -13,7 +13,6 @@
 
 package scrum.client.impediments;
 
-import java.util.*;
 
 public abstract class GCreateImpedimentAction
             extends scrum.client.common.AScrumAction {

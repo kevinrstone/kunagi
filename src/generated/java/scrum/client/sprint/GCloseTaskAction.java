@@ -13,7 +13,6 @@
 
 package scrum.client.sprint;
 
-import java.util.*;
 
 public abstract class GCloseTaskAction
             extends scrum.client.common.AScrumAction {

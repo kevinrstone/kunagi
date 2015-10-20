@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -102,7 +103,7 @@ public class BlockHeaderWidget extends AWidget {
 
 	public void appendOuterCell(Widget widget, String width, boolean alignRight) {
 		outerFramePanel.add(widget);
-		if (alignRight) outerFramePanel.setCellHorizontalAlignment(widget, HorizontalPanel.ALIGN_RIGHT);
+		if (alignRight) outerFramePanel.setCellHorizontalAlignment(widget, HasHorizontalAlignment.ALIGN_RIGHT);
 		if (width != null) outerFramePanel.setCellWidth(widget, width);
 	}
 

@@ -59,7 +59,7 @@ public class User extends GUser implements LabelSupport, Comparable<User> {
 		int index = 1;
 		while (true) {
 			String name = "newuser" + index;
-			if (User.getByName(name) == null) return name;
+			if (GUser.getByName(name) == null) return name;
 			index++;
 		}
 	}

@@ -13,7 +13,6 @@
 
 package scrum.client.pr;
 
-import java.util.*;
 
 public abstract class GPublishBlogEntryAction
             extends scrum.client.common.AScrumAction {

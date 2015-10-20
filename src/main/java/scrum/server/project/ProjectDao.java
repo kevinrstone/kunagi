@@ -17,7 +17,6 @@ package scrum.server.project;
 import ilarkesto.core.logging.Log;
 import ilarkesto.core.time.Date;
 import ilarkesto.core.time.DateAndTime;
-
 import scrum.server.admin.User;
 import scrum.server.admin.UserDao;
 
@@ -27,10 +26,7 @@ public class ProjectDao extends GProjectDao {
 
 	// --- dependencies ---
 
-	private UserDao userDao;
-
 	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
 	}
 
 	// --- ---

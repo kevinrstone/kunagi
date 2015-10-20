@@ -13,12 +13,16 @@
 
 package scrum.client.impediments;
 
-import java.util.*;
 import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
-import ilarkesto.core.base.Str;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.sprint.GTask;
 
 public abstract class GImpediment
             extends scrum.client.common.AScrumGwtEntity
@@ -174,7 +178,7 @@ public abstract class GImpediment
     }
 
     public final Set<scrum.client.sprint.Task> getTasks() {
-        return scrum.client.sprint.Task.listByImpediment((Impediment)this);
+        return GTask.listByImpediment((Impediment)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GImpediment.class);

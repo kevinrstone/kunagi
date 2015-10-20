@@ -21,6 +21,7 @@ import java.util.List;
 
 import scrum.client.ScrumScopeManager;
 import scrum.client.common.AScrumWidget;
+import scrum.client.project.GProject;
 import scrum.client.project.Project;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -60,7 +61,7 @@ public class ProjectSelectionWidget extends AScrumWidget {
 		Panel panel = new VerticalPanel();
 		outerPanel.add(panel);
 
-		List<Project> projects = Utl.sort(Project.listAll(), new Comparator<Project>() {
+		List<Project> projects = Utl.sort(GProject.listAll(), new Comparator<Project>() {
 
 			@Override
 			public int compare(Project project1, Project project2) {
@@ -79,7 +80,7 @@ public class ProjectSelectionWidget extends AScrumWidget {
 				ListBox lb = (ListBox) event.getSource();
 				String projectId = lb.getValue((lb.getSelectedIndex()));
 				if (Str.isBlank(projectId)) return;
-				selectedProject = Project.getById(projectId);
+				selectedProject = GProject.getById(projectId);
 			}
 
 		});

@@ -15,7 +15,6 @@
 package scrum.client.calendar;
 
 import ilarkesto.core.time.Date;
-
 import scrum.client.core.EventBus;
 import scrum.client.dnd.BlockListDropAction;
 

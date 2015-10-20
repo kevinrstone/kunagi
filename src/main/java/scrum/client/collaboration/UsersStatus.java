@@ -68,7 +68,7 @@ public class UsersStatus extends GUsersStatus {
 		List<AScrumGwtEntity> ret = new ArrayList<AScrumGwtEntity>(ids.size());
 		for (String id : ids) {
 			try {
-				AEntity entity = AGwtEntity.getById(id);
+				AEntity entity = AEntity.getById(id);
 				ret.add((AScrumGwtEntity) entity);
 			} catch (EntityDoesNotExistException ex) {
 				new RequestEntityServiceCall(id).execute();

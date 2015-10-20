@@ -13,19 +13,21 @@
 
 package scrum.server.collaboration;
 
-import java.util.*;
-import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.auth.Auth;
 import ilarkesto.base.Cache;
-import ilarkesto.persistence.EntityEvent;
 import ilarkesto.core.fp.Predicate;
+import ilarkesto.persistence.EntityEvent;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class GChatMessageDao
             extends ilarkesto.persistence.ADao<ChatMessage> {
 
     public final String getEntityName() {
-        return ChatMessage.TYPE;
+        return GChatMessage.TYPE;
     }
 
     public final Class getEntityClass() {

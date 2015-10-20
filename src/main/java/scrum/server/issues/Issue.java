@@ -184,7 +184,7 @@ public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSu
 
 		@Override
 		public int compare(Issue a, Issue b) {
-			return Utl.compare(b.getCloseDate(), a.getCloseDate());
+			return ilarkesto.core.base.Utl.compare(b.getCloseDate(), a.getCloseDate());
 		}
 	};
 
@@ -203,7 +203,7 @@ public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSu
 
 		@Override
 		public int compare(Issue a, Issue b) {
-			return Utl.compare(b.getAcceptDate(), a.getAcceptDate());
+			return ilarkesto.core.base.Utl.compare(b.getAcceptDate(), a.getAcceptDate());
 		}
 	};
 
@@ -211,7 +211,7 @@ public class Issue extends GIssue implements Numbered, ReferenceSupport, LabelSu
 
 		@Override
 		public int compare(Issue a, Issue b) {
-			return Utl.compare(b.getDate(), a.getDate());
+			return ilarkesto.core.base.Utl.compare(b.getDate(), a.getDate());
 		}
 	};
 

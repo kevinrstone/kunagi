@@ -17,7 +17,6 @@ package scrum.client.project;
 import ilarkesto.gwt.client.ButtonWidget;
 import ilarkesto.gwt.client.TableBuilder;
 import ilarkesto.gwt.client.editor.RichtextEditorWidget;
-
 import scrum.client.ScrumGwt;
 import scrum.client.admin.ProjectBlock;
 import scrum.client.common.AScrumWidget;

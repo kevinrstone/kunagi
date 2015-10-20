@@ -13,12 +13,21 @@
 
 package scrum.client.sprint;
 
-import java.util.*;
-import ilarkesto.core.base.Utl;
-import ilarkesto.core.logging.Log;
 import ilarkesto.core.base.Str;
+import ilarkesto.core.base.Utl;
 import ilarkesto.core.persistance.AEntity;
 import ilarkesto.core.persistance.EntityDoesNotExistException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import scrum.client.project.GProject;
+import scrum.client.project.GProjectSprintSnapshot;
+import scrum.client.project.GRequirement;
+import scrum.client.release.GRelease;
 
 public abstract class GSprint
             extends scrum.client.common.AScrumGwtEntity
@@ -517,35 +526,35 @@ public abstract class GSprint
     }
 
     public final Set<scrum.client.project.Project> getCurrentSprintProjects() {
-        return scrum.client.project.Project.listByCurrentSprint((Sprint)this);
+        return GProject.listByCurrentSprint((Sprint)this);
     }
 
     public final Set<scrum.client.project.Project> getNextSprintProjects() {
-        return scrum.client.project.Project.listByNextSprint((Sprint)this);
+        return GProject.listByNextSprint((Sprint)this);
     }
 
     public final Set<scrum.client.sprint.SprintDaySnapshot> getSprintDaySnapshots() {
-        return scrum.client.sprint.SprintDaySnapshot.listBySprint((Sprint)this);
+        return GSprintDaySnapshot.listBySprint((Sprint)this);
     }
 
     public final scrum.client.sprint.SprintReport getSprintReport() {
-        return scrum.client.sprint.SprintReport.getBySprint((Sprint)this);
+        return GSprintReport.getBySprint((Sprint)this);
     }
 
     public final Set<scrum.client.project.Requirement> getRequirements() {
-        return scrum.client.project.Requirement.listBySprint((Sprint)this);
+        return GRequirement.listBySprint((Sprint)this);
     }
 
     public final Set<scrum.client.release.Release> getReleases() {
-        return scrum.client.release.Release.listBySprint((Sprint)this);
+        return GRelease.listBySprint((Sprint)this);
     }
 
     public final Set<scrum.client.sprint.Task> getClosedTasksInPasts() {
-        return scrum.client.sprint.Task.listByClosedInPastSprint((Sprint)this);
+        return GTask.listByClosedInPastSprint((Sprint)this);
     }
 
     public final scrum.client.project.ProjectSprintSnapshot getProjectSprintSnapshot() {
-        return scrum.client.project.ProjectSprintSnapshot.getBySprint((Sprint)this);
+        return GProjectSprintSnapshot.getBySprint((Sprint)this);
     }
 
     private static final ilarkesto.core.logging.Log LOG = ilarkesto.core.logging.Log.get(GSprint.class);

@@ -14,7 +14,6 @@
  */
 package scrum.server.common;
 
-import ilarkesto.base.Str;
 import ilarkesto.persistence.AEntity;
 import scrum.client.common.LabelSupport;
 import scrum.client.common.ReferenceSupport;
@@ -31,7 +30,7 @@ public class KunagiUtl {
 		sb.append(reference);
 		sb.append("</a> ");
 		if (entity instanceof LabelSupport) {
-			sb.append(Str.toHtml(((LabelSupport) entity).getLabel()));
+			sb.append(ilarkesto.core.base.Str.toHtml(((LabelSupport) entity).getLabel()));
 		}
 		return sb.toString();
 	}

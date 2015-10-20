@@ -68,7 +68,7 @@ public class SprintHistoryWidget extends AScrumWidget {
 	}
 
 	private Sprint getSprint(Requirement requirement) {
-		List<Sprint> sprints = Utl.sort(Sprint.listAll(), Sprint.END_DATE_COMPARATOR);
+		List<Sprint> sprints = Utl.sort(GSprint.listAll(), Sprint.END_DATE_COMPARATOR);
 		for (Sprint sprint : sprints) {
 			SprintReport report = sprint.getSprintReport();
 			if (report == null) {
